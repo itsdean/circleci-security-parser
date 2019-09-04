@@ -39,24 +39,23 @@ if __name__ == "__main__":
 	# Get the absolute path for the output folder
 	o_folder = os.path.abspath(o_folder)
 
-	for fname in glob.glob(os.path.join(i_folder, "results_*.json")):
+	for fname in glob.glob(os.path.join(i_folder, "**/results_*.json")):
 		# print("Found a file: " + fname)
 		i_file = open(fname, "r")
 		files.append(i_file)
 
 	# Check if we were able to load any files
 	if len(files) != 0:
+
 		print(str(len(files)) + " files were found!\n")
+
+		reporter = Reporter(o_folder)
+		parser = Parser()
+		try:
+			parser.identify(files, reporter)
+		except Exception as ex:
+			print("An error occurred!")
+			print(ex)
+		reporter.create_report()
 	else:
-		print("No supported files were found! Did you target the right directory?\n")
-
-	reporter = Reporter(o_folder)
-	
-	parser = Parser()
-	try:
-		parser.identify(files, reporter)
-	except Exception as ex:
-		print("An error occurred!")
-		print(ex)
-
-	reporter.create_report()
+		print("No supported files were found! Did you target the right directory?")
