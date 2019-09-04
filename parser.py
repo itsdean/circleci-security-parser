@@ -23,15 +23,38 @@ class Parser:
 	accepted_tools = {
 		"DumpsterDiver": {
 			"match": "dumpsterdiver",
-		} ,
+		},
 		"detect-secrets": {
 			"match": "detect-secrets",
+		},
+		"Anchore": {
+			"match": "_latest-vuln"
 		}
 	}
 
 
 	def __init__(self):
 		self.reporter = ""
+
+
+	def parse_anchore(self, i_file):
+		a_output = json.load(i_file)
+		# Anchore outputs to multiple files,
+		# but to be honest, we currently only care about the vulnerabilities.
+		# Look for the vuln JSON file and parse that only.
+		if "vuln" in i_file.name:
+			print("Found vulns!")
+			for vulnerability in a_output["vulnerabilities"]:
+				print(vulnerability)
+				self.reporter.add_finding(
+					report_type="container_images",
+					tool="Anchore",
+					name="[" + vulnerability["severity"] + "] - " + vulnerability["vuln"],
+					description="A container package was identified as outdated and vulnerable.",
+					location="Package: " + vulnerability["package"],
+					raw_output=vulnerability,
+					i_file=i_file
+				)
 
 
 	def parse_detectsecrets(self, i_file):
@@ -88,6 +111,8 @@ class Parser:
 			self.parse_dumpsterdiver(i_file)
 		elif tool_name == "detect-secrets":
 			self.parse_detectsecrets(i_file)
+		elif tool_name == "Anchore":
+			self.parse_anchore(i_file)
 
 
 	def detect(self, i_file):

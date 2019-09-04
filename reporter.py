@@ -27,8 +27,6 @@ class Reporter:
         self.o_folder = o_folder
         self.o_file = self.o_folder + "/" + self.filename
 
-        print("Saving parsed output to " + self.o_file + "\n")
-
 
     def add_finding(self, report_type="", tool="", name="", description="", location="", raw_output="", i_file=""):
         # Get the filename to save with the raw output

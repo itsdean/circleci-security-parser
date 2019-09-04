@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
 import argparse
-import glob
 import os
 
 from parser import Parser
 from reporter import Reporter
+from pathlib import Path
 
 if __name__ == "__main__":
 	print("\nCircleCI Security Output Parser (CSOP) - Hi there!")
-	print("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
-	print("Parsing files...")
+	print("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security")
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
@@ -35,12 +34,13 @@ if __name__ == "__main__":
 
 	# Get the absolute path for the input folder
 	i_folder = os.path.abspath(i_folder)
+	print("\nLoading from: " + i_folder)
 
 	# Get the absolute path for the output folder
 	o_folder = os.path.abspath(o_folder)
+	print("Saving to: " + o_folder + "\n")
 
-	for fname in glob.glob(os.path.join(i_folder, "**/results_*.json")):
-		# print("Found a file: " + fname)
+	for fname in Path(i_folder).glob("**/*.json"):
 		i_file = open(fname, "r")
 		files.append(i_file)
 
