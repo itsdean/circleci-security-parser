@@ -27,6 +27,9 @@ class Reporter:
         self.o_folder = o_folder
         self.o_file = self.o_folder + "/" + self.filename
 
+    def get_existing_findings(self):
+        return self.temp_findings
+
 
     def add_finding(self, report_type="", tool="", name="", description="", location="", raw_output="", i_file=""):
         # Get the filename to save with the raw output

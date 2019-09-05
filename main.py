@@ -51,11 +51,12 @@ if __name__ == "__main__":
 
 		reporter = Reporter(o_folder)
 		parser = Parser()
-		try:
-			parser.identify(files, reporter)
-		except Exception as ex:
-			print("An error occurred!")
-			print(ex)
+		# try:
+		# 	parser.identify(files, reporter)
+		# except Exception as ex:
+		# 	print("An error occurred!")
+		# 	print(ex)
+		parser.identify(files, reporter)
 		reporter.create_report()
 	else:
 		print("No supported files were found! Did you target the right directory?")
