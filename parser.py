@@ -13,7 +13,7 @@ csv format
 report_type - secrets, container, code, etc.
 tool - tool used
 name - issue that tool reported + rating where available
-description - issue description if availabke?
+description - issue description if available?
 location - location of finding
 raw_output - raw finding output for triaging, along with filename
 
