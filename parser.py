@@ -28,7 +28,7 @@ class Parser:
 			"match": "detect-secrets",
 		},
 		"Anchore": {
-			"match": "_latest-vuln"
+			"match": "_latest"
 		}
 	}
 
@@ -42,10 +42,10 @@ class Parser:
 		# Anchore outputs to multiple files,
 		# but to be honest, we currently only care about the vulnerabilities.
 		# Look for the vuln JSON file and parse that only.
-		if "vuln" in i_file.name:
+		if "_latest-vuln" in i_file.name:
 			print("Found vulns!")
 			for vulnerability in a_output["vulnerabilities"]:
-				print(vulnerability)
+				# print(vulnerability)
 				self.reporter.add_finding(
 					report_type="container_images",
 					tool="Anchore",
@@ -59,10 +59,8 @@ class Parser:
 
 	def parse_detectsecrets(self, i_file):
 		ds_output = json.load(i_file)
-		# print(ds_output)
 
 		for name, information in ds_output["results"].items():
-			# print(name, information)
 			self.reporter.add_finding(
 				report_type="secrets",
 				tool="detect-secrets",
@@ -128,7 +126,7 @@ class Parser:
 		self.reporter = reporter
 
 		for i_file in files:
-
+			print("-" * 50)
 			print("Parsing: " + os.path.basename(i_file.name))
 			print("-" * 50)
 			self.detect(i_file)
