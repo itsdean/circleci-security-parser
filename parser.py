@@ -46,10 +46,8 @@ class Parser:
 		# but to be honest, we currently only care about the vulnerabilities.
 		# Look for the vuln JSON file and parse that only.
 		if "_latest-vuln" in i_file.name:
-			print("Found vulns!")
 			for vulnerability in a_output["vulnerabilities"]:
-				# print(vulnerability)
-			 			self.reporter.add_finding(
+			 	self.reporter.add_finding(
 					report_type="container_images",
 					tool="Anchore",
 					name="[" + vulnerability["severity"] + "] - " + vulnerability["vuln"],
@@ -117,19 +115,25 @@ class Parser:
 			for vulnerability in vulnerabilities:
 				report_type="dependencies"
 				tool="Snyk"
+
 				# Add the risk rating to the title if it's available
 				if vulnerability["severity"]:
 					name = "[" + vulnerability["severity"].capitalize() + "] " + vulnerability["title"]
 				else:
 					name = vulnerability["title"]
+
+				# Some Snyk issue descriptions have verbose descriptions.
+				# For now, we just want the gist of the issue.
 				if vulnerability["description"].startswith("## Overview"):
 					# Take the first part of the description (i.e. the vuln description without references)
 					# and remove any newlines too. The "[1:]" strips the first space and the last split removes
 					# the word Overview.
 					vuln_information = vulnerability["description"].split("##")[1].replace("\n", " ").replace("\r\n", " ")[1:].lstrip("Overview ")
+				
 				# If there's no description in the first place, clean the variable neatly for later.
 				if "None" in vulnerability["description"]:
 					vuln_information = ""
+
 				# Additional parsing to better populate the description column.
 				if "CVE-" in name:	
 					original_info = vuln_information					
@@ -149,6 +153,7 @@ class Parser:
 				# We're dealing with an existing vulnerability - skip this iteration and don't add it as a finding.
 				if skip:
 					continue
+
 				# print("Name: " + name)
 				# print("Vuln: " + vuln_information)
 
