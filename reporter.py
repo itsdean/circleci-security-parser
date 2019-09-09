@@ -13,7 +13,7 @@ tool - tool used
 name - issue that tool reported + rating where available
 description - issue description if availabke?
 location - location of finding
-raw_output - raw finding output for triaging, along with filename
+raw_output - raw finding raw_output for triaging, along with filename
 
 """
 class Reporter:
@@ -28,11 +28,11 @@ class Reporter:
         else:
             username = ""
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
-            repo = os.getenv("CIRCLE_PROJECT_USERNAME") + "_"
+            repo = os.getenv("CIRCLE_PROJECT_REPONAME") + "_"
         else:
             repo = ""
         if "CIRCLE_JOB" in os.environ:
-            job_name = os.getenv("CIRCLE_JOB") + "_"
+            job_name = os.getenv("CIRCLE_JOB").replace("/", "_") + "_"
         else:
             job_name = ""
 
@@ -44,6 +44,7 @@ class Reporter:
                         str(int(time.time())) + ".csv"
         self.o_folder = o_folder
         self.o_file = self.o_folder + "/" + self.filename
+        print("Saving to: " + self.o_file + "\n")
 
     def get_existing_findings(self):
         return self.temp_findings
