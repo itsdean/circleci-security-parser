@@ -3,7 +3,6 @@ import csv
 import os
 
 """
-
 FYI
 
 csv format
@@ -28,15 +27,11 @@ class Reporter:
         else:
             username = ""
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
-            repo = os.getenv("CIRCLE_PROJECT_REPONAME") + "_"
+            repo = os.getenv("CIRCLE_PROJECT_REPONAME").replace("_", "-") + "_"
         else:
             repo = ""
         if "CIRCLE_JOB" in os.environ:
-<<<<<<< HEAD
-            job_name = os.getenv("CIRCLE_JOB").replace("/", "_") + "_"
-=======
             job_name = os.getenv("CIRCLE_JOB").replace("/", "-") + "_"
->>>>>>> feature-snyk
         else:
             job_name = ""
 
@@ -49,6 +44,7 @@ class Reporter:
         self.o_folder = o_folder
         self.o_file = self.o_folder + "/" + self.filename
         print("Saving to: " + self.o_file + "\n")
+
 
     def get_existing_findings(self):
         return self.temp_findings
