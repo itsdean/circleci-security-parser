@@ -32,7 +32,11 @@ class Reporter:
         else:
             repo = ""
         if "CIRCLE_JOB" in os.environ:
+<<<<<<< HEAD
             job_name = os.getenv("CIRCLE_JOB").replace("/", "_") + "_"
+=======
+            job_name = os.getenv("CIRCLE_JOB").replace("/", "-") + "_"
+>>>>>>> feature-snyk
         else:
             job_name = ""
 
