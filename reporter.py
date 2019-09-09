@@ -22,8 +22,26 @@ class Reporter:
     def __init__(self, o_folder):
         self.temp_findings = []
 
+        # Check if specific CircleCI environments are available and add their values to the output filename.
+        if "CIRCLE_PROJECT_USERNAME" in os.environ:
+            username = os.getenv("CIRCLE_PROJECT_USERNAME") + "_"
+        else:
+            username = ""
+        if "CIRCLE_PROJECT_REPONAME" in os.environ:
+            repo = os.getenv("CIRCLE_PROJECT_USERNAME") + "_"
+        else:
+            repo = ""
+        if "CIRCLE_JOB" in os.environ:
+            job_name = os.getenv("CIRCLE_JOB") + "_"
+        else:
+            job_name = ""
+
         # Determine the exact path to save the parsed output to.
-        self.filename = "parsed_output_" + str(int(time.time())) + ".csv"
+        self.filename = "parsed_output_" + \
+                        username + \
+                        repo + \
+                        job_name + \
+                        str(int(time.time())) + ".csv"
         self.o_folder = o_folder
         self.o_file = self.o_folder + "/" + self.filename
 
@@ -47,23 +65,27 @@ class Reporter:
 
 
     def create_report(self):
-        print("Writing CSV report...")
+        if len(self.get_existing_findings()) != 0:
+            print("Generating CSV report...")
 
-        fieldnames = [
-            "report_type",
-            "tool",
-            "name",
-            "description",
-            "location",
-            "raw_output"
-        ]
+            fieldnames = [
+                "report_type",
+                "tool",
+                "name",
+                "description",
+                "location",
+                "raw_output"
+            ]
 
-        with open(self.o_file, 'w+', newline="\n") as open_o_file:
-            writer = csv.DictWriter(open_o_file, fieldnames=fieldnames)
-            writer.writeheader()
+            with open(self.o_file, 'w+', newline="\n") as open_o_file:
+                writer = csv.DictWriter(open_o_file, fieldnames=fieldnames)
+                writer.writeheader()
 
-            # Write a row in csv format for each finding that has been reported so far
-            for finding in self.temp_findings:
-                writer.writerow(finding)
+                # Write a row in csv format for each finding that has been reported so far
+                for finding in self.temp_findings:
+                    writer.writerow(finding)
 
+        else:
+            print("There were no issues found during this job.")
+            print("Skipping CSV report creation...")
         print("Done!")

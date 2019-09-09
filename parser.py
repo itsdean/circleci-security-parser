@@ -3,6 +3,7 @@
 
 import json
 import os
+import mistune
 
 """
 
@@ -30,8 +31,11 @@ class Parser:
 		"Anchore": {
 			"match": "_latest"
 		},
-		"Snyk": {
-			"match": "_snyk"
+		"Snyk [Image]": {
+			"match": "image_snyk"
+		},
+		"Snyk [Node]": {
+			"match": "node_snyk"
 		}
 	}
 
@@ -106,8 +110,7 @@ class Parser:
 			# Move on.
 			print("No output found in file - ignoring.")
 
-
-	def parse_snyk(self, i_file):
+	def parse_snyk(self, i_file, tool_name):
 		s_output = json.load(i_file) 
 
 		vulnerabilities = s_output["vulnerabilities"]
@@ -116,20 +119,28 @@ class Parser:
 
 			for vulnerability in vulnerabilities:
 				report_type="dependencies"
-				tool="Snyk"
+				tool=tool_name
+
 				# Add the risk rating to the title if it's available
 				if vulnerability["severity"]:
 					name = "[" + vulnerability["severity"].capitalize() + "] " + vulnerability["title"]
 				else:
 					name = vulnerability["title"]
+
 				if vulnerability["description"].startswith("## Overview"):
 					# Take the first part of the description (i.e. the vuln description without references)
 					# and remove any newlines too. The "[1:]" strips the first space and the last split removes
 					# the word Overview.
 					vuln_information = vulnerability["description"].split("##")[1].replace("\n", " ").replace("\r\n", " ")[1:].lstrip("Overview ")
+				
+				# The node Snyk scanner outputs vulnerabilities in Markdown, so lets parse to HTML
+				if tool == "Snyk [Node]":
+					vuln_information = mistune.markdown(vuln_information)
+
 				# If there's no description in the first place, clean the variable neatly for later.
 				if "None" in vulnerability["description"]:
 					vuln_information = ""
+
 				# Additional parsing to better populate the description column.
 				if "CVE-" in name:	
 					original_info = vuln_information					
@@ -146,14 +157,13 @@ class Parser:
 					if vuln_information == finding["description"]:
 						skip = True
 						break
+
 				# We're dealing with an existing vulnerability - skip this iteration and don't add it as a finding.
 				if skip:
 					continue
-				# print("Name: " + name)
-				# print("Vuln: " + vuln_information)
 
 				description = vuln_information
-				location=vulnerability["name"] + " " + vulnerability["version"]
+				location="Package: " + vulnerability["name"] + " " + vulnerability["version"]
 				raw_output=vulnerability
 				i_file=i_file
 
@@ -169,6 +179,17 @@ class Parser:
 
 				print
 
+
+	def parse_snyk_image(self, i_file):
+		tool = "Snyk [Image]"
+		self.parse_snyk(i_file, tool)
+
+
+	def parse_snyk_node(self, i_file):
+		tool = "Snyk [Node]"
+		self.parse_snyk(i_file, tool)
+
+
 	def parse(self, i_file, tool_name):
 		if tool_name == "DumpsterDiver":
 			self.parse_dumpsterdiver(i_file)
@@ -176,8 +197,10 @@ class Parser:
 			self.parse_detectsecrets(i_file)
 		elif tool_name == "Anchore":
 			self.parse_anchore(i_file)
-		elif tool_name == "Snyk":
-			self.parse_snyk(i_file)
+		elif tool_name == "Snyk [Image]":
+			self.parse_snyk_image(i_file)
+		elif tool_name == "Snyk [Node]":
+			self.parse_snyk_node(i_file)
 
 
 	def detect(self, i_file):
