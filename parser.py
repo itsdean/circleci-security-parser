@@ -169,7 +169,7 @@ class Parser:
 
 				self.reporter.add_finding(
 					report_type=report_type,
-					tool=tool,
+					tool=tool_name,
 					name=name,
 					description=description,
 					location=location,
