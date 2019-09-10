@@ -66,48 +66,51 @@ class Parser:
 
 
 	def parse_audit_ci(self, i_file):
-		ac_output = json.load(i_file)
 
-		report_type = "dependencies"
-		tool = "audit-ci"
-		
-		# Audit-CI output has a dictionary of advisories, with each key being the advisor number
-		# (similar to a CVE) and the value being another dictionary with further info.
-		# We may have to go recursive.
-		for advisory_number, advisory_info in ac_output["advisories"].items():
+		# Some audit-ci runs do not generate output, let alone valid JSON
+		# To catch these we try to run json.load to parse the JSON.
+		# If the JSON is not well formed, then chances are there's no vulns.
+		# We'll inform the user, and carry on. It' s okay.
+		# If we fail to parse then we can just grab the artifact from CircleCI and manually parse it.
+		try:
+			ac_output = json.load(i_file)
 
-			name = advisory_info["title"]
+			report_type = "dependencies"
+			tool = "audit-ci"
+			
+			# Audit-CI output has a dictionary of advisories, with each key being the advisor number
+			# (similar to a CVE) and the value being another dictionary with further info.
+			# We may have to go recursive.
+			for advisory_number, advisory_info in ac_output["advisories"].items():
 
-			# If the issue has a severity preprend it to the issue name/title
-			if advisory_info["severity"]:
-				name = "[" + advisory_info["severity"].capitalize() + "] " + name
+				name = advisory_info["title"]
 
-			# Check if there's a CVE associated, in which case add this to the issue title
-			if advisory_info["cves"]:
-				name = "[" + ", ".join(advisory_info["cves"]) + "] " + name
+				# If the issue has a severity prepend it to the issue name/title
+				if advisory_info["severity"]:
+					name = "[" + advisory_info["severity"].capitalize() + "] " + name
 
-			# Description example: "123: This is the vuln issue. This is the vuln recommendation."
-			description = str(advisory_number) + ": " + advisory_info["overview"].rstrip() + " " + advisory_info["recommendation"].replace("\n", " ")
+				# Check if there's a CVE associated, in which case add this to the issue title
+				if advisory_info["cves"]:
+					name = "[" + ", ".join(advisory_info["cves"]) + "] " + name
 
-			# Location example: "foobar 1.2.3 (foo>bar>foobar, bar>foo>foobar)"
-			location = advisory_info["module_name"] + " " + advisory_info["findings"][0]["version"] + " (" + ", ".join(advisory_info["findings"][0]["paths"]) + ")"
+				# Description example: "123: This is the vuln issue. This is the vuln recommendation."
+				description = str(advisory_number) + ": " + advisory_info["overview"].rstrip() + " " + advisory_info["recommendation"].replace("\n", " ")
 
-			self.reporter.add_finding(
-				report_type=report_type,
-				tool=tool,
-				name=name,
-				description=description,
-				location=location,
-				raw_output=advisory_info,
-				i_file=i_file
-			)
+				# Location example: "foobar 1.2.3 (foo>bar>foobar, bar>foo>foobar)"
+				location = advisory_info["module_name"] + " " + advisory_info["findings"][0]["version"] + " (" + ", ".join(advisory_info["findings"][0]["paths"]) + ")"
 
-			# print()
-			# print("Report Type: " + report_type)
-			# print("Tool: " + tool)
-			# print("Name: " + name)
-			# print("Description: " + description)
-			# print("Location: " + location)
+				self.reporter.add_finding(
+					report_type=report_type,
+					tool=tool,
+					name=name,
+					description=description,
+					location=location,
+					raw_output=advisory_info,
+					i_file=i_file
+				)
+		except ValueError as ve:
+			print("Unable to parse JSON from " + os.path.basename(i_file.name) + "; skipping file.")
+
 
 	def parse_detectsecrets(self, i_file):
 		ds_output = json.load(i_file)

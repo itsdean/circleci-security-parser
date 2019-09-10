@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import traceback
 
 from parser import Parser
 from reporter import Reporter
@@ -46,16 +47,22 @@ if __name__ == "__main__":
 	# Check if we were able to load any files
 	if len(files) != 0:
 
-		print(str(len(files)) + " files were found!\n")
-
-		reporter = Reporter(o_folder)
-		parser = Parser()
-		# try:
-		# 	parser.identify(files, reporter)
-		# except Exception as ex:
-		# 	print("An error occurred!")
-		# 	print(ex)
-		parser.identify(files, reporter)
-		reporter.create_report()
+		print(str(len(files)) + " files were found!")
+		for f_object in files:
+			print("- " + os.path.basename(f_object.name))
+		print()
+		try:
+			reporter = Reporter(o_folder)
+			parser = Parser()
+			# try:
+			# 	parser.identify(files, reporter)
+			# except Exception as ex:
+			# 	print("An error occurred!")
+			# 	print(ex)
+			parser.identify(files, reporter)
+			reporter.create_report()
+		except Exception as ex:
+			print("-" * 50 + "\nAN UNEXPECTED ERROR HAS OCCURRED:\n" + "-" * 50)
+			print(traceback.print_tb(ex.__traceback__))
 	else:
 		print("No supported files were found! Did you target the right directory?")
