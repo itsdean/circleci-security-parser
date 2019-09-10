@@ -36,6 +36,9 @@ class Parser:
 		},
 		"Snyk [Node]": {
 			"match": "node_snyk"
+		},
+		"audit-ci": {
+			"match": "audit-ci"
 		}
 	}
 
@@ -61,6 +64,50 @@ class Parser:
 					i_file=i_file
 				)
 
+
+	def parse_audit_ci(self, i_file):
+		ac_output = json.load(i_file)
+
+		report_type = "dependencies"
+		tool = "audit-ci"
+		
+		# Audit-CI output has a dictionary of advisories, with each key being the advisor number
+		# (similar to a CVE) and the value being another dictionary with further info.
+		# We may have to go recursive.
+		for advisory_number, advisory_info in ac_output["advisories"].items():
+
+			name = advisory_info["title"]
+
+			# If the issue has a severity preprend it to the issue name/title
+			if advisory_info["severity"]:
+				name = "[" + advisory_info["severity"].capitalize() + "] " + name
+
+			# Check if there's a CVE associated, in which case add this to the issue title
+			if advisory_info["cves"]:
+				name = "[" + ", ".join(advisory_info["cves"]) + "] " + name
+
+			# Description example: "123: This is the vuln issue. This is the vuln recommendation."
+			description = str(advisory_number) + ": " + advisory_info["overview"].rstrip() + " " + advisory_info["recommendation"].replace("\n", " ")
+
+			# Location example: "foobar 1.2.3 (foo>bar>foobar, bar>foo>foobar)"
+			location = advisory_info["module_name"] + " " + advisory_info["findings"][0]["version"] + " (" + ", ".join(advisory_info["findings"][0]["paths"]) + ")"
+
+			self.reporter.add_finding(
+				report_type=report_type,
+				tool=tool,
+				name=name,
+				description=description,
+				location=location,
+				raw_output=advisory_info,
+				i_file=i_file
+			)
+
+			# print()
+			# print("Report Type: " + report_type)
+			# print("Tool: " + tool)
+			# print("Name: " + name)
+			# print("Description: " + description)
+			# print("Location: " + location)
 
 	def parse_detectsecrets(self, i_file):
 		ds_output = json.load(i_file)
@@ -195,6 +242,8 @@ class Parser:
 			self.parse_snyk_image(i_file)
 		elif tool_name == "Snyk [Node]":
 			self.parse_snyk_node(i_file)
+		elif tool_name == "audit-ci":
+			self.parse_audit_ci(i_file)
 
 
 	def detect(self, i_file):

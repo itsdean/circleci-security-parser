@@ -31,7 +31,7 @@ class Reporter:
         else:
             repo = ""
         if "CIRCLE_JOB" in os.environ:
-            job_name = os.getenv("CIRCLE_JOB").replace("/", "-").replace("_").("-") + "_"
+            job_name = os.getenv("CIRCLE_JOB").replace("/", "-").replace("_", "-") + "_"
         else:
             job_name = ""
 

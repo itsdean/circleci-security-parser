@@ -38,9 +38,8 @@ if __name__ == "__main__":
 
 	# Get the absolute path for the output folder
 	o_folder = os.path.abspath(o_folder)
-	print("Saving to: " + o_folder + "\n")
 
-	for fname in Path(i_folder).glob("**/*.json"):
+	for fname in Path(i_folder).glob("**/results_*.json"):
 		i_file = open(fname, "r")
 		files.append(i_file)
 
