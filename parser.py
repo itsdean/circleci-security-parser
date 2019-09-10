@@ -109,7 +109,7 @@ class Parser:
 					i_file=i_file
 				)
 		except ValueError as ve:
-			print("Unable to parse JSON from " + os.path.basename(i_file.name) + "; skipping file.")
+			print("- Unable to parse JSON from " + os.path.basename(i_file.name) + "; skipping.")
 
 
 	def parse_detectsecrets(self, i_file):
@@ -156,72 +156,77 @@ class Parser:
 
 		else:
 			# Move on.
-			print("No output found in file - ignoring.")
+			print("No output found in file; skipping.")
+
 
 	def parse_snyk(self, i_file, tool_name):
 		s_output = json.load(i_file) 
 
-		vulnerabilities = s_output["vulnerabilities"]
+		# If we get a value of "false" for the "ok" key, then an error occured somewhere.
+		if s_output["ok"] == "false" and "Could not find package.json" in s_output["error"]:
+			print("- Snyk was unable to find a valid package.json file; skipping.")
+		else:
+			vulnerabilities = s_output["vulnerabilities"]
 
-		if len(vulnerabilities) != 0:
+			if len(vulnerabilities) != 0:
 
-			for vulnerability in vulnerabilities:
-				report_type="dependencies"
+				for vulnerability in vulnerabilities:
+					report_type="dependencies"
 
-				# Add the risk rating to the title if it's available
-				if vulnerability["severity"]:
-					name = "[" + vulnerability["severity"].capitalize() + "] " + vulnerability["title"]
-				else:
-					name = vulnerability["title"]
+					# Add the risk rating to the title if it's available
+					if vulnerability["severity"]:
+						name = "[" + vulnerability["severity"].capitalize() + "] " + vulnerability["title"]
+					else:
+						name = vulnerability["title"]
 
-				if vulnerability["description"].startswith("## Overview"):
-					# Take the first part of the description (i.e. the vuln description without references)
-					# and remove any newlines too. The "[1:]" strips the first space and the last split removes
-					# the word Overview.
-					vuln_information = vulnerability["description"].split("##")[1].replace("\n", " ").replace("\r\n", " ")[1:].lstrip("Overview ")
+					if vulnerability["description"].startswith("## Overview"):
+						# Take the first part of the description (i.e. the vuln description without references)
+						# and remove any newlines too. The "[1:]" strips the first space and the last split removes
+						# the word Overview.
+						vuln_information = vulnerability["description"].split("##")[1].replace("\n", " ").replace("\r\n", " ")[1:].lstrip("Overview ")
 
-				# If there's no description in the first place, clean the variable neatly for later.
-				if "None" in vulnerability["description"]:
-					vuln_information = ""
+					# If there's no description in the first place, clean the variable neatly for later.
+					if "None" in vulnerability["description"]:
+						vuln_information = ""
 
-				# Additional parsing to better populate the description column.
-				if "CVE-" in name:	
-					original_info = vuln_information					
-					vuln_information = "The package " + vulnerability["name"].split("/")[0] + " was vulnerable to " + vulnerability["title"] + "."
-					if not original_info.startswith("CVE-") and original_info != "":
-						vuln_information += " - " + original_info 
+					# Additional parsing to better populate the description column.
+					if "CVE-" in name:	
+						original_info = vuln_information					
+						vuln_information = "The package " + vulnerability["name"].split("/")[0] + " was vulnerable to " + vulnerability["title"] + "."
+						if not original_info.startswith("CVE-") and original_info != "":
+							vuln_information += " - " + original_info 
 
-				# 	# Now that we have crafted the core issue, we need to check if it's already been reported.
-				# 	# If it was reported, then pass, getting rid of the duplicates.
-				# 	# Time for O(N^2)!
-				skip = False
-				for finding in self.reporter.get_existing_findings():
-					# If we find the same report, break out of the loop of existing findings and remember this.
-					if vuln_information == finding["description"]:
-						skip = True
-						break
+					# 	# Now that we have crafted the core issue, we need to check if it's already been reported.
+					# 	# If it was reported, then pass, getting rid of the duplicates.
+					# 	# Time for O(N^2)!
+					skip = False
+					for finding in self.reporter.get_existing_findings():
+						# If we find the same report, break out of the loop of existing findings and remember this.
+						if vuln_information == finding["description"]:
+							skip = True
+							break
 
-				# We're dealing with an existing vulnerability - skip this iteration and don't add it as a finding.
-				if skip:
-					continue
+					# We're dealing with an existing vulnerability - skip this iteration and don't add it as a finding.
+					if skip:
+						continue
 
 
-				description = vuln_information
-				location="Package: " + vulnerability["name"] + " " + vulnerability["version"]
-				raw_output=vulnerability
-				i_file=i_file
-
-				self.reporter.add_finding(
-					report_type=report_type,
-					tool=tool_name,
-					name=name,
-					description=description,
-					location=location,
-					raw_output=vulnerability,
+					description = vuln_information
+					location="Package: " + vulnerability["name"] + " " + vulnerability["version"]
+					raw_output=vulnerability
 					i_file=i_file
-				)			
 
-				print
+					self.reporter.add_finding(
+						report_type=report_type,
+						tool=tool_name,
+						name=name,
+						description=description,
+						location=location,
+						raw_output=vulnerability,
+						i_file=i_file
+					)			
+
+					print
 
 
 	def parse_snyk_image(self, i_file):
@@ -252,8 +257,9 @@ class Parser:
 	def detect(self, i_file):
 		for tool_name, options in self.accepted_tools.items():
 			if options["match"] in i_file.name:
-				print("Tool identified: " + tool_name)
+				print("- Tool identified: " + tool_name)
 				self.parse(i_file, tool_name)
+				print("<" * 100)
 
 
 	def identify(self, files, reporter):
@@ -262,9 +268,9 @@ class Parser:
 		self.reporter = reporter
 
 		for i_file in files:
-			print("-" * 50)
+			print(">" * 100)
 			print("Parsing: " + os.path.basename(i_file.name))
-			print("-" * 50)
+			print("-" * 100)
 			self.detect(i_file)
 			print()
 

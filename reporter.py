@@ -67,7 +67,7 @@ class Reporter:
 
     def create_report(self):
         if len(self.get_existing_findings()) != 0:
-            print("-" * 50 + "\nGenerating CSV report...\n" + "-" * 50)
+            print(">" * 100 + "\nGenerating CSV report...\n" + "-" * 100)
 
             fieldnames = [
                 "report_type",
@@ -87,6 +87,6 @@ class Reporter:
                     writer.writerow(finding)
 
         else:
-            print("There were no issues found during this job.")
-            print("Skipping CSV report creation...")
-        print("Done!")
+            print("- There were no issues found during this job.")
+            print("- Skipping CSV report creation...")
+        print("- Done!\n" + "<" * 100)
