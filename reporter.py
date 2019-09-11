@@ -66,8 +66,8 @@ class Reporter:
 
 
     def create_report(self):
+        print(">" * 100 + "\nAttempting to generate CSV report...\n" + "-" * 100)
         if len(self.get_existing_findings()) != 0:
-            print(">" * 100 + "\nGenerating CSV report...\n" + "-" * 100)
 
             fieldnames = [
                 "report_type",

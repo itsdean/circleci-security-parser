@@ -156,15 +156,16 @@ class Parser:
 
 		else:
 			# Move on.
-			print("No output found in file; skipping.")
+			print("- [x] No output found in file; skipping.")
 
 
 	def parse_snyk(self, i_file, tool_name):
 		s_output = json.load(i_file) 
 
-		# If we get a value of "false" for the "ok" key, then an error occured somewhere.
-		if s_output["ok"] == "false" and "Could not find package.json" in s_output["error"]:
-			print("- Snyk was unable to find a valid package.json file; skipping.")
+		# We need to check if the output back from Snyk is telling us it couldn't find
+		# a package.json file. Do not attempt to parse, if true.
+		if s_output["ok"] is False and ("error" in s_output and "Could not find package.json" in s_output["error"]):
+			print("- [x] Snyk was unable to find a valid package.json file; skipping.")
 		else:
 			vulnerabilities = s_output["vulnerabilities"]
 
@@ -209,7 +210,6 @@ class Parser:
 					# We're dealing with an existing vulnerability - skip this iteration and don't add it as a finding.
 					if skip:
 						continue
-
 
 					description = vuln_information
 					location="Package: " + vulnerability["name"] + " " + vulnerability["version"]
