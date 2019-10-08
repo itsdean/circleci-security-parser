@@ -57,7 +57,7 @@ class Reporter:
         # Add the finding to the list to be reported
         self.temp_findings.append({
             "report_type": report_type,
-            "tool": tool,
+            "tool": tool,   
             "name": name,
             "description": description,
             "location": location,
