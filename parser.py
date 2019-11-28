@@ -5,18 +5,10 @@ import json
 import os
 
 """
+This class deals with the reading and mapping of output from each security tool
+into a common issue reporting format.
 
-FYI
-
-csv format
-
-report_type - secrets, container, code, etc.
-tool - tool used
-name - issue that tool reported + rating where available
-description - issue description if available?
-location - location of finding
-raw_output - raw finding output for triaging, along with filename
-
+Each supported tool has an associated method that starts with parse_, i.e. 
 """
 class Parser:
 
@@ -46,11 +38,13 @@ class Parser:
 		self.reporter = ""
 
 
+	"""
+	Method that reads Anchore tool output and reports container findings to Reporter.
+	"""
 	def parse_anchore(self, i_file):
 		a_output = json.load(i_file)
-		# Anchore outputs to multiple files,
-		# but to be honest, we currently only care about the vulnerabilities.
-		# Look for the vuln JSON file and parse that only.
+		# Anchore outputs various information to multiple files,
+		# but we currently only care about the file containing identified vulnerabilities.
 		if "_latest-vuln" in i_file.name:
 			for vulnerability in a_output["vulnerabilities"]:
 			 	self.reporter.add_finding(
@@ -63,7 +57,9 @@ class Parser:
 					i_file=i_file
 				)
 
-
+	"""
+	Method that parses audit-ci output and forwards vulnerable node dependency issues to Reporter.
+	"""
 	def parse_audit_ci(self, i_file):
 
 		# Some audit-ci runs do not generate output, let alone valid JSON
@@ -111,6 +107,9 @@ class Parser:
 			print("- Unable to parse JSON from " + os.path.basename(i_file.name) + "; skipping.")
 
 
+	"""
+	Method that parses detectsecrets output and forwards any potential credentials to Reporter.
+	"""
 	def parse_detectsecrets(self, i_file):
 		ds_output = json.load(i_file)
 
@@ -126,6 +125,9 @@ class Parser:
 			)
 
 
+	"""
+	Method that parses DumpsterDiver output and forwards any potential credentials to Reporter.
+	"""
 	def parse_dumpsterdiver(self, i_file):
 		dd_output = json.load(i_file) 
 
@@ -158,6 +160,12 @@ class Parser:
 			print("- [x] No output found in file; skipping.")
 
 
+	"""
+	Parses Snyk output and forwards any vulnerabilities to Reporter.
+	This method supports the reporting of both vulnerable dependencies and container packages, 
+	as Snyk does both; the only different is the "tool" field, which is specified in the tool_name
+	parameter.
+	"""
 	def parse_snyk(self, i_file, tool_name):
 		s_output = json.load(i_file) 
 

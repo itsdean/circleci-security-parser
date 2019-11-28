@@ -51,7 +51,10 @@ if __name__ == "__main__":
 	if len(files) != 0:
 
 		# Found some files! Lets list them.
-		print(str(len(files)) + " files were found!")
+		if len(files) == 1:
+			print("1 file was found!")
+		else:
+			print(str(len(files)) + " files were found!")
 		for f_object in files:
 			print("- " + os.path.basename(f_object.name))
 		print()
