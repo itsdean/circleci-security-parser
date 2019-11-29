@@ -158,7 +158,7 @@ class Parser:
 				# summary count of the previous issues)
 				for issue in issues[:-1]:
 					advisory = issue['data']['advisory']
-					pprint(advisory)
+					
 					# resolution = issue['data']['resolution']
 					# pprint(resolution)
 
