@@ -50,7 +50,7 @@ class Reporter:
         return self.temp_findings
 
 
-    def add_finding(self, report_type="", tool="", name="", description="", location="", raw_output="", i_file=""):
+    def add_finding(self, report_type="", tool="", name="", description="", recommendation = "", location="", raw_output="", i_file=""):
         # Get the filename to save with the raw output
         filename = os.path.basename(i_file.name)
 
@@ -60,13 +60,14 @@ class Reporter:
             "tool": tool,   
             "name": name,
             "description": description,
+            "recommendation": recommendation,
             "location": location,
             "raw_output": filename + " - " + str(raw_output)
         })
 
 
     def create_report(self):
-        print(">" * 100 + "\nAttempting to generate CSV report...\n" + "-" * 100)
+        print(">" * 10 + "\nAttempting to generate CSV report...\n" + "-" * 10)
         if len(self.get_existing_findings()) != 0:
 
             fieldnames = [
@@ -74,6 +75,7 @@ class Reporter:
                 "tool",
                 "name",
                 "description",
+                "recommendation",
                 "location",
                 "raw_output"
             ]
@@ -89,4 +91,4 @@ class Reporter:
         else:
             print("- There were no issues found during this job.")
             print("- Skipping CSV report creation...")
-        print("- Done!\n" + "<" * 100)
+        print("- Done!\n" + "<" * 10)

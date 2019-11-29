@@ -72,7 +72,7 @@ if __name__ == "__main__":
 			reporter.create_report()
 		# Be nice, and if something breaks return the stack trace for debugging.
 		except Exception as ex:
-			print(">" * 100 + "\nAN UNEXPECTED ERROR HAS OCCURRED:\n" + "-" * 100)
+			print(">" * 10 + "\nAN UNEXPECTED ERROR HAS OCCURRED:\n" + "-" * 10)
 			print(traceback.print_tb(ex.__traceback__))
 	else:
 		# We didn't find any files; odd.

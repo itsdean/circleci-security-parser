@@ -3,6 +3,7 @@
 
 import json
 import os
+from pprint import pprint
 
 """
 This class deals with the reading and mapping of output from each security tool
@@ -28,8 +29,11 @@ class Parser:
 		"Snyk [Node]": {
 			"match": "node_snyk"
 		},
-		"audit-ci": {
-			"match": "audit-ci"
+		"audit-ci [Yarn]": {
+			"match": "audit-ci-yarn"
+		},
+		"audit-ci [npm]": {
+			"match": "audit-ci-npm"
 		}
 	}
 
@@ -58,9 +62,9 @@ class Parser:
 				)
 
 	"""
-	Method that parses audit-ci output and forwards vulnerable node dependency issues to Reporter.
+	Method that parses audit-ci output for packages using npm, forwarding vulnerable node dependency issues to Reporter.
 	"""
-	def parse_audit_ci(self, i_file):
+	def parse_audit_ci_npm(self, i_file):
 
 		# Some audit-ci runs do not generate output, let alone valid JSON
 		# To catch these we try to run json.load to parse the JSON.
@@ -103,9 +107,77 @@ class Parser:
 					raw_output=advisory_info,
 					i_file=i_file
 				)
-		except ValueError as ve:
+
+		except ValueError:
 			print("- Unable to parse JSON from " + os.path.basename(i_file.name) + "; skipping.")
 
+
+	"""
+	Method that parses audit-ci output for packages using Yarn, forwarding vulnerable node dependency issues to Reporter.
+
+	audit-ci's parsing of Yarn packages is hella silly in my opinion.
+	It will output a JSON object for each vulnerability it finds, but does not bunch them together into an array
+	so that json.load() will not accept it. You can't slice the file to get each JSON body either as they are
+	prettified (so not single lined) and of different line lengths; ugh.
+	"""
+	def parse_audit_ci_yarn(self, i_file):
+		report_type = "dependencies"
+		tool = "audit-ci [Yarn]"
+		
+		formatted = []
+
+		# I'm going to try to fix the file first, by looking for closing brackets without whitespace before them (i.e. the last
+		# bracket of an object), and adding a comma to these (bar the last object, of course.)
+		# Afterwards, I will add opening and closing square brackets to the entire file to convert it into an array of JSON
+		# objects; json.load should be happy then.
+		lines = i_file.readlines()
+		for line in lines:
+			line = line.rstrip()
+			if line[0] != " " and line[-1] == "}":
+				formatted.append(line.rstrip() + ",")
+			else: 
+				formatted.append(line.rstrip())
+
+		# Get the first element and add an open square bracket to the beginning.
+		formatted[0] = "[" + formatted[0]
+		# Get the last element, remove the comma and replace it with a closed square bracket.
+		formatted[-1] = formatted[-1].replace(",", "]")
+
+		# Now we have to save the formatted array to a temporary file. 
+		import uuid
+		name = str(uuid.uuid4())
+		full_location = "/tmp/" + name
+		with open(full_location, 'w') as f:
+			f.write("\n".join(formatted))
+
+		# Using the temporary file, we can actually do the original parsing.
+		with open(full_location, 'r') as f:
+			try:
+				issues = json.load(f)
+				# Iterate through the individual issue objects, aside from the last objects (because it's just a
+				# summary count of the previous issues)
+				for issue in issues[:-1]:
+					advisory = issue['data']['advisory']
+					pprint(advisory)
+					# resolution = issue['data']['resolution']
+					# pprint(resolution)
+
+					self.reporter.add_finding(
+						report_type=report_type,
+						tool=tool,
+						name="[" + advisory["severity"].capitalize() + "] " + advisory["title"],
+						description=advisory["overview"],
+						recommendation=advisory["recommendation"],
+						location="\n".join(advisory["findings"][0]["paths"]),
+						raw_output=advisory,
+						i_file=i_file
+					)
+
+			except ValueError:
+				print("- Unable to parse JSON from " + os.path.basename(i_file.name) + "; skipping.")
+
+		# Don't forget to delete the temporarily created file!
+		os.remove(full_location)
 
 	"""
 	Method that parses detectsecrets output and forwards any potential credentials to Reporter.
@@ -139,7 +211,7 @@ class Parser:
 
 				# Check if a rule was triggered
 				if "Advanced rule" in finding["Finding"]:
-					name = "DumpsterDiver Rule Triggered"
+					# name = "DumpsterDiver Rule Triggered"
 					description = "A DumpsterDiver rule was triggered. Please check the raw output for further information."
 				else:
 					description = "Potential credential found: " + finding["Details"]["String"]
@@ -220,7 +292,6 @@ class Parser:
 
 					description = vuln_information
 					location="Package: " + vulnerability["name"] + " " + vulnerability["version"]
-					raw_output=vulnerability
 					i_file=i_file
 
 					self.reporter.add_finding(
@@ -257,8 +328,10 @@ class Parser:
 			self.parse_snyk_image(i_file)
 		elif tool_name == "Snyk [Node]":
 			self.parse_snyk_node(i_file)
-		elif tool_name == "audit-ci":
-			self.parse_audit_ci(i_file)
+		elif tool_name == "audit-ci [npm]":
+			self.parse_audit_ci_npm(i_file)
+		elif tool_name == "audit-ci [Yarn]":
+			self.parse_audit_ci_yarn(i_file)
 
 
 	def detect(self, i_file):
@@ -266,7 +339,7 @@ class Parser:
 			if options["match"] in i_file.name:
 				print("- Tool identified: " + tool_name)
 				self.parse(i_file, tool_name)
-				print("<" * 100)
+				print("<" * 10)
 
 
 	def identify(self, files, reporter):
@@ -275,9 +348,9 @@ class Parser:
 		self.reporter = reporter
 
 		for i_file in files:
-			print(">" * 100)
+			print(">" * 10)
 			print("Parsing: " + os.path.basename(i_file.name))
-			print("-" * 100)
+			print("-" * 10)
 			self.detect(i_file)
 			print()
 
