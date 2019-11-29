@@ -1,6 +1,7 @@
 import time
 import csv
 import os
+import constants
 
 """
 FYI
@@ -43,7 +44,7 @@ class Reporter:
                         str(int(time.time())) + ".csv"
         self.o_folder = o_folder
         self.o_file = self.o_folder + "/" + self.filename
-        print("Saving to: " + self.o_file + "\n")
+        print(">" * constants.SEPARATOR_LENGTH + "\nSaving to: " + self.o_file + "\n" + "<" * constants.SEPARATOR_LENGTH + "\n")
 
 
     def get_existing_findings(self):
@@ -66,29 +67,51 @@ class Reporter:
         })
 
 
+    def deduplicate(self):
+        print("- Deduplicating...")
+        tmp_duped_array = self.get_existing_findings()
+        deduped_findings = []
+        raw_output_key = []
+
+        for issue in tmp_duped_array:
+            if issue['raw_output'] not in raw_output_key:
+                # print(issue['raw_output'])
+                raw_output_key.append(issue['raw_output'])
+                deduped_findings.append(issue)
+
+        print("- Array size: " + str(len(tmp_duped_array)))
+        print("- Array size after deduplication: " + str(len(deduped_findings)))
+
+        return deduped_findings
+
     def create_report(self):
-        print(">" * 10 + "\nAttempting to generate CSV report...\n" + "-" * 10)
-        if len(self.get_existing_findings()) != 0:
 
-            fieldnames = [
-                "report_type",
-                "tool",
-                "name",
-                "description",
-                "recommendation",
-                "location",
-                "raw_output"
-            ]
 
-            with open(self.o_file, 'w+', newline="\n") as open_o_file:
-                writer = csv.DictWriter(open_o_file, fieldnames=fieldnames)
-                writer.writeheader()
-
-                # Write a row in csv format for each finding that has been reported so far
-                for finding in self.temp_findings:
-                    writer.writerow(finding)
-
-        else:
+        if len(self.get_existing_findings()) == 0:
             print("- There were no issues found during this job.")
             print("- Skipping CSV report creation...")
-        print("- Done!\n" + "<" * 10)
+            exit(0)
+
+        print(">" * constants.SEPARATOR_LENGTH + "\nAttempting to generate CSV report...\n" + "-" * constants.SEPARATOR_LENGTH)
+
+        self.temp_findings = self.deduplicate()
+
+        fieldnames = [
+            "report_type",
+            "tool",
+            "name",
+            "description",
+            "recommendation",
+            "location",
+            "raw_output"
+        ]
+
+        with open(self.o_file, 'w+', newline="\n") as open_o_file:
+            writer = csv.DictWriter(open_o_file, fieldnames=fieldnames)
+            writer.writeheader()
+
+            # Write a row in csv format for each finding that has been reported so far
+            for finding in self.temp_findings:
+                writer.writerow(finding)
+
+        print("- [✓] Done!\n" + "<" * constants.SEPARATOR_LENGTH)

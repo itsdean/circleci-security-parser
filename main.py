@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import constants
 import traceback
 
 from parser import Parser
@@ -10,7 +11,7 @@ from pathlib import Path
 
 if __name__ == "__main__":
 	print("\nCircleCI Security Output Parser (CSOP) - Hi there!")
-	print("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security")
+	print("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
@@ -36,7 +37,7 @@ if __name__ == "__main__":
 
 	# Get the absolute path for the input folder
 	i_folder = os.path.abspath(i_folder)
-	print("\nLoading from: " + i_folder)
+	print(">" * constants.SEPARATOR_LENGTH + "\nLoading from: " + i_folder)
 
 	# Get the absolute path for the output folder
 	o_folder = os.path.abspath(o_folder)
@@ -54,10 +55,10 @@ if __name__ == "__main__":
 		if len(files) == 1:
 			print("1 file was found!")
 		else:
-			print(str(len(files)) + " files were found!")
+			print(str(len(files)) + " files were found!\n" + "-" * constants.SEPARATOR_LENGTH)
 		for f_object in files:
 			print("- " + os.path.basename(f_object.name))
-		print()
+		print("<" * constants.SEPARATOR_LENGTH + "\n")
 		try:
 			# Create Reporter and Parser objects then pass the list of file
 			# objects (and the parser) to the parser.
@@ -72,8 +73,8 @@ if __name__ == "__main__":
 			reporter.create_report()
 		# Be nice, and if something breaks return the stack trace for debugging.
 		except Exception as ex:
-			print(">" * 10 + "\nAN UNEXPECTED ERROR HAS OCCURRED:\n" + "-" * 10)
-			print(traceback.print_tb(ex.__traceback__))
+			print(">" * constants.SEPARATOR_LENGTH + "\nAN UNEXPECTED ERROR HAS OCCURRED:\n" + "-" * constants.SEPARATOR_LENGTH)
+			print(traceback.print_tb(ex.__traceback__) + "\n" + "<" * constants.SEPARATOR_LENGTH)
 	else:
 		# We didn't find any files; odd.
-		print("No supported files were found! Did you target the right directory?")
+		print("- [x] No supported files were found! Did you target the right directory?")

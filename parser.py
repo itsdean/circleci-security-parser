@@ -3,6 +3,7 @@
 
 import json
 import os
+import constants
 from pprint import pprint
 
 """
@@ -65,17 +66,15 @@ class Parser:
 	Method that parses audit-ci output for packages using npm, forwarding vulnerable node dependency issues to Reporter.
 	"""
 	def parse_audit_ci_npm(self, i_file):
-
+		report_type = "dependencies"
+		tool = "audit-ci [npm]"
 		# Some audit-ci runs do not generate output, let alone valid JSON
 		# To catch these we try to run json.load to parse the JSON.
 		# If the JSON is not well formed, then chances are there's no vulns.
-		# We'll inform the user, and carry on. It' s okay.
+		# We'll inform the user, and carry on. It's okay.
 		# If we fail to parse then we can just grab the artifact from CircleCI and manually parse it.
 		try:
 			ac_output = json.load(i_file)
-
-			report_type = "dependencies"
-			tool = "audit-ci"
 			
 			# Audit-CI output has a dictionary of advisories, with each key being the advisor number
 			# (similar to a CVE) and the value being another dictionary with further info.
@@ -110,6 +109,8 @@ class Parser:
 
 		except ValueError:
 			print("- Unable to parse JSON from " + os.path.basename(i_file.name) + "; skipping.")
+		
+		print("- [✓] Done!")
 
 
 	"""
@@ -158,7 +159,7 @@ class Parser:
 				# summary count of the previous issues)
 				for issue in issues[:-1]:
 					advisory = issue['data']['advisory']
-					
+
 					# resolution = issue['data']['resolution']
 					# pprint(resolution)
 
@@ -178,6 +179,8 @@ class Parser:
 
 		# Don't forget to delete the temporarily created file!
 		os.remove(full_location)
+
+		print("- [✓] Done!")
 
 	"""
 	Method that parses detectsecrets output and forwards any potential credentials to Reporter.
@@ -339,7 +342,6 @@ class Parser:
 			if options["match"] in i_file.name:
 				print("- Tool identified: " + tool_name)
 				self.parse(i_file, tool_name)
-				print("<" * 10)
 
 
 	def identify(self, files, reporter):
@@ -348,10 +350,10 @@ class Parser:
 		self.reporter = reporter
 
 		for i_file in files:
-			print(">" * 10)
+			print(">" * constants.SEPARATOR_LENGTH)
 			print("Parsing: " + os.path.basename(i_file.name))
-			print("-" * 10)
+			print("-" * constants.SEPARATOR_LENGTH)
 			self.detect(i_file)
-			print()
+			print("<" * constants.SEPARATOR_LENGTH + "\n")
 
 
