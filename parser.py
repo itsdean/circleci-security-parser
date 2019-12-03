@@ -95,7 +95,7 @@ class Parser:
 				description = str(advisory_number) + ": " + advisory_info["overview"].rstrip() + " " + advisory_info["recommendation"].replace("\n", " ")
 
 				# Location example: "foobar 1.2.3 (foo>bar>foobar, bar>foo>foobar)"
-				location = advisory_info["module_name"] + " " + advisory_info["findings"][0]["version"] + " (" + ", ".join(advisory_info["findings"][0]["paths"]) + ")"
+				location = "Package: " + advisory_info["module_name"] + " " + advisory_info["findings"][0]["version"] + " (" + ", ".join(advisory_info["findings"][0]["paths"]) + ")"
 
 				self.reporter.add_finding(
 					report_type=report_type,
@@ -244,7 +244,7 @@ class Parser:
 	"""
 	def parse_snyk(self, i_file, tool_name):
 		import re
-		
+
 		s_output = json.load(i_file) 
 
 		# We need to check if the output back from Snyk is telling us it couldn't find
@@ -286,7 +286,7 @@ class Parser:
 					# For node dependencies, if an NSP exists, grab it and add it to the description title
 					# to be as consistent as possible with the other node checkers (e.g. audit-ci)
 					if "NSP" in vulnerability["identifiers"]:
-						name = str(vulnerability["identifiers"]["NSP"][0]) + ": " + name
+						description = str(vulnerability["identifiers"]["NSP"][0]) + ": " + description
 
 					# Look for any remediation steps and add them to the finding.
 					recommendation_regex = "(?:## Remediation)(?P<recommendation>.*)(?:##)"
