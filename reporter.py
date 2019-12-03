@@ -74,9 +74,9 @@ class Reporter:
         raw_output_key = []
 
         for issue in tmp_duped_array:
-            if issue['raw_output'] not in raw_output_key:
+            if issue['description'] not in raw_output_key:
                 # print(issue['raw_output'])
-                raw_output_key.append(issue['raw_output'])
+                raw_output_key.append(issue['description'])
                 deduped_findings.append(issue)
 
         print("- Array size: " + str(len(tmp_duped_array)))

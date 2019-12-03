@@ -67,7 +67,7 @@ class Parser:
 	"""
 	def parse_audit_ci_npm(self, i_file):
 		report_type = "dependencies"
-		tool = "audit-ci [npm]"
+		tool = "audit-ci [Node] [npm]"
 		# Some audit-ci runs do not generate output, let alone valid JSON
 		# To catch these we try to run json.load to parse the JSON.
 		# If the JSON is not well formed, then chances are there's no vulns.
@@ -123,7 +123,7 @@ class Parser:
 	"""
 	def parse_audit_ci_yarn(self, i_file):
 		report_type = "dependencies"
-		tool = "audit-ci [Yarn]"
+		tool = "audit-ci [Node] [Yarn]"
 		
 		formatted = []
 
@@ -169,7 +169,7 @@ class Parser:
 						name="[" + advisory["severity"].capitalize() + "] " + advisory["title"],
 						description=advisory["overview"],
 						recommendation=advisory["recommendation"],
-						location="\n".join(advisory["findings"][0]["paths"]),
+						location="Package: " + "\n".join(advisory["findings"][0]["paths"]),
 						raw_output=advisory,
 						i_file=i_file
 					)
@@ -181,6 +181,7 @@ class Parser:
 		os.remove(full_location)
 
 		print("- [✓] Done!")
+
 
 	"""
 	Method that parses detectsecrets output and forwards any potential credentials to Reporter.
@@ -242,12 +243,15 @@ class Parser:
 	parameter.
 	"""
 	def parse_snyk(self, i_file, tool_name):
+		import re
+		
 		s_output = json.load(i_file) 
 
 		# We need to check if the output back from Snyk is telling us it couldn't find
 		# a package.json file. Do not attempt to parse, if true.
 		if s_output["ok"] is False and ("error" in s_output and "Could not find package.json" in s_output["error"]):
 			print("- [x] Snyk was unable to find a valid package.json file; skipping.")
+			print("- [x] Please check the original snyk JSON file in your artifacts!")
 		else:
 			vulnerabilities = s_output["vulnerabilities"]
 
@@ -279,19 +283,19 @@ class Parser:
 						if not original_info.startswith("CVE-") and original_info != "":
 							vuln_information += " - " + original_info 
 
-					# 	# Now that we have crafted the core issue, we need to check if it's already been reported.
-					# 	# If it was reported, then pass, getting rid of the duplicates.
-					# 	# Time for O(N^2)!
-					skip = False
-					for finding in self.reporter.get_existing_findings():
-						# If we find the same report, break out of the loop of existing findings and remember this.
-						if vuln_information == finding["description"]:
-							skip = True
-							break
+					# For node dependencies, if an NSP exists, grab it and add it to the description title
+					# to be as consistent as possible with the other node checkers (e.g. audit-ci)
+					if "NSP" in vulnerability["identifiers"]:
+						name = str(vulnerability["identifiers"]["NSP"][0]) + ": " + name
 
-					# We're dealing with an existing vulnerability - skip this iteration and don't add it as a finding.
-					if skip:
-						continue
+					# Look for any remediation steps and add them to the finding.
+					recommendation_regex = "(?:## Remediation)(?P<recommendation>.*)(?:##)"
+					recommendation_match = re.search(recommendation_regex, vulnerability["description"].replace("\n", " ").replace("\r", " "))
+					# print(vulnerability["description"])
+					if recommendation_match is not None:
+						recommendation = recommendation_match.group("recommendation")
+					else:
+						recommendation = ""
 
 					description = vuln_information
 					location="Package: " + vulnerability["name"] + " " + vulnerability["version"]
@@ -302,12 +306,15 @@ class Parser:
 						tool=tool_name,
 						name=name,
 						description=description,
+						recommendation=recommendation,
 						location=location,
 						raw_output=vulnerability,
 						i_file=i_file
 					)			
 
 					print
+
+			print("- [✓] Done!")
 
 
 	def parse_snyk_image(self, i_file):
