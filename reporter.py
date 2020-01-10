@@ -8,12 +8,15 @@ FYI
 
 csv format
 
-report_type - secrets, container, code, etc.
-tool - tool used
-name - issue that tool reported + rating where available
-description - issue description if availabke?
-location - location of finding
-raw_output - raw finding raw_output for triaging, along with filename
+issue_type = dependencies, secrets, etc.
+tool_name = Snyk [Node], Snyk [Image], burrow, etc.
+title = "Hardcoded Credentials"
+severity = how bad?
+description = what's the issue?
+location = where?
+recommendation = how to fix?
+CVE = CVE number if it exists. Can be left blank I suppose
+raw_output = what we just parsed, in case we missed something outhats
 
 """
 class Reporter:
@@ -47,29 +50,44 @@ class Reporter:
         print(">" * constants.SEPARATOR_LENGTH + "\nSaving to: " + self.o_file + "\n" + "<" * constants.SEPARATOR_LENGTH + "\n")
 
 
-    def get_existing_findings(self):
+    def get(self):
         return self.temp_findings
 
 
-    def add_finding(self, report_type="", tool="", name="", description="", recommendation = "", location="", raw_output="", i_file=""):
-        # Get the filename to save with the raw output
-        filename = os.path.basename(i_file.name)
-
-        # Add the finding to the list to be reported
-        self.temp_findings.append({
-            "report_type": report_type,
-            "tool": tool,   
-            "name": name,
-            "description": description,
-            "recommendation": recommendation,
-            "location": location,
-            "raw_output": filename + " - " + str(raw_output)
-        })
+    """
+    Inserts a new issue to the list; the parameters force a reporting standard to be followed (i.e. each must have the first six parameters as "headings" in a report)x
+    """
+    def add(
+        self,
+        issue_type,
+        tool_name,
+        title,
+        description,
+        location,
+        recommendation,
+        ifile_name,
+        raw_output = "n/a",
+        severity = "unknown",
+        cve_value = "n/a",
+    ):
+        self.temp_findings.append(
+            {
+                "issue_type": issue_type,
+                "tool_name": tool_name,
+                "title": title,
+                "severity": severity,
+                "description": description,
+                "cve_value": cve_value,
+                "location": location,
+                "recommendation": recommendation,
+                "raw_output": raw_output
+            }
+        )
 
 
     def deduplicate(self):
         print("- Deduplicating...")
-        tmp_duped_array = self.get_existing_findings()
+        tmp_duped_array = self.get()
         deduped_findings = []
         raw_output_key = []
 
@@ -84,10 +102,11 @@ class Reporter:
 
         return deduped_findings
 
+
     def create_report(self):
 
 
-        if len(self.get_existing_findings()) == 0:
+        if len(self.get()) == 0:
             print("- There were no issues found during this job.")
             print("- Skipping CSV report creation...")
             exit(0)
@@ -97,12 +116,14 @@ class Reporter:
         self.temp_findings = self.deduplicate()
 
         fieldnames = [
-            "report_type",
-            "tool",
-            "name",
+            "issue_type",
+            "tool_name",
+            "title",
+            "severity",
             "description",
-            "recommendation",
+            "cve_value",
             "location",
+            "recommendation",
             "raw_output"
         ]
 

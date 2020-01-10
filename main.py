@@ -17,7 +17,8 @@ if __name__ == "__main__":
 	parser.add_argument(
 		"-i",
 		"--input",
-		help="The directory to load security tool output from"
+		help="The directory to load security tool output from",
+		required=True
 		)
 	parser.add_argument(
 		"-o",
@@ -69,7 +70,7 @@ if __name__ == "__main__":
 			# except Exception as ex:
 			# 	print("An error occurred!")
 			# 	print(ex)
-			parser.identify(files, reporter)
+			parser.consume(files, reporter)
 			reporter.create_report()
 		# Be nice, and if something breaks return the stack trace for debugging.
 		except Exception as ex:
