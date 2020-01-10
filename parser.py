@@ -25,10 +25,10 @@ class Parser:
 			"match": "_latest"
 		},
 		"Snyk [Image]": {
-			"match": "image_snyk"
+			"match": "snyk_image"
 		},
 		"Snyk [Node]": {
-			"match": "node_snyk"
+			"match": "snyk_node"
 		},
 		"audit-ci [Yarn]": {
 			"match": "audit-ci-yarn"
