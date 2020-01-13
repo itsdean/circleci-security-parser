@@ -2,6 +2,7 @@
 test_input/*
 test_output/*
 .vscode/
+old/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -19,7 +20,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+#lib/
 lib64/
 parts/
 sdist/
