@@ -3,41 +3,25 @@ import csv
 import os
 import constants
 
-"""
-FYI
 
-csv format
-
-issue_type = dependencies, secrets, etc.
-tool_name = Snyk [Node], Snyk [Image], burrow, etc.
-title = "Hardcoded Credentials"
-severity = how bad?
-description = what's the issue?
-location = where?
-recommendation = how to fix?
-CVE = CVE number if it exists. Can be left blank I suppose
-raw_output = what we just parsed, in case we missed something outhats
-
-"""
 class Reporter:
 
 
     def __init__(self, o_folder):
         self.temp_findings = []
 
+        # Set up the filename_variables in preparation
+        username = ""
+        repo = ""
+        job_name = ""
+
         # Check if specific CircleCI environments are available and add their values to the output filename.
         if "CIRCLE_PROJECT_USERNAME" in os.environ:
             username = os.getenv("CIRCLE_PROJECT_USERNAME") + "_"
-        else:
-            username = ""
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
             repo = os.getenv("CIRCLE_PROJECT_REPONAME").replace("_", "-") + "_"
-        else:
-            repo = ""
         if "CIRCLE_JOB" in os.environ:
             job_name = os.getenv("CIRCLE_JOB").replace("/", "-").replace("_", "-") + "_"
-        else:
-            job_name = ""
 
         # Determine the exact path to save the parsed output to.
         self.filename = "parsed_output_" + \
@@ -55,7 +39,7 @@ class Reporter:
 
 
     """
-    Inserts a new issue to the list; the parameters force a reporting standard to be followed (i.e. each must have the first six parameters as "headings" in a report)x
+    Inserts a new issue to the list; the parameters force a reporting standard to be followed (i.e. each must have the first six parameters as "headings" in a report)
     """
     def add(
         self,
@@ -67,7 +51,7 @@ class Reporter:
         recommendation,
         ifile_name,
         raw_output = "n/a",
-        severity = "unknown",
+        severity = "n/a",
         cve_value = "n/a",
     ):
         self.temp_findings.append(
@@ -85,16 +69,35 @@ class Reporter:
         )
 
 
+    """
+    Once all issues have been provided to the reporter, we'll deduplicate them so we get a final list of unique issues. 
+
+    If we deduplicate per tool then we're either wasting time/code or doing something wrong in the first place.
+    """
     def deduplicate(self):
         print("- Deduplicating...")
-        tmp_duped_array = self.get()
-        deduped_findings = []
-        raw_output_key = []
 
+        # Obtain a temporary version of our current (potentially duplicated) findings.
+        tmp_duped_array = self.get()
+
+        # Create an empty list that will contain the unique issues.
+        deduped_findings = []
+
+        # Use a secondary list that will only contain issue descriptions as keys.
+        # We'll use the descriptions as existence oracles
+        duplicate_oracle = []
+
+        # For each finding in the original list...
         for issue in tmp_duped_array:
-            if issue['description'] not in raw_output_key:
-                # print(issue['raw_output'])
-                raw_output_key.append(issue['description'])
+
+            # Check if the description for the issue's not already in the lookup table list
+            if issue['description'] not in duplicate_oracle:
+
+                # If we've reached this line, then it's a new issue we haven't seen before and we can report it.
+                # Add the description to the oracle list
+                duplicate_oracle.append(issue['description'])
+
+                # Add the full issue to the new list
                 deduped_findings.append(issue)
 
         print("- Array size: " + str(len(tmp_duped_array)))
@@ -104,7 +107,6 @@ class Reporter:
 
 
     def create_report(self):
-
 
         if len(self.get()) == 0:
             print("- There were no issues found during this job.")

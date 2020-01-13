@@ -50,7 +50,7 @@ if __name__ == "__main__":
 		files.append(i_file)
 
 	# Check if we were able to load any files
-	if len(files) != 0:
+	if len(files) > 0:
 
 		# Found some files! Lets list them.
 		if len(files) == 1:
@@ -60,22 +60,14 @@ if __name__ == "__main__":
 		for f_object in files:
 			print("- " + os.path.basename(f_object.name))
 		print("<" * constants.SEPARATOR_LENGTH + "\n")
-		try:
-			# Create Reporter and Parser objects then pass the list of file
-			# objects (and the parser) to the parser.
-			reporter = Reporter(o_folder)
-			parser = Parser()
-			# try:
-			# 	parser.identify(files, reporter)
-			# except Exception as ex:
-			# 	print("An error occurred!")
-			# 	print(ex)
-			parser.consume(files, reporter)
-			reporter.create_report()
-		# Be nice, and if something breaks return the stack trace for debugging.
-		except Exception as ex:
-			print(">" * constants.SEPARATOR_LENGTH + "\nAN UNEXPECTED ERROR HAS OCCURRED:\n" + "-" * constants.SEPARATOR_LENGTH)
-			print(traceback.print_tb(ex.__traceback__) + "\n" + "<" * constants.SEPARATOR_LENGTH)
+
+		# Create Reporter and Parser objects then pass the list of file
+		# objects (and the parser) to the parser.
+		reporter = Reporter(o_folder)
+		parser = Parser()
+		parser.consume(files, reporter)
+		reporter.create_report()
+		
 	else:
 		# We didn't find any files; odd.
 		print("- [x] No supported files were found! Did you target the right directory?")
