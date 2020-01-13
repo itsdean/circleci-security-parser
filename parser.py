@@ -13,6 +13,7 @@ class Parser:
 	"""
 
 	parsed_tools = {
+		"burrow": "burrow",
 		"Snyk [Node]": "snyk_node"
 	}
 
@@ -212,7 +213,7 @@ class Parser:
 
 	def burrow(self, i_file):
 		from lib import burrow
-		
+		burrow.parse(i_file, self.reporter)
 
 
 	def snyk_node(self, i_file):
@@ -222,7 +223,7 @@ class Parser:
 
 	def get_file_source(self, i_file):
 		"""
-		This method iterates through a dictionary of tools that can be parse and compares its associated filename pattern with the file currently being processed.
+		Iterates through a dictionary of tools that can be parsed and compares their associated filename patterns with the file currently being processed.
 		"""
 
 		# Get the tool name ("Snyk [Node]" for example) and its associated matching filename ("snyk_node"), both from parsed_tools in KV format

@@ -69,12 +69,15 @@ class Reporter:
         )
 
 
-    """
-    Once all issues have been provided to the reporter, we'll deduplicate them so we get a final list of unique issues. 
-
-    If we deduplicate per tool then we're either wasting time/code or doing something wrong in the first place.
-    """
     def deduplicate(self):
+        """
+        Goes through the list of submitted issues and removes any issues that have been reported more than once.
+
+        The description and location of each issue is merged together and hashed - if this hash has not been dealt with (this parsing round) before then we'll accept it, otherwise ignore it.
+        """
+
+        import hashlib
+
         print("- Deduplicating...")
 
         # Obtain a temporary version of our current (potentially duplicated) findings.
@@ -84,18 +87,22 @@ class Reporter:
         deduped_findings = []
 
         # Use a secondary list that will only contain issue descriptions as keys.
-        # We'll use the descriptions as existence oracles
+        # We'll use hashes of the combination of the description and location as existence oracles
         duplicate_oracle = []
 
         # For each finding in the original list...
         for issue in tmp_duped_array:
 
+            issue_hash = hashlib.sha3_256(
+                issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")
+            ).hexdigest()
+
             # Check if the description for the issue's not already in the lookup table list
-            if issue['description'] not in duplicate_oracle:
+            if issue_hash not in duplicate_oracle:
 
                 # If we've reached this line, then it's a new issue we haven't seen before and we can report it.
                 # Add the description to the oracle list
-                duplicate_oracle.append(issue['description'])
+                duplicate_oracle.append(issue_hash)
 
                 # Add the full issue to the new list
                 deduped_findings.append(issue)
