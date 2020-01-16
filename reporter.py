@@ -49,7 +49,7 @@ class Reporter:
         description,
         location,
         recommendation,
-        ifile_name,
+        ifile_name = "",
         raw_output = "n/a",
         severity = "n/a",
         cve_value = "n/a",
@@ -94,7 +94,8 @@ class Reporter:
         for issue in tmp_duped_array:
 
             issue_hash = hashlib.sha3_256(
-                issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")
+                # issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")
+                issue["description"].encode("utf-8")
             ).hexdigest()
 
             # Check if the description for the issue's not already in the lookup table list
