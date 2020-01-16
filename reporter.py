@@ -93,7 +93,7 @@ class Reporter:
         # For each finding in the original list...
         for issue in tmp_duped_array:
 
-            issue_hash = hashlib.sha3_256(
+            issue_hash = hashlib.sha256(
                 # issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")
                 issue["description"].encode("utf-8")
             ).hexdigest()
