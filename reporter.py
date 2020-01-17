@@ -95,7 +95,7 @@ class Reporter:
 
             issue_hash = hashlib.sha256(
                 # issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")
-                issue["description"].encode("utf-8")
+                issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")
             ).hexdigest()
 
             # Check if the description for the issue's not already in the lookup table list
