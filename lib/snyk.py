@@ -9,9 +9,6 @@ from markdown import markdown
 
 
 def node_parse_unresolvables(unparsed_dependencies, reporter):
-
-    from packaging.version import parse as parse_version
-
     """
     Obtains all dependencies reported by Snyk as being vulnerable, that cannot be fixed solely by updating said dependencies. 
 
@@ -19,6 +16,8 @@ def node_parse_unresolvables(unparsed_dependencies, reporter):
     
     Furthermore, for either the child or parent dependency it can be the case that they are no longer maintained, and a vulnerability for their last version has been found; because there isn't the possibility of updating to fix this, a different solution has to be identified.
     """
+
+    from packaging.version import parse as parse_version
 
     # todo: what if a>b>c and a>b>c>d are unresolvable - how can i group by recommending resolving a>b, even though the dependencies are different (a or b)
 

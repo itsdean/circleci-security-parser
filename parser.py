@@ -13,8 +13,9 @@ class Parser:
 	"""
 
 	parsed_tools = {
+		"nancy": "nancy",
 		"burrow": "burrow",
-		"Snyk [Node]": "snyk_node"
+		"Snyk [Node]": "snyk_node",
 	}
 
 
@@ -209,6 +210,11 @@ class Parser:
 	# 	else:
 	# 		# Move on.
 	# 		print("- [x] No output found in file; skipping.")
+
+
+	def nancy(self, i_file):
+		from lib import nancy
+		nancy.parse(i_file, self.reporter)
 
 
 	def burrow(self, i_file):
