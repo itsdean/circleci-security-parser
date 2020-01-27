@@ -13,6 +13,7 @@ class Parser:
 	"""
 
 	parsed_tools = {
+		"gosec", "gosec"
 		"nancy": "nancy",
 		"burrow": "burrow",
 		"Snyk [Node]": "snyk_node",
@@ -210,6 +211,11 @@ class Parser:
 	# 	else:
 	# 		# Move on.
 	# 		print("- [x] No output found in file; skipping.")
+
+
+	def gosec(self, i_file):
+		from lib import gosec
+		gosec.parse(i_file, self.reporter)
 
 
 	def nancy(self, i_file):

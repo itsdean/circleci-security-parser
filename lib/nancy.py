@@ -154,3 +154,5 @@ def parse(i_file, reporter):
                 location,
                 recommendation
             )
+
+    print("- [✓] Done!")

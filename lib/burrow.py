@@ -48,3 +48,5 @@ def parse(i_file, reporter):
             ifile_name,
             raw_output = raw_output     
         )
+
+    print("- [✓] Done!")
