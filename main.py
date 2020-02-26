@@ -8,6 +8,7 @@ import traceback
 from parser import Parser
 from reporter import Reporter
 from pathlib import Path
+from uploader import Uploader
 
 if __name__ == "__main__":
 	print("\nCircleCI Security Output Parser (CSOP) - Hi there!")
@@ -19,13 +20,13 @@ if __name__ == "__main__":
 		"--input",
 		help="The directory to load security tool output from",
 		required=True
-		)
+	)
 	parser.add_argument(
 		"-o",
 		"--output",
 		help="The directory to store the parsed data to",
 		default="."
-		)
+	)
 
 	arguments = parser.parse_args()
 
@@ -67,6 +68,10 @@ if __name__ == "__main__":
 		parser = Parser()
 		parser.consume(files, reporter)
 		reporter.create_report()
+
+		bucket_name = ""
+
+		uploader = Uploader()
 		
 	else:
 		# We didn't find any files; odd.
