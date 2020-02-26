@@ -89,6 +89,8 @@ def parse(i_file, reporter):
 
     issues = json_object["Issues"]
 
+    print("- Found " + str(len(issues)) + " issues to report...")
+
     for issue in issues:
         
         title = issue["details"]
@@ -103,10 +105,6 @@ def parse(i_file, reporter):
         
         recommendation += "\n\nNote: If this is a false positive, add #nosec to the code line or block to prevent it from being reported again."
 
-        print(description)
-        print(recommendation)
-        print("---")
-
         severity = issue["severity"].lower().capitalize()
 
         reporter.add(
@@ -119,3 +117,5 @@ def parse(i_file, reporter):
             raw_output = issue,
             severity = severity
         )
+
+    print("- [✓] Done!")
