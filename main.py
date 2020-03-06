@@ -5,9 +5,10 @@ import os
 import constants
 import traceback
 
+from outputter import Outputter
 from parser import Parser
-from reporter import Reporter
 from pathlib import Path
+from reporter import Reporter
 from uploader import Uploader
 
 if __name__ == "__main__":
@@ -36,8 +37,8 @@ if __name__ == "__main__":
 	arguments = parser.parse_args()
 
 	# Create variables to store where to load and save files from/to.
-	i_folder = arguments.input
-	o_folder = arguments.output
+	input_folder = arguments.input
+	output_folder = arguments.output
 
 	# Create a variable to store the, but only if it exists.
 	if arguments.fail:
@@ -45,21 +46,25 @@ if __name__ == "__main__":
 	else:
 		fail_threshold = "off"
 
-	print("fail threshold: " + fail_threshold + "\n")
+	outputter = Outputter()
+	# o.set_title("fail threshold: " + fail_threshold + "\n")
+	outputter.set_title("fail threshold: " + fail_threshold)
+	outputter.flush()
 
 	# Create a blank list to keep track of any security tool output
 	files = []
 
 	# Get the absolute path for the input folder
-	i_folder = os.path.abspath(i_folder)
-	print(">" * constants.SEPARATOR_LENGTH + "\nLoading from: " + i_folder)
+	input_folder = os.path.abspath(input_folder)
+
+	outputter.set_title("Loading from: " + input_folder)
 
 	# Get the absolute path for the output folder
-	o_folder = os.path.abspath(o_folder)
+	output_folder = os.path.abspath(output_folder)
 
 	# Create open file objects for all JSON files in the input folder
 	# and store them in the files list object
-	for fname in Path(i_folder).glob("**/results_*.json"):
+	for fname in Path(input_folder).glob("**/results_*.json"):
 		i_file = open(str(fname), "r")
 		files.append(i_file)
 
@@ -68,24 +73,27 @@ if __name__ == "__main__":
 
 		# Found some files! Lets list them.
 		if len(files) == 1:
-			print("1 supported file was found!")
+			outputter.add("1 supported file was found!")
 		else:
-			print(str(len(files)) + " supported files were found!\n" + "-" * constants.SEPARATOR_LENGTH)
+			outputter.add(str(len(files)) + " supported files were found!\n" + "-" * constants.SEPARATOR_LENGTH)
 		for f_object in files:
-			print("- " + os.path.basename(f_object.name))
-		print("<" * constants.SEPARATOR_LENGTH + "\n")
+			outputter.add("- " + os.path.basename(f_object.name))
+
+		outputter.flush()
 
 		# Create Reporter and Parser objects then pass the list of file
 		# objects (and the parser) to the parser.
-		reporter = Reporter(o_folder)
+		reporter = Reporter(output_folder)
 		parser = Parser()
 		parser.consume(files, reporter)
 
 		# Check if we have a severity threshold. If we do, error_code will be > 0 so return that value to force the build to fail.
 		error_code = parser.check_threshold(fail_threshold)
+
+		# print(error_code)
+
 		if error_code != 0:
-			import sys
-			sys.exit(error_code)
+			exit(error_code)
 
 		reporter.create_report()
 

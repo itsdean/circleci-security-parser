@@ -75,7 +75,7 @@ def generate_issue(rule_id, filepath, line, code):
  
     return description, recommendation
 
-def parse(i_file, reporter):
+def parse(i_file, reporter, outputter):
     """
     Opens gosec output (assuming it's in JSON format) and attempts to identify raised issues, passing it to the parser reporter.
     """
@@ -89,7 +89,7 @@ def parse(i_file, reporter):
 
     issues = json_object["Issues"]
 
-    print("- Found " + str(len(issues)) + " issues to report...")
+    outputter.add("- Found " + str(len(issues)) + " issues to report...")
 
     for issue in issues:
         
@@ -118,4 +118,4 @@ def parse(i_file, reporter):
             severity = severity
         )
 
-    print("- [✓] Done!")
+    outputter.add("- [✓] Done!")

@@ -121,7 +121,7 @@ def node_parse_unresolvables(unparsed_dependencies, reporter):
         console_output += "s"
 
     console_output += " generated!"
-    print(console_output)
+    outputter.add(console_output)
 
     # Okay, now we have deduplicated issues - pass them to reporter for output.
     for merged_dependency in merged_dependencies:
@@ -260,10 +260,10 @@ def node_parse_resolvables(upgradable_dependencies, reporter, project_name):
     else:
         console_output += "issue generated!"
 
-    print(console_output)
+    outputter.add(console_output)
 
 
-def parse_node(i_file, reporter):
+def parse_node(i_file, reporter, outputter):
     """
     Attempts to carry out multiple steps on a Snyk scan's output:
     1) Report dependencies that, when updated, will fix one or more vulnerabilities
@@ -284,7 +284,7 @@ def parse_node(i_file, reporter):
         upgradable_dependencies = remediation_key["upgrade"]
         node_parse_resolvables(upgradable_dependencies, reporter, project_name)
 
-        print("- [✓] Done!")
+        outputter.add("- [✓] Done!")
 
     else:
-        print("[x] The results of this scan apparently failed - please see the following error obtained from the output file: \n[x] \"" + i_file_json_object["error"] + "\"")
+        outputter.add("[x] The results of this scan apparently failed - please see the following error obtained from the output file: \n[x] \"" + i_file_json_object["error"] + "\"")

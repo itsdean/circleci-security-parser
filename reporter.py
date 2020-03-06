@@ -3,11 +3,14 @@ import csv
 import os
 import constants
 
+from outputter import Outputter
+
 
 class Reporter:
 
 
     def __init__(self, o_folder):
+        self.outputter = Outputter()
         self.temp_findings = []
 
         # Set up the filename_variables in preparation
@@ -31,7 +34,9 @@ class Reporter:
                         str(int(time.time())) + ".csv"
         self.o_folder = o_folder
         self.o_file = self.o_folder + "/" + self.filename
-        print(">" * constants.SEPARATOR_LENGTH + "\nSaving to: " + self.o_file + "\n" + "<" * constants.SEPARATOR_LENGTH + "\n")
+
+        self.outputter.set_title("Saving to: " + self.o_file)
+        self.outputter.flush()
 
 
     def get(self):
@@ -78,7 +83,7 @@ class Reporter:
 
         import hashlib
 
-        print("- Deduplicating...")
+        self.outputter.set_title("Deduplicating...")
 
         # Obtain a temporary version of our current (potentially duplicated) findings.
         tmp_duped_array = self.get()
@@ -108,8 +113,10 @@ class Reporter:
                 # Add the full issue to the new list
                 deduped_findings.append(issue)
 
-        print("- Array size: " + str(len(tmp_duped_array)))
-        print("- Array size after deduplication: " + str(len(deduped_findings)))
+        self.outputter.add("- Array size: " + str(len(tmp_duped_array)))
+        self.outputter.add("- Array size after deduplication: " + str(len(deduped_findings)))
+
+        self.outputter.flush()
 
         return deduped_findings
 
@@ -117,11 +124,11 @@ class Reporter:
     def create_report(self):
 
         if len(self.get()) == 0:
-            print("- There were no issues found during this job.")
-            print("- Skipping CSV report creation...")
-            exit(0)
+            self.outputter.set_title("There were no issues found during this job.")
+            self.outputter.add("- Skipping CSV report creation...")
+            exit(6)
 
-        print(">" * constants.SEPARATOR_LENGTH + "\nAttempting to generate CSV report...\n" + "-" * constants.SEPARATOR_LENGTH)
+        self.outputter.set_title("Attempting to generate CSV report...")
 
         self.temp_findings = self.deduplicate()
 
@@ -145,4 +152,5 @@ class Reporter:
             for finding in self.temp_findings:
                 writer.writerow(finding)
 
-        print("- [✓] Done!\n" + "<" * constants.SEPARATOR_LENGTH)
+        self.outputter.add("- [✓] Done!")
+        self.outputter.flush()
