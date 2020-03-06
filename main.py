@@ -2,18 +2,22 @@
 
 import argparse
 import os
-import constants
 import traceback
 
 from lib.output.OutputWrapper import OutputWrapper
 from parser import Parser
 from pathlib import Path
 from reporter import Reporter
-from uploader import Uploader
 
 if __name__ == "__main__":
-	print("\nCircleCI Security Output Parser (CSOP) - Hi there!")
-	print("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
+
+	print()
+
+	output_wrapper = OutputWrapper()
+
+	output_wrapper.add("CircleCI Security Output Parser (CSOP) - Hi there!")
+	output_wrapper.add("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
+	output_wrapper.flush(show_time=False)
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
@@ -46,7 +50,6 @@ if __name__ == "__main__":
 	else:
 		fail_threshold = "off"
 
-	output_wrapper = OutputWrapper()
 	# o.set_title("fail threshold: " + fail_threshold + "\n")
 	output_wrapper.set_title("fail threshold: " + fail_threshold)
 	output_wrapper.flush()
@@ -75,7 +78,7 @@ if __name__ == "__main__":
 		if len(files) == 1:
 			output_wrapper.add("1 supported file was found!")
 		else:
-			output_wrapper.add(str(len(files)) + " supported files were found!\n" + "-" * constants.SEPARATOR_LENGTH)
+			output_wrapper.add(str(len(files)) + " supported files were found!")
 		for f_object in files:
 			output_wrapper.add("- " + os.path.basename(f_object.name))
 
@@ -98,10 +101,8 @@ if __name__ == "__main__":
 			exit(error_code)
 
 		reporter.create_report()
-
-		# bucket_name = ""
-		# uploader = Uploader()
 		
 	else:
 		# We didn't find any files; odd.
-		print("- [x] No supported files were found! Did you target the right directory?")
+		output_wrapper.set_title("[x] No supported files were found! Did you target the right directory?")
+		output_wrapper.flush()

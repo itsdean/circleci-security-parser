@@ -3,6 +3,9 @@ from textwrap import TextWrapper, fill
 
 class OutputWrapper:
 
+    def set_time(self, show_time):
+        self.show_time = show_time
+
     def clear(self):
         """
         Empty the current buffer.
@@ -48,7 +51,7 @@ class OutputWrapper:
         self.title = title
 
 
-    def print(self, line, max_width=-1):
+    def print(self, line, max_width=-1, show_time=True):
         """
         Print out a line.
 
@@ -58,10 +61,15 @@ class OutputWrapper:
         if max_width >= 0:
             tw = TextWrapper()
             tw.width = max_width
-            tw.subsequent_indent = self.get_time() + " "
+            if show_time:
+                tw.subsequent_indent = self.get_time() + " "
             line = tw.fill(line)
 
-        print(self.get_time() + " " + line)
+        if show_time:
+            print(self.get_time() + " " + line)
+        else:
+            print(line)
+
 
 
     def get_time(self):
@@ -72,7 +80,7 @@ class OutputWrapper:
         return "[" + datetime.now().strftime("%H:%M:%S") + "]"
 
 
-    def flush(self, border=True, new=True):
+    def flush(self, border=True, new=True, show_time=True):
         """
         Empties the buffer, printing out all stored strings.
 
@@ -88,19 +96,19 @@ class OutputWrapper:
             max_line_length = self.max_terminal_width
 
         if border:
-            self.print(">" * max_line_length)
+            self.print(">" * max_line_length, show_time=show_time)
 
         if self.title != "":
-            self.print(self.title)
+            self.print(self.title, show_time=show_time)
             # Draw another divider if there's text to be printed after the title.
             if len(self.buffer) > 0:
-                self.print("-" * max_line_length)
+                self.print("-" * max_line_length, show_time=show_time)
 
         for line in self.buffer:
-           self.print(line, max_width=max_line_length)
+           self.print(line, max_width=max_line_length, show_time=show_time)
 
         if border:
-            self.print("<" * max_line_length)
+            self.print("<" * max_line_length, show_time=show_time)
 
         if new:
             print()
@@ -116,6 +124,8 @@ class OutputWrapper:
 
 
     def __init__(self):
+        self.show_time = True
+
         import subprocess
         rows, columns = subprocess.check_output(['stty', 'size']).split()
         self.max_terminal_width = int(columns) - 15

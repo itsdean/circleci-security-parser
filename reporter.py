@@ -1,7 +1,6 @@
 import time
 import csv
 import os
-import constants
 
 from lib.output.OutputWrapper import OutputWrapper
 
