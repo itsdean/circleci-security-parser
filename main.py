@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
 	# Create open file objects for all JSON files in the input folder
 	# and store them in the files list object
-	for fname in Path(input_folder).glob("**/results_*"):
+	for fname in Path(input_folder).glob("**/results_*.json"):
 		i_file = open(str(fname), "r")
 		files.append(i_file)
 
