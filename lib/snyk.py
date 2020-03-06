@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from markdown import markdown
 
 
-def node_parse_unresolvables(unparsed_dependencies, reporter):
+def node_parse_unresolvables(unparsed_dependencies, reporter, output_wrapper):
     """
     Obtains all dependencies reported by Snyk as being vulnerable, that cannot be fixed solely by updating said dependencies. 
 
@@ -121,7 +121,7 @@ def node_parse_unresolvables(unparsed_dependencies, reporter):
         console_output += "s"
 
     console_output += " generated!"
-    outputter.add(console_output)
+    output_wrapper.add(console_output)
 
     # Okay, now we have deduplicated issues - pass them to reporter for output.
     for merged_dependency in merged_dependencies:
@@ -176,7 +176,7 @@ def node_parse_unresolvables(unparsed_dependencies, reporter):
         )
 
 
-def node_parse_resolvables(upgradable_dependencies, reporter, project_name):
+def node_parse_resolvables(upgradable_dependencies, reporter, output_wrapper, project_name):
     """
     Snyk kindly identifies the path of least resistance when scanning a project and reports what dependencies will, when updated, fix as many vulnerabilities as possible (either within itself or its sub-dependencies).
 
@@ -260,10 +260,10 @@ def node_parse_resolvables(upgradable_dependencies, reporter, project_name):
     else:
         console_output += "issue generated!"
 
-    outputter.add(console_output)
+    output_wrapper.add(console_output)
 
 
-def parse_node(i_file, reporter, outputter):
+def parse_node(i_file, reporter, output_wrapper):
     """
     Attempts to carry out multiple steps on a Snyk scan's output:
     1) Report dependencies that, when updated, will fix one or more vulnerabilities
@@ -279,12 +279,12 @@ def parse_node(i_file, reporter, outputter):
         remediation_key = i_file_json_object["remediation"]
 
         unresolved_dependencies = remediation_key["unresolved"]
-        node_parse_unresolvables(unresolved_dependencies, reporter)
+        node_parse_unresolvables(unresolved_dependencies, reporter, output_wrapper)
 
         upgradable_dependencies = remediation_key["upgrade"]
-        node_parse_resolvables(upgradable_dependencies, reporter, project_name)
+        node_parse_resolvables(upgradable_dependencies, reporter, output_wrapper, project_name)
 
-        outputter.add("- [✓] Done!")
+        output_wrapper.add("- [✓] Done!")
 
     else:
-        outputter.add("[x] The results of this scan apparently failed - please see the following error obtained from the output file: \n[x] \"" + i_file_json_object["error"] + "\"")
+        output_wrapper.add("[x] The results of this scan apparently failed - please see the following error obtained from the output file: \n[x] \"" + i_file_json_object["error"] + "\"")

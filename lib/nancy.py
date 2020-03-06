@@ -117,7 +117,7 @@ def convert_to_json(i_file):
     return nancy_json_object
 
 
-def parse(i_file, reporter, outputter):
+def parse(i_file, reporter, output_wrapper):
     json_object = convert_to_json(i_file) 
 
     if len(json_object) > 0:
@@ -155,4 +155,4 @@ def parse(i_file, reporter, outputter):
                 recommendation
             )
 
-    outputter.add("- [✓] Done!")
+    output_wrapper.add("- [✓] Done!")

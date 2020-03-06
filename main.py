@@ -5,7 +5,7 @@ import os
 import constants
 import traceback
 
-from outputter import Outputter
+from lib.output.OutputWrapper import OutputWrapper
 from parser import Parser
 from pathlib import Path
 from reporter import Reporter
@@ -46,10 +46,10 @@ if __name__ == "__main__":
 	else:
 		fail_threshold = "off"
 
-	outputter = Outputter()
+	output_wrapper = OutputWrapper()
 	# o.set_title("fail threshold: " + fail_threshold + "\n")
-	outputter.set_title("fail threshold: " + fail_threshold)
-	outputter.flush()
+	output_wrapper.set_title("fail threshold: " + fail_threshold)
+	output_wrapper.flush()
 
 	# Create a blank list to keep track of any security tool output
 	files = []
@@ -57,7 +57,7 @@ if __name__ == "__main__":
 	# Get the absolute path for the input folder
 	input_folder = os.path.abspath(input_folder)
 
-	outputter.set_title("Loading from: " + input_folder)
+	output_wrapper.set_title("Loading from: " + input_folder)
 
 	# Get the absolute path for the output folder
 	output_folder = os.path.abspath(output_folder)
@@ -73,13 +73,13 @@ if __name__ == "__main__":
 
 		# Found some files! Lets list them.
 		if len(files) == 1:
-			outputter.add("1 supported file was found!")
+			output_wrapper.add("1 supported file was found!")
 		else:
-			outputter.add(str(len(files)) + " supported files were found!\n" + "-" * constants.SEPARATOR_LENGTH)
+			output_wrapper.add(str(len(files)) + " supported files were found!\n" + "-" * constants.SEPARATOR_LENGTH)
 		for f_object in files:
-			outputter.add("- " + os.path.basename(f_object.name))
+			output_wrapper.add("- " + os.path.basename(f_object.name))
 
-		outputter.flush()
+		output_wrapper.flush()
 
 		# Create Reporter and Parser objects then pass the list of file
 		# objects (and the parser) to the parser.
@@ -93,8 +93,8 @@ if __name__ == "__main__":
 		# print(error_code)
 
 		if error_code != 0:
-			outputter.set_title("[x] Exiting script with return code " + str(error_code) + "!")
-			outputter.flush()
+			output_wrapper.set_title("[x] Exiting script with return code " + str(error_code) + "!")
+			output_wrapper.flush()
 			exit(error_code)
 
 		reporter.create_report()

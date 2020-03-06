@@ -7,7 +7,7 @@ import constants
 import re
 
 from pprint import pprint
-from outputter import Outputter
+from lib.output.OutputWrapper import OutputWrapper
 
 class Parser:
 	"""
@@ -25,22 +25,22 @@ class Parser:
 
 	def gosec(self, i_file):
 		from lib import gosec
-		gosec.parse(i_file, self.reporter, self.outputter)
+		gosec.parse(i_file, self.reporter, self.output_wrapper)
 
 
 	def nancy(self, i_file):
 		from lib import nancy
-		nancy.parse(i_file, self.reporter, self.outputter)
+		nancy.parse(i_file, self.reporter, self.output_wrapper)
 
 
 	def burrow(self, i_file):
 		from lib import burrow
-		burrow.parse(i_file, self.reporter, self.outputter)
+		burrow.parse(i_file, self.reporter, self.output_wrapper)
 
 
 	def snyk_node(self, i_file):
 		from lib import snyk
-		snyk.parse_node(i_file, self.reporter, self.outputter)
+		snyk.parse_node(i_file, self.reporter, self.output_wrapper)
 
 
 	def get_file_source(self, i_file):
@@ -53,7 +53,7 @@ class Parser:
 			# Alright, we've found a file from a tool that we support
 			if filename_pattern in i_file.name:
 				# Lets obtain a link to the correct tool parser we'll be using. Thanks getattr, you're the best!
-				self.outputter.add("Tool identified: " + toolname)
+				self.output_wrapper.add("Tool identified: " + toolname)
 				# We could squash the below into one line but it's more confusing to understand if you don't know getattr.
 				file_parser_method = getattr(self, filename_pattern)
 				file_parser_method(i_file)
@@ -69,13 +69,13 @@ class Parser:
 
 		for i_file in files:
 			
-			self.outputter.clear()
+			self.output_wrapper.clear()
 
-			self.outputter.set_title("Parsing: " + os.path.basename(i_file.name))
+			self.output_wrapper.set_title("Parsing: " + os.path.basename(i_file.name))
 
 			self.get_file_source(i_file)
 
-			self.outputter.flush()
+			self.output_wrapper.flush()
 
 
 	def check_threshold(self, fail_threshold):
@@ -103,7 +103,7 @@ class Parser:
 			}
 
 			fail_threshold_value = fail_codes[fail_threshold]
-			self.outputter.set_title("fail_threshold set to: " + str(fail_threshold_value))
+			self.output_wrapper.set_title("fail_threshold set to: " + str(fail_threshold_value))
 
 			# Create a list to hold any failing issues
 			fail_issues = []
@@ -120,7 +120,7 @@ class Parser:
 				# Save this issue if it passes the threshold
 				if severity_value >= fail_threshold_value:
 
-					self.outputter.add("Found an issue with severity_value " + str(severity_value))
+					self.output_wrapper.add("Found an issue with severity_value " + str(severity_value))
 
 					# If we find an issue with a greater severity than what 
 					# we've found so far, set error_code to it. We'll return
@@ -130,14 +130,14 @@ class Parser:
 
 					fail_issues.append(issue)
 
-			self.outputter.flush()
+			self.output_wrapper.flush()
 
 			# Before we hard fail, explain why we failed and report the issues in shorthand form
 			if error_code > 0:
 
-				self.outputter.set_title("Issue severity threshold met - failing build...")
+				self.output_wrapper.set_title("Issue severity threshold met - failing build...")
 
-				self.outputter.add("At least one issue has been found with a severity that is greater than or equal to " + fail_threshold + "!")
+				self.output_wrapper.add("At least one issue has been found with a severity that is greater than or equal to " + fail_threshold + "!")
 
 				for issue in fail_issues:
 
@@ -148,19 +148,19 @@ class Parser:
 					remediation = issue["recommendation"].split("\n")[0]
 					location = issue["location"]
 
-					self.outputter.add("")
-					self.outputter.add("tool: " + reporting_tool)
-					self.outputter.add("title: " + title)
-					self.outputter.add("severity: " + issue_severity)
-					self.outputter.add("description: " + description)
-					self.outputter.add("recommendation: " + remediation)
-					self.outputter.add("location: " + location)
+					self.output_wrapper.add("")
+					self.output_wrapper.add("tool: " + reporting_tool)
+					self.output_wrapper.add("title: " + title)
+					self.output_wrapper.add("severity: " + issue_severity)
+					self.output_wrapper.add("description: " + description)
+					self.output_wrapper.add("recommendation: " + remediation)
+					self.output_wrapper.add("location: " + location)
 
-				self.outputter.flush()
+				self.output_wrapper.flush()
 
 		# Return error_code as the error code :)
 		return error_code
 
 
 	def __init__(self):
-		self.outputter = Outputter()
+		self.output_wrapper = OutputWrapper()
