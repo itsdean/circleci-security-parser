@@ -93,6 +93,8 @@ if __name__ == "__main__":
 		# print(error_code)
 
 		if error_code != 0:
+			outputter.set_title("[x] Exiting script with return code " + str(error_code) + "!")
+			outputter.flush()
 			exit(error_code)
 
 		reporter.create_report()

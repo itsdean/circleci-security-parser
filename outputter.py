@@ -1,4 +1,5 @@
 from datetime import datetime
+from textwrap import TextWrapper, fill
 
 class Outputter:
 
@@ -13,7 +14,7 @@ class Outputter:
         return tmp
 
 
-    def get_max_length(self):
+    def get_max_line_length(self):
 
         # self.title has a length of 0 on init, so even
         # if self.title is not set to anything else,
@@ -31,34 +32,42 @@ class Outputter:
         self.title = title
 
 
-    def print(self, string):
-        print(self.time() + " " + string)
+    def print(self, line, max_width=-1):
+
+        if max_width >= 0:
+            tw = TextWrapper()
+            tw.width = max_width
+            tw.subsequent_indent = self.get_time() + " "
+            line = tw.fill(line)
+
+        print(self.get_time() + " " + line)
 
 
-    def time(self):
+    def get_time(self):
         return "[" + datetime.now().strftime("%H:%M:%S") + "]"
 
 
     def flush(self, border=True, new=True):
 
-        import constants
+        max_line_length = self.get_max_line_length()
 
-        max_length = self.get_max_length()
+        if max_line_length > self.max_terminal_width:
+            max_line_length = self.max_terminal_width
 
         if border:
-            self.print(">" * max_length)
+            self.print(">" * max_line_length)
 
         if self.title != "":
             self.print(self.title)
             # Draw another divider if there's text to be printed after the title.
             if len(self.buffer) > 0:
-                self.print("-" * max_length)
+                self.print("-" * max_line_length)
 
         for line in self.buffer:
-           self.print(line)
+           self.print(line, max_width=max_line_length)
 
         if border:
-            self.print("<" * max_length)
+            self.print("<" * max_line_length)
 
         if new:
             print()
@@ -69,4 +78,8 @@ class Outputter:
         self.buffer.append(line)
 
     def __init__(self):
+        import subprocess
+        rows, columns = subprocess.check_output(['stty', 'size']).split()
+        self.max_terminal_width = int(columns) - 15
+
         self.clear()

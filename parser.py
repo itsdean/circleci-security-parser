@@ -140,13 +140,27 @@ class Parser:
 				self.outputter.set_title("Issue severity threshold met - failing build...")
 
 				self.outputter.add("At least one issue has been found with a severity that is greater than or equal to " + fail_threshold + "!")
-				self.outputter.add("")
 
 				for issue in fail_issues:
+
+					reporting_tool = issue["tool_name"]
+					issue_title = issue["title"].lower()
+					issue_severity = issue["severity"].lower()
+					issue_description = issue["description"].split("\n")[0]
+					issue_remediation = issue["recommendation"].split("\n")[0]
+					issue_location = issue["location"]
+
+					# pprint(issue)
 					# self.outputter.add("Failing the")
 					# pprint(issue)
 					# self.outputter.add("woo")
-					pass
+					self.outputter.add("")
+					self.outputter.add("tool: " + reporting_tool)
+					self.outputter.add("title: " + issue_title)
+					self.outputter.add("severity: " + issue_severity)
+					self.outputter.add("description: " + issue_description)
+					self.outputter.add("recommendation: " + issue_remediation)
+					self.outputter.add("location: " + issue_location)
 
 				self.outputter.flush()
 
