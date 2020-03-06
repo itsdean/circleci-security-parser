@@ -14,6 +14,7 @@ class Parser:
 	Redirects files to their respective parsers to be processed.
 	"""
 
+
 	parsed_tools = {
 		"gosec": "gosec",
 		"nancy": "nancy",
@@ -126,13 +127,10 @@ class Parser:
 					# this at the end.
 					if severity_value > error_code:
 						error_code = severity_value
-						# self.outputter.add("- Now returning error_code " + str(error_code))
 
 					fail_issues.append(issue)
 
 			self.outputter.flush()
-
-			# pprint(fail_issues)
 
 			# Before we hard fail, explain why we failed and report the issues in shorthand form
 			if error_code > 0:
@@ -144,28 +142,25 @@ class Parser:
 				for issue in fail_issues:
 
 					reporting_tool = issue["tool_name"]
-					issue_title = issue["title"].lower()
+					title = issue["title"].lower()
 					issue_severity = issue["severity"].lower()
-					issue_description = issue["description"].split("\n")[0]
-					issue_remediation = issue["recommendation"].split("\n")[0]
-					issue_location = issue["location"]
+					description = issue["description"].split("\n")[0]
+					remediation = issue["recommendation"].split("\n")[0]
+					location = issue["location"]
 
-					# pprint(issue)
-					# self.outputter.add("Failing the")
-					# pprint(issue)
-					# self.outputter.add("woo")
 					self.outputter.add("")
 					self.outputter.add("tool: " + reporting_tool)
-					self.outputter.add("title: " + issue_title)
+					self.outputter.add("title: " + title)
 					self.outputter.add("severity: " + issue_severity)
-					self.outputter.add("description: " + issue_description)
-					self.outputter.add("recommendation: " + issue_remediation)
-					self.outputter.add("location: " + issue_location)
+					self.outputter.add("description: " + description)
+					self.outputter.add("recommendation: " + remediation)
+					self.outputter.add("location: " + location)
 
 				self.outputter.flush()
 
 		# Return error_code as the error code :)
 		return error_code
+
 
 	def __init__(self):
 		self.outputter = Outputter()
