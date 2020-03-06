@@ -132,6 +132,24 @@ class Parser:
 
 			self.outputter.flush()
 
+			# pprint(fail_issues)
+
+			# Before we hard fail, explain why we failed and report the issues in shorthand form
+			if error_code > 0:
+
+				self.outputter.set_title("Issue severity threshold met - failing build...")
+
+				self.outputter.add("At least one issue has been found with a severity that is greater than or equal to " + fail_threshold + "!")
+				self.outputter.add("")
+
+				for issue in fail_issues:
+					# self.outputter.add("Failing the")
+					# pprint(issue)
+					# self.outputter.add("woo")
+					pass
+
+				self.outputter.flush()
+
 		# Return error_code as the error code :)
 		return error_code
 
