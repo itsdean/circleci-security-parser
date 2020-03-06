@@ -27,12 +27,25 @@ if __name__ == "__main__":
 		help="The directory to store the parsed data to",
 		default="."
 	)
+	parser.add_argument(
+		"--fail",
+		help="Return an error code for",
+		choices=["critical", "high", "medium", "low", "informational"]
+	)
 
 	arguments = parser.parse_args()
 
 	# Create variables to store where to load and save files from/to.
 	i_folder = arguments.input
 	o_folder = arguments.output
+
+	# Create a variable to store the, but only if it exists.
+	if arguments.fail:
+		fail_threshold = arguments.fail
+	else:
+		fail_threshold = "off"
+
+	print("fail threshold: " + fail_threshold + "\n")
 
 	# Create a blank list to keep track of any security tool output
 	files = []
@@ -55,9 +68,9 @@ if __name__ == "__main__":
 
 		# Found some files! Lets list them.
 		if len(files) == 1:
-			print("1 file was found!")
+			print("1 supported file was found!")
 		else:
-			print(str(len(files)) + " files were found!\n" + "-" * constants.SEPARATOR_LENGTH)
+			print(str(len(files)) + " supported files were found!\n" + "-" * constants.SEPARATOR_LENGTH)
 		for f_object in files:
 			print("- " + os.path.basename(f_object.name))
 		print("<" * constants.SEPARATOR_LENGTH + "\n")
@@ -67,11 +80,17 @@ if __name__ == "__main__":
 		reporter = Reporter(o_folder)
 		parser = Parser()
 		parser.consume(files, reporter)
+
+		# Check if we have a severity threshold. If we do, error_code will be > 0 so return that value to force the build to fail.
+		error_code = parser.check_threshold(fail_threshold)
+		if error_code != 0:
+			import sys
+			sys.exit(error_code)
+
 		reporter.create_report()
 
-		bucket_name = ""
-
-		uploader = Uploader()
+		# bucket_name = ""
+		# uploader = Uploader()
 		
 	else:
 		# We didn't find any files; odd.
