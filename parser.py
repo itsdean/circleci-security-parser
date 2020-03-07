@@ -3,7 +3,6 @@
 
 import json
 import os
-import constants
 import re
 
 from pprint import pprint
