@@ -287,5 +287,6 @@ def parse_node(i_file, reporter, output_wrapper):
         output_wrapper.add("[✓] Done!")
 
     else:
-        output_wrapper.add("[x] The results of this scan apparently failed - please see the following error obtained from the output file:")
+        output_wrapper.add("[x] The results of this scan apparently failed!")
+        output_wrapper.add("[x] Please see the following error obtained from the output file:")
         output_wrapper.add("[x] \"" + i_file_json_object["error"] + "\"")

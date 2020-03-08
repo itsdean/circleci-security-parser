@@ -3,7 +3,7 @@ import hashlib
 import os
 import time
 
-from lib.issues.Issue import Issue
+from lib.issues.Issue import Issue, get_fieldnames
 from lib.issues.IssueHolder import IssueHolder
 from lib.output.OutputWrapper import OutputWrapper
 
@@ -18,6 +18,7 @@ class Reporter:
         # Set up the filename_variables in preparation
         username = ""
         repo = ""
+        branch = ""
         job_name = ""
 
         # Check if specific CircleCI environments are available and add their values to the output filename.
@@ -25,6 +26,8 @@ class Reporter:
             username = os.getenv("CIRCLE_PROJECT_USERNAME") + "_"
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
             repo = os.getenv("CIRCLE_PROJECT_REPONAME").replace("_", "-") + "_"
+        if "CIRCLE_BRANCH" in os.environ:
+            branch = os.getenv("CIRCLE_BRANCH").replace("/", "-").replace("_", "-")
         if "CIRCLE_JOB" in os.environ:
             job_name = os.getenv("CIRCLE_JOB").replace("/", "-").replace("_", "-") + "_"
 
@@ -35,14 +38,10 @@ class Reporter:
                         job_name + \
                         str(int(time.time())) + ".csv"
         self.o_folder = o_folder
-        self.o_file = self.o_folder + "/" + self.filename
+        self.ofile_name = self.o_folder + "/" + self.filename
 
-        self.output_wrapper.set_title("Saving to: " + self.o_file)
+        self.output_wrapper.set_title("Saving to: " + self.ofile_name)
         self.output_wrapper.flush()
-
-
-    def get_issues(self):
-        return self.issue_holder.get_issues()
 
 
     """
@@ -86,19 +85,16 @@ class Reporter:
 
         self.output_wrapper.set_title("Deduplicating...")
 
-        # Obtain a temporary version of our current (potentially duplicated) findings.
-        tmp_duped_array = list(self.issue_holder.get_issues())
-        # print(tmp_duped_array)
-
         # Create an empty list that will contain the unique issues.
-        deduped_findings = []
+        deduplicated_findings = []
 
-        # Use a secondary list that will only contain issue descriptions as keys.
-        # We'll use hashes of the combination of the description and location as existence oracles
-        duplicate_oracle = []
+        # Use a secondary list that will only contain issue descriptions as
+        # keys. We'll use hashes of the combination of the description and 
+        # location as existence oracles
+        issue_hash_oracle = []
 
         # For each finding in the original list...
-        for element in tmp_duped_array:
+        for element in list(self.issue_holder.get_issues()):
 
             issue = element.get()
 
@@ -108,21 +104,20 @@ class Reporter:
             ).hexdigest()
 
             # Check if the description for the issue's not already in the lookup table list
-            if issue_hash not in duplicate_oracle:
+            if issue_hash not in issue_hash_oracle:
 
                 # If we've reached this line, then it's a new issue we haven't seen before and we can report it.
                 # Add the description to the oracle list
-                duplicate_oracle.append(issue_hash)
+                issue_hash_oracle.append(issue_hash)
 
                 # Add the full issue to the new list
-                deduped_findings.append(issue)
+                deduplicated_findings.append(issue)
 
-        self.output_wrapper.add("- Array size: " + str(len(tmp_duped_array)))
-        self.output_wrapper.add("- Array size after deduplication: " + str(len(deduped_findings)))
-
+        self.output_wrapper.add("- Array size: " + str(self.issue_holder.size()))
+        self.output_wrapper.add("- Array size after deduplication: " + str(len(deduplicated_findings)))
         self.output_wrapper.flush()
 
-        return deduped_findings
+        return deduplicated_findings
 
 
     def create_report(self):
@@ -148,8 +143,8 @@ class Reporter:
             "raw_output"
         ]
 
-        with open(self.o_file, 'w+', newline="\n") as open_o_file:
-            writer = csv.DictWriter(open_o_file, fieldnames=fieldnames)
+        with open(self.ofile_name, 'w+', newline="\n") as ofile_object:
+            writer = csv.DictWriter(ofile_object, fieldnames=get_fieldnames())
             writer.writeheader()
 
             # Write a row in csv format for each finding that has been reported so far

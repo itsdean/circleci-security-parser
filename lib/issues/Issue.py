@@ -1,4 +1,21 @@
+fieldnames = [
+    "issue_type",
+    "tool_name",
+    "title",
+    "severity",
+    "description",
+    "cve_value",
+    "location",
+    "recommendation",
+    "raw_output"
+]
+
+def get_fieldnames():
+    return fieldnames
+
+
 class Issue:
+
 
     def __init__(
             self,
