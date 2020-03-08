@@ -96,9 +96,9 @@ class Reporter:
         duplicate_oracle = []
 
         # For each finding in the original list...
-        for issue in tmp_duped_array:
+        for element in tmp_duped_array:
 
-            issue = issue.get()
+            issue = element.get()
 
             issue_hash = hashlib.sha256(
                 # issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")
