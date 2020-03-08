@@ -44,6 +44,10 @@ class Reporter:
         self.output_wrapper.flush()
 
 
+    def get_issues(self):
+        return self.issue_holder.get_issues()
+
+
     """
     Inserts a new issue to the list; the parameters force a reporting standard to be followed (i.e. each must have the first six parameters as "headings" in a report)
     """
