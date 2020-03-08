@@ -5,9 +5,10 @@ import os
 import traceback
 
 from lib.output.OutputWrapper import OutputWrapper
+from lib.output.Reporter import Reporter
 from parser import Parser
 from pathlib import Path
-from reporter import Reporter
+
 
 if __name__ == "__main__":
 
