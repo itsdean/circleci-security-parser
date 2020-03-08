@@ -2,8 +2,8 @@ import time
 import csv
 import os
 
+from lib.issues.Issue import Issue
 from lib.output.OutputWrapper import OutputWrapper
-
 
 class Reporter:
 
@@ -58,20 +58,21 @@ class Reporter:
         severity = "n/a",
         cve_value = "n/a",
     ):
-        self.temp_findings.append(
-            {
-                "issue_type": issue_type,
-                "tool_name": tool_name,
-                "title": title,
-                "severity": severity,
-                "description": description,
-                "cve_value": cve_value,
-                "location": location,
-                "recommendation": recommendation,
-                "raw_output": raw_output
-            }
+
+        issue_object = Issue(
+            issue_type,
+            tool_name,
+            title,
+            description,
+            location,
+            recommendation,
+            ifile_name=ifile_name,
+            raw_output=raw_output,
+            severity=severity,
+            cve_value=cve_value
         )
 
+        self.temp_findings.append(issue_object)
 
     def deduplicate(self):
         """
@@ -85,7 +86,7 @@ class Reporter:
         self.output_wrapper.set_title("Deduplicating...")
 
         # Obtain a temporary version of our current (potentially duplicated) findings.
-        tmp_duped_array = self.get()
+        tmp_duped_array = list(self.get())
 
         # Create an empty list that will contain the unique issues.
         deduped_findings = []
@@ -96,6 +97,8 @@ class Reporter:
 
         # For each finding in the original list...
         for issue in tmp_duped_array:
+
+            issue = issue.get()
 
             issue_hash = hashlib.sha256(
                 # issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")

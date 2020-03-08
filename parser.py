@@ -112,6 +112,8 @@ class Parser:
 			# If the value is greater than or equal to the fail_code
 			# value of the set threshold, save it to a temporary array.
 			for issue in self.reporter.get():
+
+				issue = issue.get()
 				
 				severity = issue["severity"].lower()
 				severity_value = fail_codes[severity]
