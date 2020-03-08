@@ -26,7 +26,7 @@ def node_parse_unresolvables(unparsed_dependencies, reporter, output_wrapper):
     # 2) Deduplicate each unresolvable, grouping by their name, path and latest version (to update to) 
     # 3) Create issues for each deduplicated dependency.
 
-    print("- Found entries for unresolved dependencies! Parsing and merging...")
+    output_wrapper.add("- Found entries for unresolved dependencies! Parsing and merging...")
 
     # Initiate an empty list to store the metadata
     parsed_dependencies = []
@@ -287,4 +287,5 @@ def parse_node(i_file, reporter, output_wrapper):
         output_wrapper.add("- [✓] Done!")
 
     else:
-        output_wrapper.add("[x] The results of this scan apparently failed - please see the following error obtained from the output file: \n[x] \"" + i_file_json_object["error"] + "\"")
+        output_wrapper.add("[x] The results of this scan apparently failed - please see the following error obtained from the output file:")
+        output_wrapper.add("[x] \"" + i_file_json_object["error"] + "\"")

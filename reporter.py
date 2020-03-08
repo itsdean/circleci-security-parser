@@ -1,8 +1,10 @@
-import time
 import csv
+import hashlib
 import os
+import time
 
 from lib.issues.Issue import Issue
+from lib.issues.IssueHolder import IssueHolder
 from lib.output.OutputWrapper import OutputWrapper
 
 class Reporter:
@@ -10,6 +12,7 @@ class Reporter:
 
     def __init__(self, o_folder):
         self.output_wrapper = OutputWrapper()
+        self.issue_holder = IssueHolder()
         self.temp_findings = []
 
         # Set up the filename_variables in preparation
@@ -38,8 +41,8 @@ class Reporter:
         self.output_wrapper.flush()
 
 
-    def get(self):
-        return self.temp_findings
+    def get_issues(self):
+        return self.issue_holder.get_issues()
 
 
     """
@@ -59,34 +62,33 @@ class Reporter:
         cve_value = "n/a",
     ):
 
-        issue_object = Issue(
-            issue_type,
-            tool_name,
-            title,
-            description,
-            location,
-            recommendation,
-            ifile_name=ifile_name,
-            raw_output=raw_output,
-            severity=severity,
-            cve_value=cve_value
+        self.issue_holder.add(
+            Issue(
+                issue_type,
+                tool_name,
+                title,
+                description,
+                location,
+                recommendation,
+                ifile_name=ifile_name,
+                raw_output=raw_output,
+                severity=severity,
+                cve_value=cve_value
+            )
         )
-
-        self.temp_findings.append(issue_object)
 
     def deduplicate(self):
         """
         Goes through the list of submitted issues and removes any issues that have been reported more than once.
 
-        The description and location of each issue is merged together and hashed - if this hash has not been dealt with (this parsing round) before then we'll accept it, otherwise ignore it.
+        The description and location of each issue is merged together and hashed - if this hash has not been dealt with (this parsing round) before then we'll accept it, otherwise ignore it.l¬
         """
-
-        import hashlib
 
         self.output_wrapper.set_title("Deduplicating...")
 
         # Obtain a temporary version of our current (potentially duplicated) findings.
-        tmp_duped_array = list(self.get())
+        tmp_duped_array = list(self.issue_holder.get_issues())
+        # print(tmp_duped_array)
 
         # Create an empty list that will contain the unique issues.
         deduped_findings = []
@@ -125,7 +127,7 @@ class Reporter:
 
     def create_report(self):
 
-        if len(self.get()) == 0:
+        if self.issue_holder.size() == 0:
             self.output_wrapper.set_title("There were no issues found during this job.")
             self.output_wrapper.add("- Skipping CSV report creation...")
             exit(6)
