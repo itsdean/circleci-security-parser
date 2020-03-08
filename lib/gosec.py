@@ -118,4 +118,4 @@ def parse(i_file, reporter, output_wrapper):
             severity = severity
         )
 
-    output_wrapper.add("- [✓] Done!")
+    output_wrapper.add("[✓] Done!")

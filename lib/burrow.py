@@ -49,4 +49,4 @@ def parse(i_file, reporter, output_wrapper):
             raw_output = raw_output     
         )
 
-    output_wrapper.add("- [✓] Done!")
+    output_wrapper.add("[✓] Done!")

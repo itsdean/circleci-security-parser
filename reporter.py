@@ -156,5 +156,5 @@ class Reporter:
             for finding in self.temp_findings:
                 writer.writerow(finding)
 
-        self.output_wrapper.add("- [✓] Done!")
+        self.output_wrapper.add("[✓] Done!")
         self.output_wrapper.flush()
