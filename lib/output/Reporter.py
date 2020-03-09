@@ -35,6 +35,7 @@ class Reporter:
         self.filename = "parsed_output_" + \
                         username + \
                         repo + \
+                        branch + \
                         job_name + \
                         str(int(time.time())) + ".csv"
         self.o_folder = o_folder
@@ -84,7 +85,7 @@ class Reporter:
         """
         Goes through the list of submitted issues and removes any issues that have been reported more than once.
 
-        The description and location of each issue is merged together and hashed - if this hash has not been dealt with (this parsing round) before then we'll accept it, otherwise ignore it.l¬
+        The description and location of each issue is merged together and hashed - if this hash has not been dealt with (this parsing round) before then we'll accept it, otherwise ignore it.
         """
 
         self.output_wrapper.set_title("Deduplicating...")
@@ -136,18 +137,6 @@ class Reporter:
             self.output_wrapper.set_title("Generating CSV report...")
 
             self.temp_findings = self.deduplicate()
-
-            fieldnames = [
-                "issue_type",
-                "tool_name",
-                "title",
-                "severity",
-                "description",
-                "cve_value",
-                "location",
-                "recommendation",
-                "raw_output"
-            ]
 
             with open(self.ofile_name, 'w+', newline="\n") as ofile_object:
                 writer = csv.DictWriter(ofile_object, fieldnames=get_fieldnames())
