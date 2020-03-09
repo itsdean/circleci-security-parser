@@ -76,7 +76,6 @@ class Reporter:
         return self.issue_holder.get_issues()
 
 
-
     def add(
         self,
         issue_type,
@@ -109,6 +108,7 @@ class Reporter:
             )
         )
 
+
     def deduplicate(self):
         """
         Goes through the list of submitted issues and removes any issues that have been reported more than once.
@@ -126,11 +126,14 @@ class Reporter:
         # location as existence oracles
         issue_hash_oracle = []
 
-        # For each finding in the original list...
+        # Make a new list object and hard copy all current issues to that
+        # object. Iterate through it.
         for element in list(self.issue_holder.get_issues()):
 
+            # Get the issue in dictionary format
             issue = element.get()
 
+            # Generate a hash from fields of the issue. This will be used to uniquely identify that issue
             issue_hash = hashlib.sha256(
                 # issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")
                 issue["description"].encode("utf-8") + b":" + issue["location"].encode("utf-8")
@@ -152,7 +155,10 @@ class Reporter:
         return deduplicated_findings
 
 
-    def create_report(self):
+    def create_csv_report(self):
+        """
+        Obtains the current list of issues and prints them to a CSV file.
+        """
 
         if self.issue_holder.size() == 0:
 
@@ -166,8 +172,8 @@ class Reporter:
 
             deduplicated_findings = self.deduplicate()
 
-            with open(self.csv_location, 'w+', newline="\n") as ofile_object:
-                writer = csv.DictWriter(ofile_object, fieldnames=get_fieldnames())
+            with open(self.csv_location, 'w+', newline="\n") as csv_file_object:
+                writer = csv.DictWriter(csv_file_object, fieldnames=get_fieldnames())
                 writer.writeheader()
 
                 # Write a row in csv format for each finding that has been reported so far

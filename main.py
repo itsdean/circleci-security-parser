@@ -101,7 +101,7 @@ if __name__ == "__main__":
 			output_wrapper.flush()
 			exit(error_code)
 
-		reporter.create_report()
+		reporter.create_csv_report()
 		
 	else:
 		# We didn't find any files; odd.
