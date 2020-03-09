@@ -27,7 +27,7 @@ class Reporter:
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
             repo = os.getenv("CIRCLE_PROJECT_REPONAME").replace("_", "-") + "_"
         if "CIRCLE_BRANCH" in os.environ:
-            branch = os.getenv("CIRCLE_BRANCH").replace("/", "-").replace("_", "-")
+            branch = os.getenv("CIRCLE_BRANCH").replace("/", "-").replace("_", "-") + "_"
         if "CIRCLE_JOB" in os.environ:
             job_name = os.getenv("CIRCLE_JOB").replace("/", "-").replace("_", "-") + "_"
 
