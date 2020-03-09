@@ -59,13 +59,13 @@ class Reporter:
         self.output_wrapper = OutputWrapper()
         self.issue_holder = IssueHolder()
 
-        self.filename = self.prepare_csv_name()
+        self.csv_name = self.prepare_csv_name()
 
         # Determine the exact path to save the parsed output to.
-        self.o_folder = o_folder
-        self.ofile_name = self.o_folder + "/" + self.filename
+        self.csv_folder_name = o_folder
+        self.csv_location = self.csv_folder_name + "/" + self.csv_name
 
-        self.output_wrapper.set_title("Saving to: " + self.ofile_name)
+        self.output_wrapper.set_title("Saving to: " + self.csv_location)
         self.output_wrapper.flush()
 
 
@@ -162,7 +162,7 @@ class Reporter:
 
             deduplicated_findings = self.deduplicate()
 
-            with open(self.ofile_name, 'w+', newline="\n") as ofile_object:
+            with open(self.csv_location, 'w+', newline="\n") as ofile_object:
                 writer = csv.DictWriter(ofile_object, fieldnames=get_fieldnames())
                 writer.writeheader()
 
