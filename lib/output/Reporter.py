@@ -70,12 +70,13 @@ class Reporter:
 
 
     def get_issues(self):
+        """
+        Return the current list of issues.
+        """
         return self.issue_holder.get_issues()
 
 
-    """
-    Inserts a new issue to the list; the parameters force a reporting standard to be followed (i.e. each must have the first six parameters as "headings" in a report)
-    """
+
     def add(
         self,
         issue_type,
@@ -89,6 +90,9 @@ class Reporter:
         severity = "",
         cve_value = "n/a",
     ):
+        """
+        Inserts a new issue to the list; the parameters force a reporting standard to be followed (i.e. each must have the first six parameters as "headings" in a report)
+        """
 
         self.issue_holder.add(
             Issue(
