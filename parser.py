@@ -23,7 +23,7 @@ class Parser:
 
 
 	def gosec(self, i_file):
-		from lib.parser import gosec
+		from lib.parsers import gosec
 		gosec.parse(i_file, self.reporter, self.output_wrapper)
 
 
@@ -33,7 +33,7 @@ class Parser:
 
 
 	def burrow(self, burrow_file):
-		from lib.parser import burrow
+		from lib.parsers import burrow
 		burrow.parse(burrow_file, self.reporter, self.output_wrapper)
 
 
