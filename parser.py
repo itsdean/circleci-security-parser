@@ -28,7 +28,7 @@ class Parser:
 
 
 	def nancy(self, i_file):
-		from lib import nancy
+		from lib.parsers import nancy
 		nancy.parse(i_file, self.reporter, self.output_wrapper)
 
 
