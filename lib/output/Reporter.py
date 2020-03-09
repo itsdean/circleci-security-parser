@@ -13,14 +13,12 @@ class Reporter:
     S3 bucket, etc.)
     """
 
-    def __init__(self, o_folder):
+
+    def prepare_csv_name(self):
         """
-        Standard init procedure.
+        Creates the name of the file to save issue output to.
+        The name can also include other values (such as the git repository name and branch) taken from CircleCI build variables.
         """
-    
-        # Create the instances we will be calling throughout this class
-        self.output_wrapper = OutputWrapper()
-        self.issue_holder = IssueHolder()
 
         # Set up the filename_variables in preparation
         username = ""
@@ -38,13 +36,32 @@ class Reporter:
         if "CIRCLE_JOB" in os.environ:
             job_name = os.getenv("CIRCLE_JOB").replace("/", "-").replace("_", "-") + "_"
 
+        # Obtain the current time in epoch format
+        timestamp = int(
+            time.time()
+        )
+
+        csv_name = "parsed_output_" + \
+                    username + \
+                    repo + \
+                    branch + \
+                    job_name + \
+                    str(timestamp) + ".csv"
+        return csv_name
+
+
+    def __init__(self, o_folder):
+        """
+        Standard init procedure.
+        """
+
+        # Create the instances we will be calling throughout this class
+        self.output_wrapper = OutputWrapper()
+        self.issue_holder = IssueHolder()
+
+        self.filename = self.prepare_csv_name()
+
         # Determine the exact path to save the parsed output to.
-        self.filename = "parsed_output_" + \
-                        username + \
-                        repo + \
-                        branch + \
-                        job_name + \
-                        str(int(time.time())) + ".csv"
         self.o_folder = o_folder
         self.ofile_name = self.o_folder + "/" + self.filename
 
