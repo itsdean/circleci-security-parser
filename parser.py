@@ -32,9 +32,9 @@ class Parser:
 		nancy.parse(i_file, self.reporter, self.output_wrapper)
 
 
-	def burrow(self, i_file):
-		from lib import burrow
-		burrow.parse(i_file, self.reporter, self.output_wrapper)
+	def burrow(self, burrow_file):
+		from lib.parser import burrow
+		burrow.parse(burrow_file, self.reporter, self.output_wrapper)
 
 
 	def snyk_node(self, i_file):
