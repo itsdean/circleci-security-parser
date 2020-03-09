@@ -129,7 +129,8 @@ class Reporter:
         if self.issue_holder.size() == 0:
             self.output_wrapper.set_title("There were no issues found during this job.")
             self.output_wrapper.add("- Skipping CSV report creation...")
-            exit(6)
+            self.output_wrapper.flush()
+            # exit(6)
 
         self.output_wrapper.set_title("Attempting to generate CSV report...")
 
