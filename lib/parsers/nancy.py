@@ -35,6 +35,8 @@ def parse(nancy_file, reporter, output_wrapper):
 
             description = "Version " + version + " of " + name + ", a Go dependency pulled by the scanned project, was found to be vulnerable to security issues. Such vulnerabilities have been listed below.\n\n"
 
+            # For each vulnerability, add its title and a short description to
+            # the general description string. Add in the link too for more info.
             for vulnerability in dependency["Vulnerabilities"]:
                 description += vulnerability["Title"] + "\n"
                 description += vulnerability["Description"]
@@ -44,7 +46,7 @@ def parse(nancy_file, reporter, output_wrapper):
                     cve_value = vulnerability["Cve"]
                 else:
                     cve_value = ""
-                    
+
             reporter.add(
                 issue_type,
                 tool_name,
