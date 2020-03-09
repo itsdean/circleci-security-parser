@@ -119,7 +119,6 @@ class Reporter:
 
         self.output_wrapper.add("- Array size: " + str(self.issue_holder.size()))
         self.output_wrapper.add("- Array size after deduplication: " + str(len(deduplicated_findings)))
-        self.output_wrapper.flush()
 
         return deduplicated_findings
 
@@ -127,34 +126,37 @@ class Reporter:
     def create_report(self):
 
         if self.issue_holder.size() == 0:
-            self.output_wrapper.set_title("There were no issues found during this job.")
-            self.output_wrapper.add("- Skipping CSV report creation...")
+
+            self.output_wrapper.set_title("[x] There were no issues found during this job!")
+            self.output_wrapper.add("- No report has been created.")
             self.output_wrapper.flush()
-            # exit(6)
 
-        self.output_wrapper.set_title("Attempting to generate CSV report...")
+        else:
 
-        self.temp_findings = self.deduplicate()
+            self.output_wrapper.set_title("Generating CSV report...")
 
-        fieldnames = [
-            "issue_type",
-            "tool_name",
-            "title",
-            "severity",
-            "description",
-            "cve_value",
-            "location",
-            "recommendation",
-            "raw_output"
-        ]
+            self.temp_findings = self.deduplicate()
 
-        with open(self.ofile_name, 'w+', newline="\n") as ofile_object:
-            writer = csv.DictWriter(ofile_object, fieldnames=get_fieldnames())
-            writer.writeheader()
+            fieldnames = [
+                "issue_type",
+                "tool_name",
+                "title",
+                "severity",
+                "description",
+                "cve_value",
+                "location",
+                "recommendation",
+                "raw_output"
+            ]
 
-            # Write a row in csv format for each finding that has been reported so far
-            for finding in self.temp_findings:
-                writer.writerow(finding)
+            with open(self.ofile_name, 'w+', newline="\n") as ofile_object:
+                writer = csv.DictWriter(ofile_object, fieldnames=get_fieldnames())
+                writer.writeheader()
 
-        self.output_wrapper.add("[✓] Done!")
+                # Write a row in csv format for each finding that has been reported so far
+                for finding in self.temp_findings:
+                    writer.writerow(finding)
+
+            self.output_wrapper.add("[✓] Done!")
+
         self.output_wrapper.flush()
