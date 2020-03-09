@@ -12,7 +12,7 @@ class Issue:
             description,
             location,
             recommendation,
-            ifile_name="",
+            # ifile_name="",
             raw_output="n/a",
             severity="low",
             cve_value="n/a"
@@ -28,7 +28,7 @@ class Issue:
         self.description = description
         self.location = location
         self.recommendation = recommendation
-        self.ifile_name = ifile_name
+        # self.ifile_name = ifile_name
         self.raw_output = raw_output
         self.severity = severity
         self.cve_value = cve_value

@@ -84,7 +84,7 @@ class Reporter:
         description,
         location,
         recommendation,
-        ifile_name = "",
+        filename = "",
         raw_output = "n/a",
         severity = "",
         cve_value = "n/a",
@@ -101,7 +101,7 @@ class Reporter:
                 description,
                 location,
                 recommendation,
-                ifile_name=ifile_name,
+                # ifile_name=filename,
                 raw_output=raw_output,
                 severity=severity,
                 cve_value=cve_value

@@ -13,7 +13,7 @@ def parse(i_file, reporter, output_wrapper):
     issue_type = "secrets"
     tool_name = "burrow"
 
-    ifile_name = i_file.name
+    # ifile_name = i_file.name
 
     recommendation = "Please identify whether this finding is a true or false positive. Consider adding the file and line to .burrowignore to prevent future reports if this issue is the latter."
 
@@ -45,7 +45,7 @@ def parse(i_file, reporter, output_wrapper):
             description,
             location,
             recommendation,
-            ifile_name,
+            # ifile_name,
             raw_output = raw_output
         )
 
