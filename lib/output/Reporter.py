@@ -8,12 +8,19 @@ from lib.issues.IssueHolder import IssueHolder
 from lib.output.OutputWrapper import OutputWrapper
 
 class Reporter:
-
+    """
+    This class deals with the presenting of reported issues from their parser-standardised output to the relevant locations (i.e. .csv file,
+    S3 bucket, etc.)
+    """
 
     def __init__(self, o_folder):
+        """
+        Standard init procedure.
+        """
+    
+        # Create the instances we will be calling throughout this class
         self.output_wrapper = OutputWrapper()
         self.issue_holder = IssueHolder()
-        self.temp_findings = []
 
         # Set up the filename_variables in preparation
         username = ""
@@ -136,14 +143,14 @@ class Reporter:
 
             self.output_wrapper.set_title("Generating CSV report...")
 
-            self.temp_findings = self.deduplicate()
+            deduplicated_findings = self.deduplicate()
 
             with open(self.ofile_name, 'w+', newline="\n") as ofile_object:
                 writer = csv.DictWriter(ofile_object, fieldnames=get_fieldnames())
                 writer.writeheader()
 
                 # Write a row in csv format for each finding that has been reported so far
-                for finding in self.temp_findings:
+                for finding in deduplicated_findings:
                     writer.writerow(finding)
 
             self.output_wrapper.add("[✓] Done!")
