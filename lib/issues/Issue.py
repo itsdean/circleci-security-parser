@@ -43,7 +43,8 @@ class Issue:
             "raw_output": self.raw_output
         }
 
- fieldnames = [
+
+fieldnames = [
     "issue_type",
     "tool_name",
     "title",
