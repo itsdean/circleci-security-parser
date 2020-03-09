@@ -2,9 +2,17 @@ from datetime import datetime
 from textwrap import TextWrapper, fill
 
 class OutputWrapper:
+    """
+    Custom library used to print parser output. Currently adds timing and pretty borders to each blob of output.
+    """
 
     def set_time(self, show_time):
+        """
+        Used to set the variable self.show_time, that determines if a printed line should be prepended with the current timestamp.
+        """
+
         self.show_time = show_time
+
 
     def clear(self):
         """
@@ -25,7 +33,7 @@ class OutputWrapper:
         return tmp
 
 
-    def get_max_line_length(self):
+    def get_longest_line_length(self):
         """
         Find the line in the buffer with the longest length and return its value.
         """
@@ -71,7 +79,6 @@ class OutputWrapper:
             print(line)
 
 
-
     def get_time(self):
         """
         Return the current time in hours, minutes and seconds, surrounded by square brackets.
@@ -90,30 +97,34 @@ class OutputWrapper:
         By default a new line is printed after the buffer is flushed.
         """
 
-        max_line_length = self.get_max_line_length()
+        # What's the longest line in the buffer?
+        buffer_longest_line_length = self.get_longest_line_length()
 
-        if max_line_length > self.max_terminal_width:
-            max_line_length = self.max_terminal_width
+        # If max_line_length 
+        if buffer_longest_line_length > self.max_terminal_width:
+            buffer_longest_line_length = self.max_terminal_width
 
         if border:
-            self.print(">" * max_line_length, show_time=show_time)
+            self.print(">" * buffer_longest_line_length, show_time=show_time)
 
+        # If there's a title, print it.
         if self.title != "":
             self.print(self.title, show_time=show_time)
             # Draw another divider if there's text to be printed after the title.
             if len(self.buffer) > 0:
-                self.print("-" * max_line_length, show_time=show_time)
+                self.print("-" * buffer_longest_line_length, show_time=show_time)
 
         for line in self.buffer:
-           self.print(line, max_width=max_line_length, show_time=show_time)
+           self.print(line, max_width=buffer_longest_line_length, show_time=show_time)
 
         if border:
-            self.print("<" * max_line_length, show_time=show_time)
+            self.print("<" * buffer_longest_line_length, show_time=show_time)
 
         if new:
             print()
 
-        self.buffer = list()
+        # Flush the title and buffer
+        self.clear()
 
 
     def add(self, line):
@@ -124,10 +135,23 @@ class OutputWrapper:
 
 
     def __init__(self):
-        self.show_time = True
+        """
+        Standard init procedure.
+        """
 
+        # This variable determines if, when printing, that the current time 
+        # should be added to the beginning of the line.
+        # Currently, this only affects the printing of the splash banner when 
+        # running the script.
+        self.show_time = True
+  
+        # To prevent truncation or bad wrapping, we leverage the textwrap 
+        # package. In order to know where to wrap, we use the width of the 
+        # terminal as a baseline and reduce from there.
+        # Call stty size to get the width and height of the terminal.
         import subprocess
         rows, columns = subprocess.check_output(['stty', 'size']).split()
-        self.max_terminal_width = int(columns) - 15
+        # We remove 10 from max_terminal_width to be on the safe side.
+        self.max_terminal_width = int(columns) - 10
 
         self.clear()
