@@ -61,7 +61,7 @@ class Reporter:
         recommendation,
         ifile_name = "",
         raw_output = "n/a",
-        severity = "n/a",
+        severity = "low",
         cve_value = "n/a",
     ):
 
