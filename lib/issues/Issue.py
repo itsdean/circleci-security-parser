@@ -17,6 +17,10 @@ class Issue:
             severity="low",
             cve_value="n/a"
         ):
+        """
+        Instantiator of Issue objects.
+        Currently only used to set the instance variables.
+        """
 
         self.issue_type = issue_type
         self.tool_name = tool_name
@@ -31,6 +35,10 @@ class Issue:
 
 
     def get(self):
+        """
+        Returns a dictionary containing an issue's fieldnames and their values.
+        """
+
         return {
             "issue_type": self.issue_type,
             "tool_name": self.tool_name,
@@ -58,4 +66,8 @@ fieldnames = [
 
 
 def get_fieldnames():
+    """
+    Returns the list of keys each issue has.
+    """
+
     return fieldnames
