@@ -152,7 +152,6 @@ def parse(i_file, reporter, output_wrapper):
                 description,
                 location,
                 recommendation,
-                severity="low"
             )
 
     output_wrapper.add("[✓] Done!")

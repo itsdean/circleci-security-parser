@@ -173,7 +173,6 @@ def node_parse_unresolvables(unparsed_dependencies, reporter, output_wrapper):
             path,
             issue_recommendation,
             raw_output = merged["raw_output"],
-            severity="low"
         )
 
 
@@ -251,7 +250,6 @@ def node_parse_resolvables(upgradable_dependencies, reporter, output_wrapper, pr
             location,
             recommendation,
             raw_output = {upgrade_key: upgrade_details},
-            severity="low"
         )
 
     # Enumerate and output the amount of dependencies to be reported/fixed/etc.

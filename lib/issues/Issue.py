@@ -1,20 +1,7 @@
-fieldnames = [
-    "issue_type",
-    "tool_name",
-    "title",
-    "severity",
-    "description",
-    "cve_value",
-    "location",
-    "recommendation",
-    "raw_output"
-]
-
-def get_fieldnames():
-    return fieldnames
-
-
 class Issue:
+    """
+    Stores information on each parsed issue.
+    """
 
 
     def __init__(
@@ -27,7 +14,7 @@ class Issue:
             recommendation,
             ifile_name="",
             raw_output="n/a",
-            severity="n/a",
+            severity="low",
             cve_value="n/a"
         ):
 
@@ -55,3 +42,19 @@ class Issue:
             "recommendation": self.recommendation,
             "raw_output": self.raw_output
         }
+
+ fieldnames = [
+    "issue_type",
+    "tool_name",
+    "title",
+    "severity",
+    "description",
+    "cve_value",
+    "location",
+    "recommendation",
+    "raw_output"
+]
+
+
+def get_fieldnames():
+    return fieldnames
