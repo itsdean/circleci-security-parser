@@ -1,6 +1,4 @@
-"""
-Parses JSON-format output provided by Gosec, a golang security checker that leverages Go's internal AST tree system.
-"""
+import json
 
 """
 G106: Audit the use of ssh.InsecureIgnoreHostKey
@@ -23,6 +21,7 @@ G404: Insecure random number source (rand)
 G504: Import blacklist: net/http/cgi
 """
 
+# A dictionary of tuples, where each tuple maps to (description, recommendation). description and recommendation are both custom.
 rule_id_sets = {
     "G101": (
         "Line <<line>> of <<file>> contained a potentially hardcoded sensitive value. Should an attacker obtain an instance of the codebase (either via the source repository or a compiled asset) then they may leverage the value to carry out further compromise and move further within the systems in scope.\n\nFurthermore, for both security and functionality reasons, should the value become invalid then the code base will have to be updated each time to accomodate for the new value (as opposed to pulling the value off a fixed-name environment variable)",
@@ -50,7 +49,6 @@ rule_id_sets = {
     )
 }
 
-
 # Some codes will link to a similar issue so we can re-use descriptions and recommendations.
 # Catch SQL injection
 rule_id_sets["G202"] = rule_id_sets["G201"]
@@ -62,50 +60,58 @@ rule_id_sets["G503"] = rule_id_sets["G401"]
 rule_id_sets["G505"] = rule_id_sets["G401"]
 
 
-def generate_issue(rule_id, filepath, line, code):
+def get_issue_information(rule_id, line, code):
+    """
+    Creates boilerplate content for an issue and uses primitive templating to provide metavariables within parsed gosec issues.
+    """
 
+    default_issue = (
+        "A security issue was identified at line <<line>> of <<file>>.\n\nThe title of this issue explains the situation, while the actual code line in question can be found below:\n>> <<code>> <<\n",
+        "Please investigate the reported file and line to confirm the nature of the issue."
+    )
+
+    # Get the custom description and recommendation for the issue, depending on its rule_id value. If there isn't a custom writeup, then use the generic text.
     description, recommendation = rule_id_sets.get(
         rule_id,
-        (
-            "A security issue was identified at line <<line>> of <<file>>.\n\nThe title of this issue explains the situation, while the actual code line in question can be found below:\n>> <<code>> <<\n",
-            "Please investigate the reported file and line to confirm the nature of the issue."
-        )
+        default_issue
     )
-    description = description.replace("<<file>>", filepath).replace("<<line>>", line).replace("<<code>>", code)
- 
+
+    # Replace any instances of template variables with the actual code.
+    description = description.replace("<<line>>", line)
+    description = description.replace("<<code>>", code)
+
     return description, recommendation
 
-def parse(i_file, reporter, output_wrapper):
+def parse(gosec_file, reporter, output_wrapper):
     """
-    Opens gosec output (assuming it's in JSON format) and attempts to identify raised issues, passing it to the parser reporter.
+    Goes through findings reported by gosec and passes details to Reporter for standardisation.
     """
-
-    import json
 
     issue_type = "code"
     tool_name = "gosec"
 
-    json_object = json.load(i_file)
+    json_object = json.load(gosec_file)
 
     issues = json_object["Issues"]
 
-    output_wrapper.add("- Found " + str(len(issues)) + " issues to report...")
+    issues_size = len(issues)
+    output_wrapper.add("- Found " + str(issues_size) + " issues to report...")
 
     for issue in issues:
         
         title = issue["details"]
-        location = issue["file"] + ":" + issue["line"]
-        
-        description, recommendation = generate_issue( 
+        location = issue["file"]  + ":" + issue["line"]
+        severity = issue["severity"].lower().capitalize()
+
+        rule_id = issue["rule_id"]
+
+        description, recommendation = get_issue_information(
             issue["rule_id"],
-            issue["file"],
             issue["line"],
             issue["code"]
         )
-        
-        recommendation += "\n\nNote: If this is a false positive, add #nosec to the code line or block to prevent it from being reported again."
 
-        severity = issue["severity"].lower().capitalize()
+        recommendation += "\n\nIf this is a false positive, add #nosec to the code line/block to prevent the issue from being reported in the future."
 
         reporter.add(
             issue_type,

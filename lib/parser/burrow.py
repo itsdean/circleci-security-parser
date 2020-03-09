@@ -50,3 +50,5 @@ def parse(burrow_file, reporter, output_wrapper):
             filename,
             raw_output = issue
         )
+
+    output_wrapper.add("[✓] Done!")

@@ -23,7 +23,7 @@ class Parser:
 
 
 	def gosec(self, i_file):
-		from lib import gosec
+		from lib.parser import gosec
 		gosec.parse(i_file, self.reporter, self.output_wrapper)
 
 
