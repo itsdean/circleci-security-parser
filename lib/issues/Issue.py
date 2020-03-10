@@ -14,7 +14,7 @@ class Issue:
             recommendation,
             ifile_name="",
             raw_output="n/a",
-            severity="low",
+            severity="",
             cve_value="n/a"
         ):
         """
@@ -30,7 +30,10 @@ class Issue:
         self.recommendation = recommendation
         self.ifile_name = ifile_name
         self.raw_output = raw_output
-        self.severity = severity
+        if severity == "":
+            self.severity = "low"
+        else:
+            self.severity = severity
         self.cve_value = cve_value
 
 
