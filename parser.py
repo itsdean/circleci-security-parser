@@ -66,9 +66,9 @@ class Parser:
 		# Set the output folder variable in case we need to save parsed output
 		self.reporter = reporter
 
+		self.output_wrapper.clear()
+
 		for i_file in files:
-			
-			self.output_wrapper.clear()
 
 			self.output_wrapper.set_title("Parsing: " + os.path.basename(i_file.name))
 
