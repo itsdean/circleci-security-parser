@@ -45,7 +45,7 @@ if __name__ == "__main__":
 	input_folder = arguments.input
 	output_folder = arguments.output
 
-	# Create a variable to store the, but only if it exists.
+	# Create a variable to store the severity, but only if it exists.
 	if arguments.fail:
 		fail_threshold = arguments.fail
 	else:
