@@ -9,7 +9,6 @@ from lib.output.Reporter import Reporter
 from parser import Parser
 from pathlib import Path
 
-
 if __name__ == "__main__":
 
 	print()
@@ -51,7 +50,6 @@ if __name__ == "__main__":
 	else:
 		fail_threshold = "off"
 
-	# o.set_title("fail threshold: " + fail_threshold + "\n")
 	output_wrapper.set_title("fail threshold: " + fail_threshold)
 	output_wrapper.flush()
 
@@ -94,8 +92,6 @@ if __name__ == "__main__":
 		# Check if we have a severity threshold. If we do, error_code will be > 0 so return that value to force the build to fail.
 		error_code = parser.check_threshold(fail_threshold)
 
-		# print(error_code)
-
 		if error_code != 0:
 			output_wrapper.set_title("[x] Exiting script with return code " + str(error_code) + "!")
 			output_wrapper.flush()
@@ -104,6 +100,6 @@ if __name__ == "__main__":
 		reporter.create_csv_report()
 		
 	else:
-		# We didn't find any files; odd.
+		# We didn't find any files.
 		output_wrapper.set_title("[x] No supported files were found! Did you target the right directory?")
 		output_wrapper.flush()
