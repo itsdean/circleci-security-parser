@@ -6,9 +6,9 @@ import traceback
 
 from lib.input.Loader import Loader
 from lib.issues.IssueHolder import IssueHolder
+from lib.parsers.CoreParser import CoreParser
 from lib.output.OutputWrapper import OutputWrapper
 from lib.output.Reporter import Reporter
-from parser import Parser
 
 if __name__ == "__main__":
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
 	if files != 0:
 
 		# Create Reporter and Parser objects then pass their required parameters to them.
-		parser = Parser(output_wrapper, issue_holder, files)
+		parser = CoreParser(output_wrapper, issue_holder, files)
 
 		# Check if we have a severity threshold. If we do, error_code will be > 0 so return that value to force the build to fail.
 		error_code = parser.check_threshold(fail_threshold)

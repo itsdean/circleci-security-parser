@@ -7,7 +7,7 @@ import re
 
 from pprint import pprint
 
-class Parser:
+class CoreParser:
 	"""
 	Redirects files to their respective parsers to be processed.
 	"""
