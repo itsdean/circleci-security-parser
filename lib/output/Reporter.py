@@ -66,7 +66,7 @@ class Reporter:
         self.csv_location = self.csv_folder_name + "/" + self.csv_name
 
         self.output_wrapper.set_title("Saving to: " + self.csv_location)
-        self.output_wrapper.flush()
+        self.output_wrapper.flush(verbose=True)
 
 
     def create_csv_report(self):
@@ -74,11 +74,13 @@ class Reporter:
         Obtains the current list of issues and prints them to a CSV file.
         """
 
+        self.output_wrapper.clear()
+
         if self.issue_holder.size() == 0:
 
             self.output_wrapper.set_title("[x] There were no issues found during this job!")
             self.output_wrapper.add("- No report has been created.")
-            self.output_wrapper.flush()
+            self.output_wrapper.flush(verbose=True)
 
         else:
 

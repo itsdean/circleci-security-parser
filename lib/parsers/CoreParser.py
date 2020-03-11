@@ -37,7 +37,7 @@ class CoreParser:
 
 
 	def snyk_node(self, i_file):
-		from lib import snyk
+		from lib.parsers import snyk
 		snyk.parse_node(i_file, self.issue_holder, self.output_wrapper)
 
 
@@ -45,6 +45,8 @@ class CoreParser:
 		"""
 		Iterates through a dictionary of tools that can be parsed and compares their associated filename patterns with the file currently being processed.
 		"""
+
+		self.output_wrapper.set_title("Parsing: " + os.path.basename(i_file.name))
 
 		# Get the tool name ("Snyk [Node]" for example) and its associated matching filename ("snyk_node"), both from parsed_tools in KV format
 		for toolname, filename_pattern in self.parsed_tools.items():
@@ -55,6 +57,8 @@ class CoreParser:
 				# We could squash the below into one line but it's more confusing to understand if you don't know getattr.
 				file_parser_method = getattr(self, filename_pattern)
 				file_parser_method(i_file)
+
+		self.output_wrapper.flush(verbose=True)
 
 
 	def check_threshold(self, fail_threshold):
@@ -113,7 +117,7 @@ class CoreParser:
 
 					fail_issues.append(issue)
 
-			self.output_wrapper.flush()
+			self.output_wrapper.flush(verbose=True)
 
 			# Before we hard fail, explain why we failed and report the issues in shorthand form
 			if error_code > 0:
@@ -139,7 +143,7 @@ class CoreParser:
 					self.output_wrapper.add("recommendation: " + remediation)
 					self.output_wrapper.add("location: " + location)
 
-				self.output_wrapper.flush()
+				self.output_wrapper.flush(verbose=True)
 
 		# Return error_code as the error code :)
 		return error_code
@@ -151,14 +155,7 @@ class CoreParser:
 		"""
 
 		for i_file in self.files:
-
-			# print(i_file)
-
-			self.output_wrapper.set_title("Parsing: " + os.path.basename(i_file.name))
-
 			self.get_file_source(i_file)
-
-			self.output_wrapper.flush()
 
 
 	def __init__(self, output_wrapper, issue_holder, files):

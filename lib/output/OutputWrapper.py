@@ -102,34 +102,36 @@ class OutputWrapper:
         By default a new line is printed after the buffer is flushed.
         """
 
-        # What's the longest line in the buffer?
-        buffer_longest_line_length = self.get_longest_line_length()
+        if not (verbose and not self.verbose_mode):
 
-        # If max_line_length 
-        if buffer_longest_line_length > self.max_terminal_width:
-            buffer_longest_line_length = self.max_terminal_width
+            # What's the longest line in the buffer?
+            buffer_longest_line_length = self.get_longest_line_length()
 
-        if border:
-            self.print(">" * buffer_longest_line_length, show_time=show_time)
+            # If max_line_length 
+            if buffer_longest_line_length > self.max_terminal_width:
+                buffer_longest_line_length = self.max_terminal_width
 
-        # If there's a title, print it.
-        if self.title != "":
-            self.print(self.title, show_time=show_time)
-            # Draw another divider if there's text to be printed after the title.
-            if len(self.buffer) > 0:
-                self.print("-" * buffer_longest_line_length, show_time=show_time)
+            if border:
+                self.print(">" * buffer_longest_line_length, show_time=show_time)
 
-        for line in self.buffer:
-           self.print(line, max_width=buffer_longest_line_length, show_time=show_time)
+            # If there's a title, print it.
+            if self.title != "":
+                self.print(self.title, show_time=show_time)
+                # Draw another divider if there's text to be printed after the title.
+                if len(self.buffer) > 0:
+                    self.print("-" * buffer_longest_line_length, show_time=show_time)
 
-        if border:
-            self.print("<" * buffer_longest_line_length, show_time=show_time)
+            for line in self.buffer:
+                self.print(line, max_width=buffer_longest_line_length, show_time=show_time)
 
-        if new:
-            print()
+            if border:
+                self.print("<" * buffer_longest_line_length, show_time=show_time)
 
-        # Flush the title and buffer
-        self.clear()
+            if new:
+                print()
+
+            # Flush the title and buffer
+            self.clear()
 
 
     def add(self, line):
@@ -139,7 +141,7 @@ class OutputWrapper:
         self.buffer.append(line)
 
 
-    def __init__(self):
+    def __init__(self, verbose):
         """
         Standard init procedure.
         """
@@ -158,5 +160,8 @@ class OutputWrapper:
         rows, columns = subprocess.check_output(['stty', 'size']).split()
         # We remove 10 from max_terminal_width to be on the safe side.
         self.max_terminal_width = int(columns) - 10
+
+        # Stores whether verbose mode is enabled
+        self.verbose_mode = verbose
 
         self.clear()

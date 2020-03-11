@@ -43,12 +43,12 @@ class Loader:
                 loaded_file_name = os.path.basename(element.name)
                 self.output_wrapper.add("- " + loaded_file_name)
 
-            self.output_wrapper.flush()
+            self.output_wrapper.flush(verbose=True)
             return self.loaded_files
 
         else:
 
-            output_wrapper.flush()
+            self.output_wrapper.flush(verbose=True)
             return 0
 
         

@@ -12,16 +12,6 @@ from lib.output.Reporter import Reporter
 
 if __name__ == "__main__":
 
-	print()
-
-	output_wrapper = OutputWrapper()
-	issue_holder = IssueHolder(output_wrapper)
-	loader = Loader(output_wrapper)
-
-	output_wrapper.add("CircleCI Security Output Parser (CSOP) - Hi there!")
-	output_wrapper.add("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
-	output_wrapper.flush(show_time=False)
-
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
 		"-i",
@@ -36,6 +26,12 @@ if __name__ == "__main__":
 		default="."
 	)
 	parser.add_argument(
+		"-v",
+		"--verbose",
+		help="Sets verbose mode",
+		action="store_true"
+	)
+	parser.add_argument(
 		"--fail",
 		help="Return an error code for",
 		choices=["critical", "high", "medium", "low", "informational"]
@@ -46,6 +42,18 @@ if __name__ == "__main__":
 	# Create variables to store where to load and save files from/to.
 	input_folder = arguments.input
 	output_folder = arguments.output
+	verbose = arguments.verbose
+
+	# Instantiate the various Object instances that we require
+	output_wrapper = OutputWrapper(verbose)
+
+	print()
+	output_wrapper.add("CircleCI Security Output Parser (CSOP) - Hi there!")
+	output_wrapper.add("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
+	output_wrapper.flush(show_time=False)
+
+	issue_holder = IssueHolder(output_wrapper)
+	loader = Loader(output_wrapper)
 
 	# Get the absolute path for the output folder
 	output_folder = os.path.abspath(output_folder)
@@ -59,7 +67,7 @@ if __name__ == "__main__":
 		fail_threshold = "off"
 
 	output_wrapper.set_title("fail threshold: " + fail_threshold)
-	output_wrapper.flush()
+	output_wrapper.flush(verbose=True)
 
 	# Get a list of files containing parsable tool output
 	files = loader.load_from_folder(input_folder)

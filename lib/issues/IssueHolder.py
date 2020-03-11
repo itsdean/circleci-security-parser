@@ -73,7 +73,7 @@ class IssueHolder:
         self.output_wrapper.add("- Array size: " + str(self.size()))
         self.output_wrapper.add("- Array size after deduplication: " + str(len(deduplicated_findings)))
 
-        self.output_wrapper.flush()
+        self.output_wrapper.flush(verbose=True)
 
         return deduplicated_findings
 
