@@ -6,7 +6,6 @@ import os
 import re
 
 from pprint import pprint
-from lib.output.OutputWrapper import OutputWrapper
 
 class Parser:
 	"""
@@ -56,25 +55,6 @@ class Parser:
 				# We could squash the below into one line but it's more confusing to understand if you don't know getattr.
 				file_parser_method = getattr(self, filename_pattern)
 				file_parser_method(i_file)
-
-
-	def consume(self, files, reporter):
-		"""
-		Absorbs a list of files (and a reporter object) and attempts to have each file parsed depending on the tool (and support)
-		"""
-
-		# Set the output folder variable in case we need to save parsed output
-		self.reporter = reporter
-
-		self.output_wrapper.clear()
-
-		for i_file in files:
-
-			self.output_wrapper.set_title("Parsing: " + os.path.basename(i_file.name))
-
-			self.get_file_source(i_file)
-
-			self.output_wrapper.flush()
 
 
 	def check_threshold(self, fail_threshold):
@@ -165,5 +145,23 @@ class Parser:
 		return error_code
 
 
-	def __init__(self):
-		self.output_wrapper = OutputWrapper()
+	def consume(self):
+		"""
+		Absorbs a list of files (and a reporter object) and attempts to have each file parsed depending on the tool (and support)
+		"""
+
+		for i_file in self.files:
+
+			self.output_wrapper.set_title("Parsing: " + os.path.basename(i_file.name))
+
+			self.get_file_source(i_file)
+
+			self.output_wrapper.flush()
+
+
+	def __init__(self, reporter, output_wrapper, files):
+		self.reporter = reporter
+		self.output_wrapper = output_wrapper
+		self.files = files
+
+		self.consume()
