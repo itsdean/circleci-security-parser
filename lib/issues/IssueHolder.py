@@ -1,6 +1,8 @@
 import hashlib
 import json
 
+from lib.issues.Issue import Issue
+
 class IssueHolder:
     """
     Simple class just used to retain information on the issues found during this parser's run.
@@ -64,8 +66,6 @@ class IssueHolder:
                 issue_hash_oracle.append(issue_hash)
                 deduplicated_findings.append(issue)
 
-            # issue_hash = create_hash()
-
         # The description and location of each issue is merged together and
         # hashed - if this hash has not been dealt with (this parsing round)
         # before then we'll accept it, otherwise ignore it.
@@ -73,15 +73,42 @@ class IssueHolder:
         self.output_wrapper.add("- Array size: " + str(self.size()))
         self.output_wrapper.add("- Array size after deduplication: " + str(len(deduplicated_findings)))
 
+        self.output_wrapper.flush()
+
         return deduplicated_findings
 
 
-    def add(self, issue):
+    def add(
+        self,
+        issue_type,
+        tool_name,
+        title,
+        description,
+        location,
+        recommendation,
+        ifile_name = "",
+        raw_output = "n/a",
+        severity = "",
+        cve_value = "n/a",
+    ):
         """
-        Adds a new issue to the list of issues.
+        Inserts a new issue to the list; the parameters force a reporting standard to be followed (i.e. each must have the first six parameters as "headings" in a report)
         """
 
-        self.findings_list.append(issue)
+        self.findings_list.append(
+            Issue(
+                issue_type,
+                tool_name,
+                title,
+                description,
+                location,
+                recommendation,
+                ifile_name=ifile_name,
+                raw_output=raw_output,
+                severity=severity,
+                cve_value=cve_value
+            )
+        )
 
 
     def get_issues(self):

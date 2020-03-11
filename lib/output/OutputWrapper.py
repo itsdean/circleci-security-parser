@@ -87,7 +87,12 @@ class OutputWrapper:
         return "[" + datetime.now().strftime("%H:%M:%S") + "]"
 
 
-    def flush(self, border=True, new=True, show_time=True):
+    def flush(self,
+            border=True,
+            new=True,
+            show_time=True,
+            verbose=False
+        ):
         """
         Empties the buffer, printing out all stored strings.
 

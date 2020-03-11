@@ -263,7 +263,7 @@ def node_parse_resolvables(upgradable_dependencies, reporter, output_wrapper, pr
     output_wrapper.add(console_output)
 
 
-def parse_node(i_file, reporter, output_wrapper):
+def parse_node(i_file, issue_holder, output_wrapper):
     """
     Attempts to carry out multiple steps on a Snyk scan's output:
     1) Report dependencies that, when updated, will fix one or more vulnerabilities
@@ -279,10 +279,10 @@ def parse_node(i_file, reporter, output_wrapper):
         remediation_key = i_file_json_object["remediation"]
 
         unresolved_dependencies = remediation_key["unresolved"]
-        node_parse_unresolvables(unresolved_dependencies, reporter, output_wrapper)
+        node_parse_unresolvables(unresolved_dependencies, issue_holder, output_wrapper)
 
         upgradable_dependencies = remediation_key["upgrade"]
-        node_parse_resolvables(upgradable_dependencies, reporter, output_wrapper, project_name)
+        node_parse_resolvables(upgradable_dependencies, issue_holder, output_wrapper, project_name)
 
         output_wrapper.add("[✓] Done!")
 

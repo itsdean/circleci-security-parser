@@ -1,6 +1,6 @@
 import json
 
-def parse(burrow_file, reporter, output_wrapper):
+def parse(burrow_file, issue_holder, output_wrapper):
     """
     Goes through burrow tool output and passes each reported issue to Reporter.
     """
@@ -40,7 +40,7 @@ def parse(burrow_file, reporter, output_wrapper):
         ):
             location += ":" + str(issue["line"])
 
-        reporter.add(
+        issue_holder.add(
             issue_type,
             tool_name,
             title,

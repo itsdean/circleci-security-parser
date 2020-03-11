@@ -50,14 +50,14 @@ class Reporter:
         return csv_name
 
 
-    def __init__(self, o_folder):
+    def __init__(self, output_wrapper, issue_holder, o_folder):
         """
         Standard init procedure.
         """
 
         # Create the instances we will be calling throughout this class
-        self.output_wrapper = OutputWrapper()
-        self.issue_holder = IssueHolder(self.output_wrapper)
+        self.output_wrapper = output_wrapper
+        self.issue_holder = issue_holder
 
         self.csv_name = self.prepare_csv_name()
 
@@ -67,46 +67,6 @@ class Reporter:
 
         self.output_wrapper.set_title("Saving to: " + self.csv_location)
         self.output_wrapper.flush()
-
-
-    def get_issues(self):
-        """
-        Return the current list of issues.
-        """
-        return self.issue_holder.get_issues()
-
-
-    def add(
-        self,
-        issue_type,
-        tool_name,
-        title,
-        description,
-        location,
-        recommendation,
-        ifile_name = "",
-        raw_output = "n/a",
-        severity = "",
-        cve_value = "n/a",
-    ):
-        """
-        Inserts a new issue to the list; the parameters force a reporting standard to be followed (i.e. each must have the first six parameters as "headings" in a report)
-        """
-
-        self.issue_holder.add(
-            Issue(
-                issue_type,
-                tool_name,
-                title,
-                description,
-                location,
-                recommendation,
-                ifile_name=ifile_name,
-                raw_output=raw_output,
-                severity=severity,
-                cve_value=cve_value
-            )
-        )
 
 
     def create_csv_report(self):
@@ -122,9 +82,9 @@ class Reporter:
 
         else:
 
-            self.output_wrapper.set_title("Generating CSV report...")
-
             deduplicated_findings = self.issue_holder.deduplicate()
+
+            self.output_wrapper.set_title("Generating CSV report...")
 
             with open(self.csv_location, 'w+', newline="\n") as csv_file_object:
                 writer = csv.DictWriter(csv_file_object, fieldnames=get_fieldnames())

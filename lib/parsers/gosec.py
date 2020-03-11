@@ -82,7 +82,7 @@ def get_issue_information(rule_id, line, code):
 
     return description, recommendation
 
-def parse(gosec_file, reporter, output_wrapper):
+def parse(gosec_file, issue_holder, output_wrapper):
     """
     Goes through findings reported by gosec and passes details to Reporter for standardisation.
     """
@@ -113,7 +113,7 @@ def parse(gosec_file, reporter, output_wrapper):
 
         recommendation += "\n\nIf this is a false positive, add #nosec to the code line/block to prevent the issue from being reported in the future."
 
-        reporter.add(
+        issue_holder.add(
             issue_type,
             tool_name,
             title,

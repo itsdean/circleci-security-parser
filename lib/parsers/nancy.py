@@ -1,6 +1,6 @@
 import json
 
-def parse(nancy_file, reporter, output_wrapper):
+def parse(nancy_file, issue_holder, output_wrapper):
     """
     Goes through sonatype-nancy output and reports any dependency issues
     """
@@ -47,7 +47,7 @@ def parse(nancy_file, reporter, output_wrapper):
                 else:
                     cve_value = ""
 
-            reporter.add(
+            issue_holder.add(
                 issue_type,
                 tool_name,
                 title,

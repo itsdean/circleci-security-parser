@@ -23,22 +23,22 @@ class Parser:
 
 	def gosec(self, i_file):
 		from lib.parsers import gosec
-		gosec.parse(i_file, self.reporter, self.output_wrapper)
+		gosec.parse(i_file, self.issue_holder, self.output_wrapper)
 
 
 	def nancy(self, i_file):
 		from lib.parsers import nancy
-		nancy.parse(i_file, self.reporter, self.output_wrapper)
+		nancy.parse(i_file, self.issue_holder, self.output_wrapper)
 
 
 	def burrow(self, burrow_file):
 		from lib.parsers import burrow
-		burrow.parse(burrow_file, self.reporter, self.output_wrapper)
+		burrow.parse(burrow_file, self.issue_holder, self.output_wrapper)
 
 
 	def snyk_node(self, i_file):
 		from lib import snyk
-		snyk.parse_node(i_file, self.reporter, self.output_wrapper)
+		snyk.parse_node(i_file, self.issue_holder, self.output_wrapper)
 
 
 	def get_file_source(self, i_file):
@@ -91,7 +91,7 @@ class Parser:
 			# equivalent value.
 			# If the value is greater than or equal to the fail_code
 			# value of the set threshold, save it to a temporary array.
-			for issue in self.reporter.get_issues():
+			for issue in self.issue_holder.get_issues():
 
 				issue = issue.get()
 				
@@ -147,10 +147,12 @@ class Parser:
 
 	def consume(self):
 		"""
-		Absorbs a list of files (and a reporter object) and attempts to have each file parsed depending on the tool (and support)
+		Absorbs a list of files and attempts to have each file parsed depending on the tool (and support)
 		"""
 
 		for i_file in self.files:
+
+			# print(i_file)
 
 			self.output_wrapper.set_title("Parsing: " + os.path.basename(i_file.name))
 
@@ -159,8 +161,8 @@ class Parser:
 			self.output_wrapper.flush()
 
 
-	def __init__(self, reporter, output_wrapper, files):
-		self.reporter = reporter
+	def __init__(self, output_wrapper, issue_holder, files):
+		self.issue_holder = issue_holder
 		self.output_wrapper = output_wrapper
 		self.files = files
 

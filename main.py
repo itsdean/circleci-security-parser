@@ -5,6 +5,7 @@ import os
 import traceback
 
 from lib.input.Loader import Loader
+from lib.issues.IssueHolder import IssueHolder
 from lib.output.OutputWrapper import OutputWrapper
 from lib.output.Reporter import Reporter
 from parser import Parser
@@ -14,6 +15,7 @@ if __name__ == "__main__":
 	print()
 
 	output_wrapper = OutputWrapper()
+	issue_holder = IssueHolder(output_wrapper)
 	loader = Loader(output_wrapper)
 
 	output_wrapper.add("CircleCI Security Output Parser (CSOP) - Hi there!")
@@ -48,6 +50,8 @@ if __name__ == "__main__":
 	# Get the absolute path for the output folder
 	output_folder = os.path.abspath(output_folder)
 
+	reporter = Reporter(output_wrapper, issue_holder, output_folder)
+
 	# Create a variable to store the severity, but only if it exists.
 	if arguments.fail:
 		fail_threshold = arguments.fail
@@ -64,8 +68,7 @@ if __name__ == "__main__":
 	if files != 0:
 
 		# Create Reporter and Parser objects then pass their required parameters to them.
-		reporter = Reporter(output_folder)
-		parser = Parser(reporter, output_wrapper, files)
+		parser = Parser(output_wrapper, issue_holder, files)
 
 		# Check if we have a severity threshold. If we do, error_code will be > 0 so return that value to force the build to fail.
 		error_code = parser.check_threshold(fail_threshold)
