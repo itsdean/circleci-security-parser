@@ -10,19 +10,19 @@ class ConfigHandler:
 
 
     def get_fail_threshold(self):
-        if self.fail_threshold == "":
-            return "off"
-        else:  
-            return self.fail_threshold 
+        return self.fail_threshold
+
 
     def parse(self, yaml_object):
         """
         Obtains the various fields from the yaml file. 
         """
 
-        if yaml_object["fail_threshold"]:
+        try:
             self.set_fail_threshold(yaml_object["fail_threshold"])
-            self.output.add("- fail threshold: " + self.get_fail_threshold())
+            self.output.add("- fail_threshold: " + self.get_fail_threshold())
+        except TypeError:
+            self.output.add("- [x] fail_threshold not found, defaulting")
 
 
     def load(self, filename):
@@ -36,6 +36,7 @@ class ConfigHandler:
 
             with open(filename) as config_file:
                 yaml_object = yaml.load(config_file, Loader=yaml.FullLoader)
+
                 self.parse(yaml_object)
 
         else:
@@ -49,7 +50,9 @@ class ConfigHandler:
         self.output = output_wrapper
 
         # Define the various configuration fields
-        self.fail_threshold = ""
+        # By default, parser builds fail if an issue with severity high or
+        # above was found.
+        self.fail_threshold = "high"
 
         # Load the configuration file
         self.load(filename)
