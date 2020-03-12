@@ -1,0 +1,4 @@
+# standard summit configuration
+
+# Fail parser runs if 
+fail_threshold: high

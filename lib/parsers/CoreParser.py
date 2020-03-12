@@ -74,7 +74,7 @@ class CoreParser:
 		error_code = 0
 
 		# Only go down this route if a threshold has not been set.
-		if fail_threshold != "off":
+		if fail_threshold != "":
 
 			# Save a dictionary of what error codes to return.
 			fail_codes = {

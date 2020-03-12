@@ -40,8 +40,8 @@ class Loader:
 
             for element in self.loaded_files:
                 # Get just the filename from the File object and output it
-                loaded_file_name = os.path.basename(element.name)
-                self.output_wrapper.add("- " + loaded_file_name)
+                loaded_filename = os.path.basename(element.name)
+                self.output_wrapper.add("- " + loaded_filename)
 
             self.output_wrapper.flush(verbose=True)
             return self.loaded_files

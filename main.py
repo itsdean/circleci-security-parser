@@ -4,6 +4,7 @@ import argparse
 import os
 import traceback
 
+from lib.input.ConfigHandler import ConfigHandler
 from lib.input.Loader import Loader
 from lib.issues.IssueHolder import IssueHolder
 from lib.parsers.CoreParser import CoreParser
@@ -31,11 +32,11 @@ if __name__ == "__main__":
 		help="Sets verbose mode",
 		action="store_true"
 	)
-	parser.add_argument(
-		"--fail",
-		help="Return an error code for",
-		choices=["critical", "high", "medium", "low", "informational"]
-	)
+	# parser.add_argument(
+	# 	"--fail",
+	# 	help="Return an error code for",
+	# 	choices=["critical", "high", "medium", "low", "informational"]
+	# )
 
 	arguments = parser.parse_args()
 
@@ -52,6 +53,7 @@ if __name__ == "__main__":
 	output_wrapper.add("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
 	output_wrapper.flush(show_time=False)
 
+	config = ConfigHandler(output_wrapper)
 	issue_holder = IssueHolder(output_wrapper)
 	loader = Loader(output_wrapper)
 
@@ -60,13 +62,13 @@ if __name__ == "__main__":
 
 	reporter = Reporter(output_wrapper, issue_holder, output_folder)
 
-	# Create a variable to store the severity, but only if it exists.
-	if arguments.fail:
-		fail_threshold = arguments.fail
-	else:
-		fail_threshold = "off"
+	output_wrapper.set_title("Setting fail threshold")
 
-	output_wrapper.set_title("fail threshold: " + fail_threshold)
+	# Create a variable to store the severity, but only if it wasn't loaded
+	# from the config file already AND a new value has been provided
+	fail_threshold = config.get_fail_threshold()
+
+	output_wrapper.add("fail threshold set to: " + fail_threshold)
 	output_wrapper.flush(verbose=True)
 
 	# Get a list of files containing parsable tool output
