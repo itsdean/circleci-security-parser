@@ -36,6 +36,12 @@ class Issue:
             self.severity = severity
         self.cve_value = cve_value
 
+        # Create a hash of the object as it is - we will use this to unique
+        # identify it in case we need to whitelist it
+        import pickle
+        import hashlib
+        self.hash = hashlib.sha256(pickle.dumps(self)).hexdigest()
+
 
     def get(self):
         """
@@ -51,7 +57,8 @@ class Issue:
             "cve_value": self.cve_value,
             "location": self.location,
             "recommendation": self.recommendation,
-            "raw_output": self.raw_output
+            "raw_output": self.raw_output,
+            "uid": self.hash
         }
 
 
@@ -64,7 +71,8 @@ fieldnames = [
     "cve_value",
     "location",
     "recommendation",
-    "raw_output"
+    "raw_output",
+    "uid"
 ]
 
 

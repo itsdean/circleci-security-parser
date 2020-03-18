@@ -130,8 +130,8 @@ class OutputWrapper:
             if new:
                 print()
 
-            # Flush the title and buffer
-            self.clear()
+        # Flush the title and buffer
+        self.clear()
 
 
     def add(self, line):

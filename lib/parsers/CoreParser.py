@@ -134,6 +134,7 @@ class CoreParser:
 					description = issue["description"].split("\n")[0]
 					remediation = issue["recommendation"].split("\n")[0]
 					location = issue["location"]
+					uid = issue["uid"]
 
 					self.output_wrapper.add("")
 					self.output_wrapper.add("tool: " + reporting_tool)
@@ -142,8 +143,9 @@ class CoreParser:
 					self.output_wrapper.add("description: " + description)
 					self.output_wrapper.add("recommendation: " + remediation)
 					self.output_wrapper.add("location: " + location)
+					self.output_wrapper.add("uid: " + uid)
 
-				self.output_wrapper.flush(verbose=True)
+				self.output_wrapper.flush()
 
 		# Return error_code as the error code :)
 		return error_code
