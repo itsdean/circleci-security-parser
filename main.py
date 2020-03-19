@@ -80,9 +80,10 @@ if __name__ == "__main__":
 		# Create Reporter and Parser objects then pass their required parameters to them.
 		parser = CoreParser(output_wrapper, issue_holder, files)
 
-		# Check if we have a severity threshold. If we do, error_code will be > 0 so return that value to force the build to fail.
+		# Check if we have a severity threshold and if any issues meet it.
 		error_code = parser.check_threshold(fail_threshold)
 
+		# If any issues met our threshold, fail the script.
 		if error_code != 0:
 			output_wrapper.set_title("[x] Exiting script with return code " + str(error_code) + "!")
 			output_wrapper.flush()
