@@ -42,13 +42,13 @@ class ConfigHandler:
         Obtains the various fields from the yaml file. 
         """
 
-        try:
-            # attempt to load the various values into their respective variables
+        if "fail_threshold" in yaml_object:
             self.set_fail_threshold(yaml_object["fail_threshold"])
-            self.set_whitelisted_issue_ids(yaml_object["whitelist"])
             self.output.add("- fail_threshold: " + self.get_fail_threshold())
-        except TypeError:
-            self.output.add("- [x] fail_threshold not found, defaulting")
+
+        if "whitelist" in yaml_object:
+            self.set_whitelisted_issue_ids(yaml_object["whitelist"])
+            self.output.add("- whitelist: loaded " + str(len(self.get_whitelisted_issue_ids())) + " ids")
 
 
     def load(self, filename):

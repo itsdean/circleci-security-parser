@@ -80,6 +80,9 @@ if __name__ == "__main__":
 		# Create Reporter and Parser objects then pass their required parameters to them.
 		parser = CoreParser(output_wrapper, issue_holder, files)
 
+		# Check if any issues are whitelisted.
+		parser.check_whitelists(config)
+
 		# Check if we have a severity threshold and if any issues meet it.
 		error_code = parser.check_threshold(fail_threshold)
 

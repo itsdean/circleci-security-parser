@@ -54,10 +54,10 @@ class IssueHolder:
         deduplicated_findings = []
 
         # Iterate though a deep copy of the current issues we have
-        for element in list(self.get_issues()):
+        for issue in list(self.get_issues()):
  
             # Get the contents of the issue in dictionary format
-            issue = element.get()
+            issue = issue.getd()
 
             issue_hash = self.create_hash(issue)
 
@@ -73,9 +73,17 @@ class IssueHolder:
         self.output_wrapper.add("- Array size: " + str(self.size()))
         self.output_wrapper.add("- Array size after deduplication: " + str(len(deduplicated_findings)))
 
+        self.output_wrapper.add("[✓] Done!")
         self.output_wrapper.flush(verbose=True)
 
         return deduplicated_findings
+
+
+    def remove(self, index):
+        """
+        Removes an issue from the list depending on its index.
+        """
+        del self.findings_list[index]
 
 
     def add(

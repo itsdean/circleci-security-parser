@@ -97,9 +97,7 @@ class CoreParser:
 			# value of the set threshold, save it to a temporary array.
 			for issue in self.issue_holder.get_issues():
 
-				issue = issue.get()
-				
-				# pprint(issue)
+				issue = issue.getd()
 
 				severity = issue["severity"].lower()
 				severity_value = fail_codes[severity]
@@ -149,6 +147,38 @@ class CoreParser:
 
 		# Return error_code as the error code :)
 		return error_code
+
+
+	def check_whitelists(self, config):
+		"""
+		Loads the local whitelist from summit.yml and checks if any issues to be reported are within. If so, omit the issue from reporting (but report it in verbose mode).
+		"""
+
+		self.output_wrapper.set_title("Checking if any issues to report are whitelisted..")
+
+		whitelisted_issues = config.get_whitelisted_issue_ids()
+
+		# Go through all the issues
+
+		# todo why reversed and why list?
+		for counter, issue in reversed(list(enumerate(self.issue_holder.get_issues()))):
+
+			issue = issue.getd()
+
+			uid = issue["uid"]
+
+			# If the uid of the issue is in the list of whitelisted issues,
+			# state that we're omitting it (in verbose mode) and then remove
+			# the issue object from IssueHolder.
+			if uid in whitelisted_issues:
+				self.output_wrapper.add("Found and whitelisting " + uid + "...")
+				self.output_wrapper.add("- title: " + issue["title"])
+				self.output_wrapper.add("- location: " + issue["location"])
+
+				self.issue_holder.remove(counter)
+
+		self.output_wrapper.add("[✓] Done!")
+		self.output_wrapper.flush(verbose=True)
 
 
 	def consume(self):

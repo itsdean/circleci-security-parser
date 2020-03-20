@@ -284,9 +284,9 @@ def parse_node(i_file, issue_holder, output_wrapper):
         upgradable_dependencies = remediation_key["upgrade"]
         node_parse_resolvables(upgradable_dependencies, issue_holder, output_wrapper, project_name)
 
-        output_wrapper.add("[✓] Done!")
-
     else:
         output_wrapper.add("[x] The results of this scan apparently failed!")
         output_wrapper.add("[x] Please see the following error obtained from the output file:")
         output_wrapper.add("[x] \"" + i_file_json_object["error"] + "\"")
+
+    output_wrapper.add("[✓] Done!")

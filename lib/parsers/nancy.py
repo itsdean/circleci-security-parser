@@ -22,7 +22,6 @@ def parse(nancy_file, issue_holder, output_wrapper):
             name_and_version = dependency["Coordinates"].split("pkg:golang/")[1]
 
             title = "Use of vulnerable Go dependency - " + name_and_version
-            # print(title)
             
             name = name_and_version.split("@")[0]
 

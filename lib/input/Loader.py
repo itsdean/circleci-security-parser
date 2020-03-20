@@ -14,6 +14,8 @@ class Loader:
 
     def load_from_folder(self, folder):
 
+        return_var = 0
+
         # # Create an empty list - this list will contain all of the File objects we create
         self.loaded_files = list()
 
@@ -43,12 +45,10 @@ class Loader:
                 loaded_filename = os.path.basename(element.name)
                 self.output_wrapper.add("- " + loaded_filename)
 
-            self.output_wrapper.flush(verbose=True)
-            return self.loaded_files
+            return_var = self.loaded_files
 
-        else:
-
-            self.output_wrapper.flush(verbose=True)
-            return 0
+        self.output_wrapper.add("[✓] Done!")
+        self.output_wrapper.flush(verbose=True)
+        return return_var
 
         

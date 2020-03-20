@@ -158,8 +158,8 @@ class OutputWrapper:
         # Call stty size to get the width and height of the terminal.
         import subprocess
         rows, columns = subprocess.check_output(['stty', 'size']).split()
-        # We remove 10 from max_terminal_width to be on the safe side.
-        self.max_terminal_width = int(columns) - 10
+        # We remove to be on the safe side.
+        self.max_terminal_width = int(columns) - 15
 
         # Stores whether verbose mode is enabled
         self.verbose_mode = verbose

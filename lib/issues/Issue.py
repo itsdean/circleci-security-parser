@@ -1,3 +1,6 @@
+import pickle
+import hashlib
+
 class Issue:
     """
     Stores information on each parsed issue.
@@ -38,12 +41,10 @@ class Issue:
 
         # Create a hash of the object as it is - we will use this to unique
         # identify it in case we need to whitelist it
-        import pickle
-        import hashlib
         self.hash = hashlib.sha256(pickle.dumps(self)).hexdigest()
 
 
-    def get(self):
+    def getd(self):
         """
         Returns a dictionary containing an issue's fieldnames and their values.
         """

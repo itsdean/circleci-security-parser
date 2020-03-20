@@ -6,3 +6,4 @@ fail_threshold: medium
 # local store of issues to whitelist
 whitelist:
   - 7c3fea55f17b8c2a076bc43aaa8f420694c7572c9474ed2f990658bfed7522d0
+  - dd3e3b4545bf1fbcecb820aad396832e64e93d083c46b7c3cb598fccd94a4aff
