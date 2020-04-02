@@ -3,6 +3,7 @@ test_input/*
 test_output/*
 .vscode/
 old/
+notes.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
