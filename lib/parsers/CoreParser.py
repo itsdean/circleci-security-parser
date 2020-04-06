@@ -26,7 +26,7 @@ class CoreParser:
 
     def nancy(self, i_file):
         from lib.parsers import nancy
-        nancy.parse(i_file, self.issue_lder, self.output_wrapper)
+        nancy.parse(i_file, self.issue_holder, self.output_wrapper)
 
     def burrow(self, burrow_file):
         from lib.parsers import burrow
@@ -105,8 +105,8 @@ class CoreParser:
                         "Found an issue with severity_value " + str(severity_value))
 
                     # If we find an issue with a greater severity than what
-                    # we've found so far, set error_code to it. We'll return
-                    # this at the end.
+                    # we've found so far, set error_code to its severity.
+					# We'll return this at the end.
                     if severity_value > error_code:
                         error_code = severity_value
 
@@ -158,24 +158,22 @@ class CoreParser:
         whitelisted_issues = config.get_whitelisted_issue_ids()
 
         # Go through all the issues
+        tmp_issue_holder = self.issue_holder.get_issues()
 
-        # todo why reversed and why list?
-        for counter, issue in reversed(list(enumerate(self.issue_holder.get_issues()))):
+        for whitelisted_id in whitelisted_issues:
 
-            issue = issue.getd()
+            tmp_issue_holder = self.issue_holder.get_issues()
 
-            uid = issue["uid"]
+            for counter, issue in enumerate(tmp_issue_holder):
+                issue = issue.getd()
+                uid = issue["uid"]
 
-            # If the uid of the issue is in the list of whitelisted issues,
-            # state that we're omitting it (in verbose mode) and then remove
-            # the issue object from IssueHolder.
-            if uid in whitelisted_issues:
-                self.output_wrapper.add(
-                    "Found and whitelisting " + uid + "...")
-                self.output_wrapper.add("- title: " + issue["title"])
-                self.output_wrapper.add("- location: " + issue["location"])
-
-                self.issue_holder.remove(counter)
+                if uid in whitelisted_issues:
+                    self.output_wrapper.add("Found and whitelisting " + uid + "...")
+                    self.output_wrapper.add("- title: " + issue["title"])
+                    self.output_wrapper.add("- location: " + issue["location"])
+                    self.issue_holder.remove(counter)
+                    break
 
         self.output_wrapper.add("[✓] Done!")
         self.output_wrapper.flush(verbose=True)

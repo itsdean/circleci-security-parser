@@ -54,7 +54,7 @@ class IssueHolder:
         deduplicated_findings = []
 
         # Iterate though a deep copy of the current issues we have
-        for issue in list(self.get_issues()):
+        for issue in self.get_issues():
  
             # Get the contents of the issue in dictionary format
             issue = issue.getd()
