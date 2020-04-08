@@ -67,10 +67,10 @@ class Reporter:
 
         self.output_wrapper.flush(verbose=False)
 
-        objects = s3.list_objects_v2(Bucket=bucket_name)
-        from pprint import pprint
-        for choices in objects["Contents"]:
-            print(choices["Key"])
+        # objects = s3.list_objects_v2(Bucket=bucket_name)
+        # from pprint import pprint
+        # for choices in objects["Contents"]:
+        #     print(choices["Key"])
 
     def prepare_csv_name(self):
         """
