@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import boto3
 import os
 import traceback
 
@@ -10,6 +11,9 @@ from lib.issues.IssueHolder import IssueHolder
 from lib.parsers.CoreParser import CoreParser
 from lib.output.OutputWrapper import OutputWrapper
 from lib.output.Reporter import Reporter
+
+from dotenv import load_dotenv
+load_dotenv()
 
 if __name__ == "__main__":
 
@@ -27,11 +31,17 @@ if __name__ == "__main__":
 		default="."
 	)
 	parser.add_argument(
+		"--aws",
+		help="Sets the uploading of the output to an S3 bucket",
+		action="store_true"
+	)
+	parser.add_argument(
 		"-v",
 		"--verbose",
 		help="Sets verbose mode",
 		action="store_true"
 	)
+
 	# parser.add_argument(
 	# 	"--fail",
 	# 	help="Return an error code for",
@@ -44,6 +54,7 @@ if __name__ == "__main__":
 	input_folder = arguments.input
 	output_folder = arguments.output
 	verbose = arguments.verbose
+	aws = arguments.aws
 
 	# Instantiate the various Object instances that we require
 	output_wrapper = OutputWrapper(verbose)
@@ -93,6 +104,7 @@ if __name__ == "__main__":
 			exit(error_code)
 
 		reporter.create_csv_report()
+		reporter.s3(aws, files)
 		
 	else:
 		# We didn't find any files.

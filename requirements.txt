@@ -2,3 +2,4 @@ beautifulsoup4
 markdown
 packaging
 pyyaml
+boto3
