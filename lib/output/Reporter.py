@@ -41,7 +41,7 @@ class Reporter:
             Bucket=bucket_name
         )
 
-    def s3(self, aws, files):
+    def s3(self, files):
         bucket_name = os.getenv("PARSER_AWS_BUCKET_NAME")
 
         self.output_wrapper.set_title("S3")
@@ -65,6 +65,7 @@ class Reporter:
         self.output_wrapper.add("Uploading parsed output")
         self.upload(s3, self.csv_location)
 
+        self.output_wrapper.add("[✓] Done!")
         self.output_wrapper.flush(verbose=False)
 
         # objects = s3.list_objects_v2(Bucket=bucket_name)

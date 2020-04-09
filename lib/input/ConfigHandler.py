@@ -14,6 +14,7 @@ class ConfigHandler:
         # above was found.
         self.fail_threshold = "high"
         self.whitelisted_issues = []
+        self.aws = False
 
         # Load the configuration file
         self.load(filename)
@@ -37,6 +38,10 @@ class ConfigHandler:
         return self.fail_threshold
 
 
+    def is_aws_enabled(self):
+        return self.aws
+
+
     def parse(self, yaml_object):
         """
         Obtains the various fields from the yaml file. 
@@ -49,6 +54,9 @@ class ConfigHandler:
         if "whitelist" in yaml_object:
             self.set_whitelisted_issue_ids(yaml_object["whitelist"])
             self.output.add("- whitelist: loaded " + str(len(self.get_whitelisted_issue_ids())) + " ids")
+
+        if "aws" in yaml_object:
+            self.aws = yaml_object["aws"]
 
 
     def load(self, filename):

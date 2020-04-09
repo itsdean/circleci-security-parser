@@ -54,8 +54,6 @@ if __name__ == "__main__":
 	input_folder = arguments.input
 	output_folder = arguments.output
 	verbose = arguments.verbose
-	aws = arguments.aws
-
 	# Instantiate the various Object instances that we require
 	output_wrapper = OutputWrapper(verbose)
 
@@ -78,6 +76,7 @@ if __name__ == "__main__":
 	# Create a variable to store the severity, but only if it wasn't loaded
 	# from the config file already AND a new value has been provided
 	fail_threshold = config.get_fail_threshold()
+	aws = config.is_aws_enabled()
 
 	output_wrapper.add("fail threshold set to: " + fail_threshold)
 	output_wrapper.flush(verbose=True)
@@ -104,7 +103,8 @@ if __name__ == "__main__":
 			exit(error_code)
 
 		reporter.create_csv_report()
-		reporter.s3(aws, files)
+		if aws:
+			reporter.s3(files)
 		
 	else:
 		# We didn't find any files.
