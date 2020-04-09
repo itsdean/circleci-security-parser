@@ -68,11 +68,6 @@ class Reporter:
         self.output_wrapper.add("[✓] Done!")
         self.output_wrapper.flush(verbose=False)
 
-        # objects = s3.list_objects_v2(Bucket=bucket_name)
-        # from pprint import pprint
-        # for choices in objects["Contents"]:
-        #     print(choices["Key"])
-
     def prepare_csv_name(self):
         """
         Creates the name of the file to save issue output to.
