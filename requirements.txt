@@ -3,4 +3,4 @@ markdown
 packaging
 pyyaml
 boto3
-dotenv
+python-dotenv
