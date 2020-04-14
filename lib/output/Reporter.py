@@ -27,7 +27,6 @@ class Reporter:
 
         self.s3_path = self.repo + "/" + self.sha1 + "/" + self.job_name
 
-        filename = ntpath.basename(full_path)
         filename = full_path.split("/")[-1]
         path = Path(full_path)
         parent_directory = str(path.parent).split("/")[-1]
