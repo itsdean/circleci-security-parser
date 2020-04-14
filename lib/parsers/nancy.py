@@ -1,4 +1,5 @@
 import json
+import traceback
 
 def parse(nancy_file, issue_holder, output_wrapper):
     """
@@ -8,52 +9,61 @@ def parse(nancy_file, issue_holder, output_wrapper):
     issue_type = "dependencies"
     tool_name = "nancy"
 
-    json_object = json.load(nancy_file)
+    try:
+        json_object = json.load(nancy_file)
 
-    vulnerability_amount = json_object["num_vulnerable"]
-    output_wrapper.add("- Found entries for " + str(vulnerability_amount) + " dependencies!")
+        vulnerability_amount = json_object["num_vulnerable"]
+        output_wrapper.add("- Found entries for " + str(vulnerability_amount) + " dependencies!")
 
-    # Go through all reported dependencies
-    for dependency in json_object["vulnerable"]:
+        # Go through all reported dependencies
+        for dependency in json_object["vulnerable"]:
 
-        if len(dependency["Vulnerabilities"]) > 0:
+            if len(dependency["Vulnerabilities"]) > 0:
 
-            # Remove the "pkg:golang/" prefix from the dependency name
-            name_and_version = dependency["Coordinates"].split("pkg:golang/")[1]
+                # Remove the "pkg:golang/" prefix from the dependency name
+                name_and_version = dependency["Coordinates"].split("pkg:golang/")[1]
 
-            title = "Use of vulnerable Go dependency - " + name_and_version
-            
-            name = name_and_version.split("@")[0]
+                title = "Use of vulnerable Go dependency - " + name_and_version
 
-            # The location of the dependency is the name of itself.
-            location = name
+                name = name_and_version.split("@")[0]
 
-            version = name_and_version.split("@")[1]
+                # The location of the dependency is the name of itself.
+                location = name
 
-            recommendation = "Update " + name + " to the latest stable version to ensure the project makes use of the latest security patches and fixes that the new version comes with.\n\nIf it is not possible to update the dependency, then consider the risk exposed to the business and project.\nAlso, as a last case consider identifying and using alernative dependencies that provide similar functionality albeit without the original vulnerability."
+                version = name_and_version.split("@")[1]
 
-            description = "Version " + version + " of " + name + ", a Go dependency pulled by the scanned project, was found to be vulnerable to security issues. Such vulnerabilities have been listed below.\n\n"
+                recommendation = "Update " + name + " to the latest stable version to ensure the project makes use of the latest security patches and fixes that the new version comes with.\n\nIf it is not possible to update the dependency, then consider the risk exposed to the business and project.\nAlso, as a last case consider identifying and using alernative dependencies that provide similar functionality albeit without the original vulnerability."
 
-            # For each vulnerability, add its title and a short description to
-            # the general description string. Add in the link too for more info.
-            for vulnerability in dependency["Vulnerabilities"]:
-                description += vulnerability["Title"] + "\n"
-                description += vulnerability["Description"]
-                description += "\nFurther information can be found at " + vulnerability["Reference"] + "\n\n"
+                description = "Version " + version + " of " + name + ", a Go dependency pulled by the scanned project, was found to be vulnerable to security issues. Such vulnerabilities have been listed below.\n\n"
 
-                if vulnerability["Cve"] != "":
-                    cve_value = vulnerability["Cve"]
-                else:
-                    cve_value = ""
+                # For each vulnerability, add its title and a short description to
+                # the general description string. Add in the link too for more info.
+                for vulnerability in dependency["Vulnerabilities"]:
+                    description += vulnerability["Title"] + "\n"
+                    description += vulnerability["Description"]
+                    description += "\nFurther information can be found at " + vulnerability["Reference"] + "\n\n"
 
-            issue_holder.add(
-                issue_type,
-                tool_name,
-                title,
-                description,
-                location,
-                recommendation,
-                cve_value = cve_value
-            )
+                    if vulnerability["Cve"] != "":
+                        cve_value = vulnerability["Cve"]
+                    else:
+                        cve_value = ""
 
-    output_wrapper.add("[✓] Done!")
+                issue_holder.add(
+                    issue_type,
+                    tool_name,
+                    title,
+                    description,
+                    location,
+                    recommendation,
+                    cve_value = cve_value
+                )
+
+        output_wrapper.add("[✓] Done!")
+
+    except json.decoder.JSONDecodeError as ex:
+
+        t = traceback.format_exc().split("\n")
+
+        output_wrapper.add("[x] The parser wasn't able to parse JSON from the Nancy output. Please have a look at the following traceback:\n")
+        for line in t:
+            output_wrapper.add(line)
