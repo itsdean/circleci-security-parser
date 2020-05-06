@@ -69,7 +69,7 @@ if __name__ == "__main__":
 	# Get the absolute path for the output folder
 	output_folder = os.path.abspath(output_folder)
 
-	reporter = Reporter(output_wrapper, issue_holder, output_folder)
+	reporter = Reporter(output_wrapper, issue_holder, output_folder, verbose)
 
 	output_wrapper.set_title("Setting fail threshold")
 
@@ -96,15 +96,15 @@ if __name__ == "__main__":
 		# Check if we have a severity threshold and if any issues meet it.
 		error_code = parser.check_threshold(fail_threshold)
 
+		reported = reporter.create_csv_report()
+		if reported and aws:
+			reporter.s3(files)
+
 		# If any issues met our threshold, fail the script.
 		if error_code != 0:
 			output_wrapper.set_title("[x] Exiting script with return code " + str(error_code) + "!")
 			output_wrapper.flush()
 			exit(error_code)
-
-		reporter.create_csv_report()
-		if aws:
-			reporter.s3(files)
 		
 	else:
 		# We didn't find any files.

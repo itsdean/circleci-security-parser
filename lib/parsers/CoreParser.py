@@ -93,9 +93,9 @@ class CoreParser:
             # value of the set threshold, save it to a temporary array.
             for issue in self.issue_holder.get_issues():
 
-                issue = issue.getd()
+                issue_dict = issue.getd()
 
-                severity = issue["severity"].lower()
+                severity = issue_dict["severity"].lower()
                 severity_value = fail_codes[severity]
 
                 # Save this issue if it passes the threshold
@@ -104,13 +104,16 @@ class CoreParser:
                     self.output_wrapper.add(
                         "Found an issue with severity_value " + str(severity_value))
 
+                    # mark the issue as failing
+                    issue.set_fails(True)
+
                     # If we find an issue with a greater severity than what
                     # we've found so far, set error_code to its severity.
 					# We'll return this at the end.
                     if severity_value > error_code:
                         error_code = severity_value
 
-                    fail_issues.append(issue)
+                    fail_issues.append(issue_dict)
 
             self.output_wrapper.flush(verbose=True)
 
@@ -133,6 +136,8 @@ class CoreParser:
                     location = issue["location"]
                     uid = issue["uid"]
 
+                    issue["fails"] = True
+
                     self.output_wrapper.add("")
                     self.output_wrapper.add("tool: " + reporting_tool)
                     self.output_wrapper.add("title: " + title)
@@ -141,6 +146,9 @@ class CoreParser:
                     self.output_wrapper.add("recommendation: " + remediation)
                     self.output_wrapper.add("location: " + location)
                     self.output_wrapper.add("uid: " + uid)
+
+                # for now, dump the array as a json blob into a file for parsing
+                # by the parser lambda.
 
                 self.output_wrapper.flush()
 

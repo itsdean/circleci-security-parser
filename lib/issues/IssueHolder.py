@@ -98,6 +98,7 @@ class IssueHolder:
         raw_output = "n/a",
         severity = "",
         cve_value = "n/a",
+        fails = False
     ):
         """
         Inserts a new issue to the list; the parameters force a reporting standard to be followed (i.e. each must have the first six parameters as "headings" in a report)
@@ -114,7 +115,8 @@ class IssueHolder:
                 ifile_name=ifile_name,
                 raw_output=raw_output,
                 severity=severity,
-                cve_value=cve_value
+                cve_value=cve_value,
+                fails=fails
             )
         )
 

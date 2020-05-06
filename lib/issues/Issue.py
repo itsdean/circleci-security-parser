@@ -7,6 +7,10 @@ class Issue:
     """
 
 
+    def set_fails(self, fail_bool):
+        self.fails = fail_bool
+
+
     def __init__(
             self,
             issue_type,
@@ -18,7 +22,8 @@ class Issue:
             ifile_name="",
             raw_output="n/a",
             severity="",
-            cve_value="n/a"
+            cve_value="n/a",
+            fails=False
         ):
         """
         Instantiator of Issue objects.
@@ -38,6 +43,7 @@ class Issue:
         else:
             self.severity = severity
         self.cve_value = cve_value
+        self.fails = fails
 
         # Create a hash of the object as it is - we will use this to unique
         # identify it in case we need to whitelist it
@@ -59,7 +65,8 @@ class Issue:
             "location": self.location,
             "recommendation": self.recommendation,
             "raw_output": self.raw_output,
-            "uid": self.hash
+            "uid": self.hash,
+            "fails": self.fails
         }
 
 
@@ -73,7 +80,8 @@ fieldnames = [
     "location",
     "recommendation",
     "raw_output",
-    "uid"
+    "uid",
+    "fails"
 ]
 
 

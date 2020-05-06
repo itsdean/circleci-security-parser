@@ -21,11 +21,26 @@ class Reporter:
     S3 bucket, etc.)
     """
 
-
     def upload(self, s3, full_path):
         bucket_name = os.getenv("PARSER_AWS_BUCKET_NAME")
 
-        self.s3_path = self.repo + "/" + self.sha1 + "/" + self.job_name
+        self.s3_path = self.repo
+        self.s3_path += "/" + self.sha1
+
+        # If we're dealing with a pull request, then add it to the sha1 commit.
+        # We'll split it and deal with it in the Lambda (as this may not
+        # even be a pull request).
+        
+        # example url format:
+        # https://github.com/CyDefUnicorn/OSCP-Archives/pull/2
+        if "CIRCLE_PULL_REQUEST" in os.environ:
+            # split the url to just get the PR number
+            pr_url = os.getenv("CIRCLE_PULL_REQUEST")
+            pr_number = pr_url.split("pull/")[1]
+            self.s3_path += "_" + pr_number
+
+        self.s3_path += "/" + str(self.timestamp)
+        self.s3_path += "/" + self.job_name
 
         filename = full_path.split("/")[-1]
         path = Path(full_path)
@@ -34,7 +49,8 @@ class Reporter:
         tool_path = str(parent_directory) + "/" + str(filename)
         s3_tool_path = self.s3_path + "/" + tool_path
 
-        self.output_wrapper.add(" - " + tool_path + " -> s3://" + bucket_name + "/" + s3_tool_path)
+        if self.verbose:
+            self.output_wrapper.add(" - " + tool_path + " -> s3://" + bucket_name + "/" + s3_tool_path)
 
         s3.upload_file(
             Key=s3_tool_path,
@@ -45,7 +61,7 @@ class Reporter:
     def s3(self, files):
         bucket_name = os.getenv("PARSER_AWS_BUCKET_NAME")
 
-        self.output_wrapper.set_title("S3")
+        self.output_wrapper.set_title("Uploading to S3...")
 
         bucket_id = os.getenv("PARSER_AWS_AK_ID")
 
@@ -75,11 +91,11 @@ class Reporter:
         The name can also include other values (such as the git repository name and branch) taken from CircleCI build variables.
         """
 
-        csv_name = "parsed_output_"
+        csv_name = "output_"
 
         # Check if specific CircleCI environments are available and add their values to the output filename.
-        if "CIRCLE_PROJECT_USERNAME" in os.environ:
-            self.username = os.getenv("CIRCLE_PROJECT_USERNAME")
+        if "CIRCLE_USERNAME" in os.environ:
+            self.username = os.getenv("CIRCLE_USERNAME")
             csv_name += self.username + "_"
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
             self.repo = os.getenv("CIRCLE_PROJECT_REPONAME").replace("_", "-")
@@ -100,20 +116,26 @@ class Reporter:
             time.time()
         )
 
+        self.timestamp = timestamp
+
         csv_name += str(timestamp) + ".csv"
         return csv_name
 
 
-    def __init__(self, output_wrapper, issue_holder, o_folder):
+    def __init__(self, output_wrapper, issue_holder, o_folder, verbose=False):
         """
         Standard init procedure.
         """
+
+        # Track verbose mode in case we need to output the file transfer process
+        self.verbose = verbose
 
         # Set up the filename_variables in preparation
         self.username = ""
         self.repo = ""
         self.branch = ""
         self.job_name = ""
+        self.timestamp = ""
 
         # Create the instances we will be calling throughout this class
         self.output_wrapper = output_wrapper
@@ -142,6 +164,8 @@ class Reporter:
             self.output_wrapper.add("- No report has been created.")
             self.output_wrapper.flush(verbose=True)
 
+            return False
+
         else:
 
             deduplicated_findings = self.issue_holder.deduplicate()
@@ -157,5 +181,6 @@ class Reporter:
                     writer.writerow(finding)
 
             self.output_wrapper.add("[✓] Done!")
+            self.output_wrapper.flush()
 
-        self.output_wrapper.flush()
+            return True
