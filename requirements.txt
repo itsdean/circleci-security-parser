@@ -4,3 +4,5 @@ packaging
 pyyaml
 boto3
 python-dotenv
+
+slackclient
