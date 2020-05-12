@@ -41,6 +41,12 @@ if __name__ == "__main__":
 		help="Sets verbose mode",
 		action="store_true"
 	)
+	parser.add_argument(
+		"-c",
+		"--config",
+		help="Location of config file to consume",
+		default=""
+	)
 
 	# parser.add_argument(
 	# 	"--fail",
@@ -62,7 +68,16 @@ if __name__ == "__main__":
 	output_wrapper.add("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
 	output_wrapper.flush(show_time=False)
 
-	config = ConfigHandler(output_wrapper)
+	if arguments.config is None:
+		filename = input_folder + "parser.yml"
+	else:
+		filename = arguments.config
+
+	config = ConfigHandler(
+		output_wrapper,
+		filename = filename
+	)
+
 	issue_holder = IssueHolder(output_wrapper)
 	loader = Loader(output_wrapper)
 
