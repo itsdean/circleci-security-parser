@@ -55,10 +55,6 @@ def parse(gitleaks_file, issue_holder, output_wrapper):
         location = issue["file"]
         filename = issue["file"]
 
-        # pprint(location)
-        # pprint(issue)
-        # print(description)
-
         issue_holder.add(
             issue_type,
             tool_name,
