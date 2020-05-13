@@ -14,15 +14,13 @@ class IssueHolder:
         """
 
         self.output_wrapper = output_wrapper
-
-        # self.output_wrapper.set_title("Deduplicating...")
         self.findings_list = []
 
 
     def create_hash(self, issue):
         """
         Creates a unqiue hash using fields from the issue.
-        This hash will be used for deduplication and 
+        This hash will be used for deduplication and
         """
 
         description = issue["description"].encode("utf-8")
@@ -35,7 +33,7 @@ class IssueHolder:
         ).hexdigest()
 
         # self.output_wrapper.add("Generated hash: " + issue_hash)
-        
+
         return issue_hash
 
 
@@ -55,7 +53,7 @@ class IssueHolder:
 
         # Iterate though a deep copy of the current issues we have
         for issue in self.get_issues():
- 
+
             # Get the contents of the issue in dictionary format
             issue = issue.getd()
 
@@ -127,6 +125,20 @@ class IssueHolder:
         """
 
         return self.findings_list
+
+
+    def get_issuesa(self):
+        """
+        Returns the list of current issues albeit in readable dictionary
+        format for each issue
+        """
+
+        array = []
+
+        for issue in self.get_issues():
+            array.append(issue.getd())
+
+        return array
 
 
     def size(self):
