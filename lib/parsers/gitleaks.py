@@ -49,8 +49,8 @@ def parse(gitleaks_file, issue_holder, output_wrapper):
     for issue in formatted_file:
 
         if "key" in issue["tags"]:
-            title = "Key match"
-            description = "A potential key was found in a file. Gitleaks reports this as {}.".format(an(issue["rule"]))
+            title = "Potential {} match".format(issue["rule"])
+            description = "A string matching a key was found in a file. Gitleaks reported it as {}.".format(an(issue["rule"]))
 
         location = issue["file"]
         filename = issue["file"]
@@ -65,3 +65,5 @@ def parse(gitleaks_file, issue_holder, output_wrapper):
             filename,
             raw_output = issue
         )
+
+    output_wrapper.add("[✓] Done!")
