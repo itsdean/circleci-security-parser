@@ -1,5 +1,7 @@
 import json
 
+from ..constants import an
+
 # tmp
 from pprint import pprint
 
@@ -41,3 +43,26 @@ def parse(gitleaks_file, issue_holder, output_wrapper):
 
     output_wrapper.add("- Creating well-formed JSON object for parsing")
     formatted_file = create_json_object(gitleaks_file, output_wrapper)
+
+    output_wrapper.add("- {} findings reported by gitleaks!".format(len(formatted_file)))
+
+    for issue in formatted_file:
+
+        if "key" in issue["tags"]:
+            title = "Key match"
+            description = "A potential key was found in a file. Gitleaks reports this as {}.".format(an(issue["rule"]))
+
+        # pprint(location)
+        # pprint(issue)
+        # print(description)
+
+        # issue_holder.add(
+        #     issue_type,
+        #     tool_name,
+        #     title,
+        #     description,
+        #     location,
+        #     recommendation,
+        #     filename,
+        #     raw_output = issue
+        # )
