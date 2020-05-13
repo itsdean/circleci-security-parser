@@ -17,6 +17,7 @@ class CoreParser:
         "gosec": "gosec",
         "nancy": "nancy",
         "burrow": "burrow",
+        "gitleaks": "gitleaks",
         "Snyk [Node]": "snyk_node",
     }
 
@@ -31,6 +32,10 @@ class CoreParser:
     def burrow(self, burrow_file):
         from lib.parsers import burrow
         burrow.parse(burrow_file, self.issue_holder, self.output_wrapper)
+
+    def gitleaks(self, gitleaks_file):
+        from lib.parsers import gitleaks
+        gitleaks.parse(gitleaks_file, self.issue_holder, self.output_wrapper)
 
     def snyk_node(self, i_file):
         from lib.parsers import snyk
