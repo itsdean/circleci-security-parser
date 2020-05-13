@@ -1,5 +1,5 @@
-import pickle
 import hashlib
+import pickle
 
 class Issue:
     """
