@@ -69,13 +69,13 @@ class ConfigHandler:
         if path.exists(filename):
 
             with open(filename) as config_file:
-                self.output.add("summit.yml file found!")
+                self.output.add("config.yml file found!")
                 yaml_object = yaml.load(config_file, Loader=yaml.FullLoader)
 
                 self.parse(yaml_object)
 
         else:
-            self.output.add("[x] No summit.yml file found - loading failed!")
+            self.output.add("[x] No config.yml file found - loading failed!")
 
         self.output.flush()
 
