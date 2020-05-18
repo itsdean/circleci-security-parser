@@ -1,6 +1,7 @@
 .DS_Store
-test_input/*
-test_output/*
+test_input/
+test_output/
+test_configs/
 .vscode/
 old/
 notes.md
