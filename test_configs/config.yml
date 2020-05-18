@@ -1,5 +1,0 @@
-# default summit configuration
-
-# if fail_threshold is not specified then it is high by default
-
-aws: false

@@ -5,7 +5,7 @@ from os import path
 class ConfigHandler:
 
 
-    def __init__(self, output_wrapper, filename="summit.yml"):
+    def __init__(self, output_wrapper, filename="security.yml"):
 
         self.output = output_wrapper
 
@@ -14,7 +14,8 @@ class ConfigHandler:
         # above was found.
         self.fail_threshold = "high"
         self.whitelisted_issues = []
-        self.aws = False
+        # self.aws = True
+        self.aws = True
 
         # Load the configuration file
         self.load(filename)
@@ -69,13 +70,13 @@ class ConfigHandler:
         if path.exists(filename):
 
             with open(filename) as config_file:
-                self.output.add("config.yml file found!")
+                self.output.add("security.yml file found!")
                 yaml_object = yaml.load(config_file, Loader=yaml.FullLoader)
 
                 self.parse(yaml_object)
 
         else:
-            self.output.add("[x] No config.yml file found - loading failed!")
+            self.output.add("[x] No security.yml file found - loading failed!")
 
         self.output.flush()
 
