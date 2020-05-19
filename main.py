@@ -68,8 +68,8 @@ if __name__ == "__main__":
 	output_wrapper.add("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
 	output_wrapper.flush(show_time=False)
 
-	if arguments.config is None:
-		filename = input_folder + "parser.yml"
+	if arguments.config is not None:
+		filename = input_folder + ".security/parser.yml"
 	else:
 		filename = arguments.config
 

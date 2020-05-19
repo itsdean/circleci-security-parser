@@ -5,7 +5,7 @@ from os import path
 class ConfigHandler:
 
 
-    def __init__(self, output_wrapper, filename="security.yml"):
+    def __init__(self, output_wrapper, filename):
 
         self.output = output_wrapper
 
@@ -70,13 +70,13 @@ class ConfigHandler:
         if path.exists(filename):
 
             with open(filename) as config_file:
-                self.output.add("security.yml file found!")
+                self.output.add(".security/parser.yml file found!")
                 yaml_object = yaml.load(config_file, Loader=yaml.FullLoader)
 
                 self.parse(yaml_object)
 
         else:
-            self.output.add("[x] No security.yml file found - loading failed!")
+            self.output.add("[x] No .security/parser.yml file found - loading failed!")
 
         self.output.flush()
 
