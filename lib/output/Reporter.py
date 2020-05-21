@@ -94,8 +94,8 @@ class Reporter:
         csv_name = "output_"
 
         # Check if specific CircleCI environments are available and add their values to the output filename.
-        if "CIRCLE_PROJECT_USERNAME" in os.environ:
-            self.username = os.getenv("CIRCLE_PROJECT_USERNAME")
+        if "CIRCLE_USERNAME" in os.environ:
+            self.username = os.getenv("CIRCLE_USERNAME")
             csv_name += self.username + "_"
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
             self.repo = os.getenv("CIRCLE_PROJECT_REPONAME").replace("_", "-")
