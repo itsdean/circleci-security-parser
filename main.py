@@ -68,19 +68,14 @@ if __name__ == "__main__":
 	output_wrapper.add("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
 	output_wrapper.flush(show_time=False)
 
-<<<<<<< HEAD
-	if arguments.config is not None:
-		filename = input_folder + ".security/parser.yml"
-=======
 	if arguments.config is None:
-		filename = input_folder + "parser.yml"
->>>>>>> bc647b66241c3587763c88e1e984b53d35d82cd9
+		filename = input_folder + ".security/parser.yml"
 	else:
 		filename = arguments.config
 
 	config = ConfigHandler(
 		output_wrapper,
-		filename = filename
+		filename
 	)
 
 	issue_holder = IssueHolder(output_wrapper)
