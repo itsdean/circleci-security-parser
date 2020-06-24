@@ -19,6 +19,7 @@ class CoreParser:
         "burrow": "burrow",
         "gitleaks": "gitleaks",
         "Snyk [Node]": "snyk_node",
+        "shed": "shed"
     }
 
     def gosec(self, i_file):
@@ -40,6 +41,10 @@ class CoreParser:
     def snyk_node(self, i_file):
         from lib.parsers import snyk
         snyk.parse_node(i_file, self.issue_holder, self.output_wrapper)
+
+    def shed(self, shed_file):
+        from lib.parsers import shed
+        shed.parse(shed_file, self.issue_holder, self.output_wrapper)
 
     def get_file_source(self, i_file):
         """
