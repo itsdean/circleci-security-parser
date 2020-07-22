@@ -19,6 +19,7 @@ class CoreParser:
         "burrow": "burrow",
         "gitleaks": "gitleaks",
         "Snyk [Node]": "snyk_node",
+        "insider": "insider",
         "shed": "shed"
     }
 
@@ -41,6 +42,10 @@ class CoreParser:
     def snyk_node(self, i_file):
         from lib.parsers import snyk
         snyk.parse_node(i_file, self.issue_holder, self.output_wrapper)
+
+    def insider(self, insider_file):
+        from lib.parsers import insider
+        insider.parse(insider_file, self.issue_holder, self.output_wrapper)
 
     def shed(self, shed_file):
         from lib.parsers import shed
