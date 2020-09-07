@@ -20,7 +20,8 @@ class CoreParser:
         "gitleaks": "gitleaks",
         "Snyk [Node]": "snyk_node",
         "insider": "insider",
-        "shed": "shed"
+        "shed": "shed",
+        "trivy": "trivy"
     }
 
     def gosec(self, i_file):
@@ -50,6 +51,10 @@ class CoreParser:
     def shed(self, shed_file):
         from lib.parsers import shed
         shed.parse(shed_file, self.issue_holder, self.output_wrapper)
+
+    def trivy(self, trivy_file):
+        from lib.parsers import trivy
+        trivy.parse(trivy_file, self.issue_holder, self.output_wrapper)
 
     def get_file_source(self, i_file):
         """
