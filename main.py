@@ -117,7 +117,8 @@ if __name__ == "__main__":
 
 		# If any issues met our threshold, fail the script.
 		if error_code != 0:
-			output_wrapper.set_title("[x] Exiting script with return code " + str(error_code) + "!")
+			output_wrapper.set_title("Exiting script with non-zero value!")
+			output_wrapper.add(f"[x] The error_code value is {error_code}.")
 			output_wrapper.flush()
 			exit(error_code)
 		
