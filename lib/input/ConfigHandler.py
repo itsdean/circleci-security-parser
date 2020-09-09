@@ -69,13 +69,15 @@ class ConfigHandler:
         if path.exists(filename):
 
             with open(filename) as config_file:
-                self.output.add(".security/parser.yml file found!")
+                self.output.add(f"{filename} found!")
+
                 yaml_object = yaml.load(config_file, Loader=yaml.FullLoader)
 
-                self.parse(yaml_object)
+                if yaml_object is not None:
+                    self.parse(yaml_object)
 
         else:
-            self.output.add("[x] No .security/parser.yml file found - loading failed!")
+            self.output.add(f"[x] {filename} not found - skipping parse stage!")
 
         self.output.flush()
 
