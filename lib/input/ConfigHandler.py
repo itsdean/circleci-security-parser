@@ -14,8 +14,7 @@ class ConfigHandler:
         # above was found.
         self.fail_threshold = "high"
         self.whitelisted_issues = []
-        # self.aws = True
-        self.aws = True
+        self.aws = False
 
         # Load the configuration file
         self.load(filename)
