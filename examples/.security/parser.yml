@@ -1,2 +1,2 @@
-fail_threshold: high
+fail_threshold: "medium"
 aws: true
