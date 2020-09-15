@@ -164,7 +164,7 @@ class CoreParser:
                     self.output_wrapper.add("severity: " + issue_severity)
                     self.output_wrapper.add("description: " + description)
                     self.output_wrapper.add("recommendation: " + remediation)
-                    self.output_wrapper.add("location: " + location)
+                    self.output_wrapper.add("location(s): " + location)
                     self.output_wrapper.add("uid: " + uid)
 
                 # for now, dump the array as a json blob into a file for parsing
@@ -199,7 +199,7 @@ class CoreParser:
                 if uid in whitelisted_issues:
                     self.output_wrapper.add("Found and whitelisting " + uid + "...")
                     self.output_wrapper.add("- title: " + issue["title"])
-                    self.output_wrapper.add("- location: " + issue["location"])
+                    self.output_wrapper.add("- location(s): " + issue["location"])
                     self.issue_holder.remove(counter)
                     break
 
