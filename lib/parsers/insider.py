@@ -23,7 +23,7 @@ def parse(input_file, issue_holder, output_wrapper):
         description = vuln["longMessage"] + "\n"
         description += "\nAn example of the offending code can be seen below:\n" + vuln["method"]
 
-        if "affectedFiles" in vuln.keys():
+        if "affectedFiles" in vuln.key s():
             location = "\n".join(vuln["affectedFiles"])
         else:
             location = vuln["class"]
