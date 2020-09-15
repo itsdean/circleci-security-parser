@@ -111,7 +111,8 @@ def node_parse_unresolvables(unparsed_dependencies, reporter, output_wrapper):
 
                 # If the names aren't the same, we're dealing with an entirely different dependency. Add it to the list.
                 else:
-                    merged_dependencies.append(unparsed_dependency)
+                    merged_dependencies.append(parsed_dependency)
+                    break
 
     # Gather the amount of merged dependencies and pass information to stdout
     merged_amount = len(merged_dependencies)
