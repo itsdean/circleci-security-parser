@@ -1,11 +1,16 @@
+import logging
+import sys
 import yaml
 
 from os import path
+from ..output.Logger import Logger
 
 class ConfigHandler:
 
 
     def __init__(self, output_wrapper, filename):
+        
+        self.l = Logger("ConfigHandler")
 
         self.output = output_wrapper
 
@@ -48,8 +53,13 @@ class ConfigHandler:
         """
 
         if "fail_threshold" in yaml_object:
-            self.set_fail_threshold(yaml_object["fail_threshold"])
-            self.output.add("- fail_threshold: " + self.get_fail_threshold())
+            self.fail_threshold = yaml_object["fail_threshold"]
+
+            if type(self.fail_threshold) is bool:
+                self.l.error("fail_threshold is a bool, did you use double quotes when defining fail_threshold in the .yml file?")
+                sys.exit(-1)
+            else:
+                self.l.debug(f"fail_threshold set to {self.fail_threshold}")
 
         if "whitelist" in yaml_object:
             self.set_whitelisted_issue_ids(yaml_object["whitelist"])
