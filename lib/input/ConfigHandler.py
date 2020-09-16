@@ -9,7 +9,7 @@ class ConfigHandler:
 
 
     def __init__(self, output_wrapper, filename):
-        
+
         self.l = Logger("ConfigHandler")
 
         self.output = output_wrapper
