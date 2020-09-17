@@ -95,7 +95,7 @@ class Reporter:
             # csv_name += self.username + "_"
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
             self.repo = os.getenv("CIRCLE_PROJECT_REPONAME").replace("_", "-")
-            csv_name += self.repo + "_"
+            # csv_name += self.repo + "_"
         if "CIRCLE_BRANCH" in os.environ:
             csv_name += os.getenv("CIRCLE_BRANCH").replace("/", "-").replace("_", "-") + "_"
         if "CIRCLE_JOB" in os.environ:
