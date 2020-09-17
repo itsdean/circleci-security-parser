@@ -1,7 +1,7 @@
 import json
 import traceback
 
-def parse(nancy_file, issue_holder, output_wrapper):
+def parse(nancy_file, issue_holder, logger):
     """
     Goes through sonatype-nancy output and reports any dependency issues
     """
@@ -11,9 +11,6 @@ def parse(nancy_file, issue_holder, output_wrapper):
 
     try:
         json_object = json.load(nancy_file)
-
-        vulnerability_amount = json_object["num_vulnerable"]
-        output_wrapper.add("- Found entries for " + str(vulnerability_amount) + " dependencies!")
 
         # Go through all reported dependencies
         for dependency in json_object["vulnerable"]:
@@ -58,12 +55,13 @@ def parse(nancy_file, issue_holder, output_wrapper):
                     cve_value = cve_value
                 )
 
-        output_wrapper.add("[✓] Done!")
+        logger.debug(f"> nancy: {json_object['num_vulnerable']} issues reported\n")
 
     except json.decoder.JSONDecodeError as ex:
 
         t = traceback.format_exc().split("\n")
 
-        output_wrapper.add("[x] The parser wasn't able to parse JSON from the Nancy output. Please have a look at the following traceback:\n")
+        logger.warning("The parser wasn't able to parse JSON from the Nancy output. Please have a look at the following traceback:")
+
         for line in t:
-            output_wrapper.add(line)
+            logger.warning(line)

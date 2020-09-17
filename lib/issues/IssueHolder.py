@@ -8,13 +8,13 @@ class IssueHolder:
     Simple class just used to retain information on the issues found during this parser's run.
     """
 
-    def __init__(self, output_wrapper):
+    def __init__(self, logger):
         """
         Simple init - creates the instance's list object.
         """
 
-        self.output_wrapper = output_wrapper
-        self.findings_list = []
+        self.l = logger
+        self.findings_list = list()
 
 
     def create_hash(self, issue):
@@ -32,7 +32,7 @@ class IssueHolder:
             description + b":" + location
         ).hexdigest()
 
-        # self.output_wrapper.add("Generated hash: " + issue_hash)
+        # self.l.debug(f"> Generated hash: {issue_hash}")
 
         return issue_hash
 
@@ -43,7 +43,7 @@ class IssueHolder:
         In the process, it also creates a unique hash for each issue.
         """
 
-        self.output_wrapper.set_title("Deduplicating...")
+        self.l.info("Deduplicating...")
 
         # Create an empty list that will store calculated hashes.
         issue_hash_oracle = []
@@ -55,7 +55,7 @@ class IssueHolder:
         for issue in self.get_issues():
 
             # Get the contents of the issue in dictionary format
-            issue = issue.getd()
+            issue = issue.dictionary()
 
             issue_hash = self.create_hash(issue)
 
@@ -68,11 +68,8 @@ class IssueHolder:
         # hashed - if this hash has not been dealt with (this parsing round)
         # before then we'll accept it, otherwise ignore it.
 
-        self.output_wrapper.add("- Array size: " + str(self.size()))
-        self.output_wrapper.add("- Array size after deduplication: " + str(len(deduplicated_findings)))
-
-        self.output_wrapper.add("[✓] Done!")
-        self.output_wrapper.flush(verbose=True)
+        self.l.debug(f"Array size: {self.size()}")
+        self.l.info(f"Array size after deduplication: {len(deduplicated_findings)}")
 
         return deduplicated_findings
 
@@ -136,7 +133,7 @@ class IssueHolder:
         array = []
 
         for issue in self.get_issues():
-            array.append(issue.getd())
+            array.append(issue.dictionary())
 
         return array
 

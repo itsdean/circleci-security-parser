@@ -1,6 +1,6 @@
 import json
 
-def parse(burrow_file, issue_holder, output_wrapper):
+def parse(burrow_file, issue_holder, logger):
     """
     Goes through burrow tool output and passes each reported issue to Reporter.
     """
@@ -21,9 +21,6 @@ def parse(burrow_file, issue_holder, output_wrapper):
 
     # Get the reported issues from the JSON blob.
     findings = json_object["findings"]
-
-    findings_size = len(findings) # Do I need this either?
-    output_wrapper.add("- " + str(findings_size) + " findings reported by burrow!")
 
     for issue in findings:
         
@@ -51,4 +48,4 @@ def parse(burrow_file, issue_holder, output_wrapper):
             raw_output = issue
         )
 
-    output_wrapper.add("[✓] Done!")
+    logger.debug(f"> burrow: {len(findings)} issues reported\n")

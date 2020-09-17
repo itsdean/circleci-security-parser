@@ -82,7 +82,7 @@ def get_issue_information(rule_id, line, code):
 
     return description, recommendation
 
-def parse(gosec_file, issue_holder, output_wrapper):
+def parse(gosec_file, issue_holder, logger):
     """
     Goes through findings reported by gosec and passes details to Reporter for standardisation.
     """
@@ -93,9 +93,6 @@ def parse(gosec_file, issue_holder, output_wrapper):
     json_object = json.load(gosec_file)
 
     issues = json_object["Issues"]
-
-    issues_size = len(issues)
-    output_wrapper.add("- Found " + str(issues_size) + " issues to report...")
 
     for issue in issues:
         
@@ -124,4 +121,4 @@ def parse(gosec_file, issue_holder, output_wrapper):
             severity = severity
         )
 
-    output_wrapper.add("[✓] Done!")
+    logger.debug(f"> gosec: {len(issues)} issues reported\n")

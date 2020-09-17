@@ -1,6 +1,6 @@
 import json
 
-def parse(trivy_file, issue_holder, output_wrapper):
+def parse(trivy_file, issue_holder, logger):
     """
     Goes through trivy tool output and passes issues to Reporter.
     """
@@ -75,4 +75,4 @@ def parse(trivy_file, issue_holder, output_wrapper):
             severity = issue["severity"]
         )
 
-    output_wrapper.add("[✓] Done!")
+    logger.debug(f"> trivy: {len(temp_issue_storage)} issues reported\n")

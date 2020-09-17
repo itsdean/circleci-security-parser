@@ -50,7 +50,7 @@ class Issue:
         self.hash = hashlib.sha256(pickle.dumps(self)).hexdigest()
 
 
-    def getd(self):
+    def dictionary(self):
         """
         Returns a dictionary containing an issue's fieldnames and their values.
         """

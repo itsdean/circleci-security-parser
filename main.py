@@ -6,16 +6,20 @@ import os
 import traceback
 
 from lib.input.ConfigHandler import ConfigHandler
-from lib.input.Loader import Loader
+from lib.input.Loader import load_from_folder
 from lib.issues.IssueHolder import IssueHolder
 from lib.parsers.CoreParser import CoreParser
-from lib.output.OutputWrapper import OutputWrapper
+from lib.output.Logger import Logger
 from lib.output.Reporter import Reporter
 
 from dotenv import load_dotenv
 load_dotenv()
 
 if __name__ == "__main__":
+
+	print()
+	print("Security Output Parser")
+	print("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
@@ -31,11 +35,6 @@ if __name__ == "__main__":
 		default="."
 	)
 	parser.add_argument(
-		"--aws",
-		help="Sets the uploading of the output to an S3 bucket",
-		action="store_true"
-	)
-	parser.add_argument(
 		"-v",
 		"--verbose",
 		help="Sets verbose mode",
@@ -48,81 +47,44 @@ if __name__ == "__main__":
 		default=""
 	)
 
-	# parser.add_argument(
-	# 	"--fail",
-	# 	help="Return an error code for",
-	# 	choices=["critical", "high", "medium", "low", "informational"]
-	# )
-
 	arguments = parser.parse_args()
 
 	# Create variables to store where to load and save files from/to.
 	input_folder = arguments.input
-	output_folder = arguments.output
+	# If not provided, store output in the current directory (i.e. ".")
+	output_folder = arguments.output 
 	verbose = arguments.verbose
-	# Instantiate the various Object instances that we require
-	output_wrapper = OutputWrapper(verbose)
 
-	print()
-	output_wrapper.add("CircleCI Security Output Parser (CSOP) - Hi there!")
-	output_wrapper.add("To be used with https://https://circleci.com/orbs/registry/orb/salidas/security\n")
-	output_wrapper.flush(show_time=False)
+	# Prepare the logger that will be used throughout
+	l = Logger(verbose)
 
+	# Load the config file
 	if arguments.config is "" or arguments.config is None:
-		filename = input_folder + ".security/parser.yml"
+		config = ConfigHandler(l, input_folder + "./security/parser.yml")
 	else:
-		filename = arguments.config
+		config = ConfigHandler(l, arguments.config)
 
-	config = ConfigHandler(
-		output_wrapper,
-		filename
-	)
+	issue_holder = IssueHolder(l)
 
-	issue_holder = IssueHolder(output_wrapper)
-	loader = Loader(output_wrapper)
+	input_files = load_from_folder(l, input_folder)
+
+	parser = CoreParser(l, issue_holder)
+	parser.parse(input_files)
+	parser.check_whitelists(config.whitelisted_issues)
+	exit_code = parser.check_threshold(config.fail_threshold)
 
 	# Get the absolute path for the output folder
-	output_folder = os.path.abspath(output_folder)
+	output_path = os.path.abspath(output_folder)
 
-	reporter = Reporter(output_wrapper, issue_holder, output_folder, verbose)
+	# Create the reporter and generate output now
+	reporter = Reporter(l, issue_holder, output_path)
+	creation_success = reporter.create_csv_report()
 
-	output_wrapper.set_title("Setting fail threshold")
+	# If we have a report and we're allowed to upload to AWS, then do it
+	if creation_success and config.upload_to_aws:
+		reporter.upload_to_s3(input_files)
 
-	# Create a variable to store the severity, but only if it wasn't loaded
-	# from the config file already AND a new value has been provided
-	fail_threshold = config.get_fail_threshold()
-	aws = config.is_aws_enabled()
-
-	output_wrapper.add("fail threshold set to: " + fail_threshold)
-	output_wrapper.flush(verbose=True)
-
-	# Get a list of files containing parsable tool output
-	files = loader.load_from_folder(input_folder)
-
-	# load_from_folder will return 0 if no files were found
-	if files != 0:
-
-		# Create Reporter and Parser objects then pass their required parameters to them.
-		parser = CoreParser(output_wrapper, issue_holder, files)
-
-		# Check if any issues are whitelisted.
-		parser.check_whitelists(config)
-
-		# Check if we have a severity threshold and if any issues meet it.
-		error_code = parser.check_threshold(fail_threshold)
-
-		reported = reporter.create_csv_report()
-		if reported and aws:
-			reporter.s3(files)
-
-		# If any issues met our threshold, fail the script.
-		if error_code != 0:
-			output_wrapper.set_title("Exiting script with non-zero value!")
-			output_wrapper.add(f"[x] The error_code value is {error_code}.")
-			output_wrapper.flush()
-			exit(error_code)
-		
-	else:
-		# We didn't find any files.
-		output_wrapper.set_title("[x] No supported files were found! Did you target the right directory?")
-		output_wrapper.flush()
+	if exit_code != 0:
+		l.warning("Exiting script with non-zero value")
+		l.warning(f"The exit code is {exit_code}")
+		exit(exit_code)

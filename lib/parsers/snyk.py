@@ -10,7 +10,7 @@ from markdown import markdown
 from packaging.version import parse as parse_version
 
 
-def node_parse_unresolvables(unparsed_dependencies, reporter, output_wrapper):
+def node_parse_unresolvables(unparsed_dependencies, reporter):
     """
     Obtains all dependencies reported by Snyk as being vulnerable, that cannot be fixed solely by updating said dependencies. 
 
@@ -25,8 +25,6 @@ def node_parse_unresolvables(unparsed_dependencies, reporter, output_wrapper):
     # 1) Go through each unresolvable and obtain metadata associated with them
     # 2) Deduplicate each unresolvable, grouping by their name, path and latest version (to update to) 
     # 3) Create issues for each deduplicated dependency.
-
-    output_wrapper.add("- Found entries for unresolved dependencies! Parsing and merging...")
 
     # Initiate an empty list to store the metadata
     parsed_dependencies = []
@@ -114,15 +112,7 @@ def node_parse_unresolvables(unparsed_dependencies, reporter, output_wrapper):
                     merged_dependencies.append(parsed_dependency)
                     break
 
-    # Gather the amount of merged dependencies and pass information to stdout
-    merged_amount = len(merged_dependencies)
-    console_output = "- " + str(merged_amount) + " unresolved dependency issue"
-
-    if merged_amount > 1:
-        console_output += "s"
-
-    console_output += " generated!"
-    output_wrapper.add(console_output)
+    return len(merged_dependencies)
 
     # Okay, now we have deduplicated issues - pass them to reporter for output.
     for merged_dependency in merged_dependencies:
@@ -177,7 +167,7 @@ def node_parse_unresolvables(unparsed_dependencies, reporter, output_wrapper):
         )
 
 
-def node_parse_resolvables(upgradable_dependencies, reporter, output_wrapper, project_name):
+def node_parse_resolvables(upgradable_dependencies, reporter, project_name):
     """
     Snyk kindly identifies the path of least resistance when scanning a project and reports what dependencies will, when updated, fix as many vulnerabilities as possible (either within itself or its sub-dependencies).
 
@@ -253,18 +243,10 @@ def node_parse_resolvables(upgradable_dependencies, reporter, output_wrapper, pr
             raw_output = {upgrade_key: upgrade_details},
         )
 
-    # Enumerate and output the amount of dependencies to be reported/fixed/etc.
-    console_output = "- " + str(len(upgradable_dependencies)) + " common dependency fix "
-
-    if len(upgradable_dependencies) > 1:
-        console_output += "issues generated!"
-    else:
-        console_output += "issue generated!"
-
-    output_wrapper.add(console_output)
+    return len(upgradable_dependencies)
 
 
-def parse_node(i_file, issue_holder, output_wrapper):
+def parse_node(i_file, issue_holder, logger):
     """
     Attempts to carry out multiple steps on a Snyk scan's output:
     1) Report dependencies that, when updated, will fix one or more vulnerabilities
@@ -280,14 +262,14 @@ def parse_node(i_file, issue_holder, output_wrapper):
         remediation_key = i_file_json_object["remediation"]
 
         unresolved_dependencies = remediation_key["unresolved"]
-        node_parse_unresolvables(unresolved_dependencies, issue_holder, output_wrapper)
+        unresolve_count = node_parse_unresolvables(unresolved_dependencies, issue_holder)
 
         upgradable_dependencies = remediation_key["upgrade"]
-        node_parse_resolvables(upgradable_dependencies, issue_holder, output_wrapper, project_name)
+        resolve_count = node_parse_resolvables(upgradable_dependencies, issue_holder, project_name)
+
+        logger.debug(f"> snyk: {unresolve_count + resolve_count} issues reported\n")
 
     else:
-        output_wrapper.add("[x] The results of this scan apparently failed!")
-        output_wrapper.add("[x] Please see the following error obtained from the output file:")
-        output_wrapper.add("[x] \"" + i_file_json_object["error"] + "\"")
-
-    output_wrapper.add("[✓] Done!")
+        logger.warning("snyk: The results of this scan apparently failed!")
+        logger.warning("snyk: Please see the following error obtained from the output file:")
+        logger.warning(i_file_json_object["error"] + "\n")

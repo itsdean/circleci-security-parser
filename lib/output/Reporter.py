@@ -13,7 +13,6 @@ from pathlib import Path
 
 from lib.issues.Issue import Issue, get_fieldnames
 from lib.issues.IssueHolder import IssueHolder
-from lib.output.OutputWrapper import OutputWrapper
 
 class Reporter:
     """
@@ -30,7 +29,7 @@ class Reporter:
         # If we're dealing with a pull request, then add it to the sha1 commit.
         # We'll split it and deal with it in the Lambda (as this may not
         # even be a pull request).
-        
+
         # example url format:
         # https://github.com/CyDefUnicorn/OSCP-Archives/pull/2
         if "CIRCLE_PULL_REQUEST" in os.environ:
@@ -49,8 +48,7 @@ class Reporter:
         tool_path = str(parent_directory) + "/" + str(filename)
         s3_tool_path = self.s3_path + "/" + tool_path
 
-        if self.verbose:
-            self.output_wrapper.add(" - " + tool_path + " -> s3://" + bucket_name + "/" + s3_tool_path)
+        self.l.debug(f"> {tool_path} -> s3://{bucket_name}/{s3_tool_path}")
 
         s3.upload_file(
             Key=s3_tool_path,
@@ -58,32 +56,30 @@ class Reporter:
             Bucket=bucket_name
         )
 
-    def s3(self, files):
+    def upload_to_s3(self, input_files):
         bucket_name = os.getenv("PARSER_AWS_BUCKET_NAME")
-
-        self.output_wrapper.set_title("Uploading to S3...")
+        print()
+        self.l.info("Uploading to S3 bucket {bucket_name}")
 
         bucket_id = os.getenv("PARSER_AWS_AK_ID")
-
         s3 = boto3.client(
 		"s3",
             aws_access_key_id=os.getenv("PARSER_AWS_AK_ID"),
             aws_secret_access_key=os.getenv("PARSER_AWS_SK")
         )
-        self.output_wrapper.add("boto3.client connected")
+        self.l.debug("boto3.client instantiated")
 
         # Upload output produced by any tools
-        self.output_wrapper.add("Uploading source files for reference")
-        for input_file in files:
+        self.l.info("Uploading original tool output files")
+        for input_file in input_files:
             full_path = input_file.name
             self.upload(s3, full_path)
 
         # Upload the parsed output
-        self.output_wrapper.add("Uploading parsed output")
+        self.l.info("Uploading parsed output")
         self.upload(s3, self.csv_location)
 
-        self.output_wrapper.add("[✓] Done!")
-        self.output_wrapper.flush(verbose=False)
+        self.l.info("Upload complete")
 
     def prepare_csv_name(self):
         """
@@ -95,19 +91,16 @@ class Reporter:
 
         # Check if specific CircleCI environments are available and add their values to the output filename.
         if "CIRCLE_PROJECT_USERNAME" in os.environ:
-            self.username = os.getenv("CIRCLE_PROJECT_USERNAME")
-            csv_name += self.username + "_"
+            csv_name += os.getenv("CIRCLE_PROJECT_USERNAME") + "_"
+            # csv_name += self.username + "_"
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
             self.repo = os.getenv("CIRCLE_PROJECT_REPONAME").replace("_", "-")
-            # csv_name += self.repo + "_"
+            csv_name += self.repo + "_"
         if "CIRCLE_BRANCH" in os.environ:
-           self.branch = os.getenv("CIRCLE_BRANCH").replace("/", "-").replace("_", "-")
-           csv_name += self.branch + "_"
+            csv_name += os.getenv("CIRCLE_BRANCH").replace("/", "-").replace("_", "-") + "_"
         if "CIRCLE_JOB" in os.environ:
             self.job_name = os.getenv("CIRCLE_JOB").replace("/", "-").replace("_", "-")
-            # csv_name += self.job_name + "_"
-        # if "CIRCLE_BUILD_NUM" in os.environ:
-        #     self.job_number = os.getenv("CIRCLE_BUILD_NUM")
+            csv_name += self.job_name + "_"
         if "CIRCLE_SHA1" in os.environ:
             self.sha1 = os.getenv("CIRCLE_SHA1")
 
@@ -122,33 +115,25 @@ class Reporter:
         return csv_name
 
 
-    def __init__(self, output_wrapper, issue_holder, o_folder, verbose=False):
+    def __init__(self, logger, issue_holder, o_folder):
         """
         Standard init procedure.
         """
 
-        # Track verbose mode in case we need to output the file transfer process
-        self.verbose = verbose
+        self.l = logger
 
-        # Set up the filename_variables in preparation
-        self.username = ""
+        # # Set up the filename_variables in preparation
         self.repo = ""
-        self.branch = ""
         self.job_name = ""
-        self.timestamp = ""
+        self.sha1 = ""
 
         # Create the instances we will be calling throughout this class
-        self.output_wrapper = output_wrapper
         self.issue_holder = issue_holder
 
         self.csv_name = self.prepare_csv_name()
 
         # Determine the exact path to save the parsed output to.
-        self.csv_folder_name = o_folder
-        self.csv_location = self.csv_folder_name + "/" + self.csv_name
-
-        self.output_wrapper.set_title("Saving to: " + self.csv_location)
-        self.output_wrapper.flush(verbose=True)
+        self.csv_location = o_folder + "/" + self.csv_name
 
 
     def create_csv_report(self):
@@ -156,21 +141,14 @@ class Reporter:
         Obtains the current list of issues and prints them to a CSV file.
         """
 
-        self.output_wrapper.clear()
-
         if self.issue_holder.size() == 0:
-
-            self.output_wrapper.set_title("[x] There were no issues found during this job!")
-            self.output_wrapper.add("- No report has been created.")
-            self.output_wrapper.flush(verbose=True)
-
+            self.l.warning("There were no issues found - no report has been created.")
             return False
 
         else:
-
             deduplicated_findings = self.issue_holder.deduplicate()
 
-            self.output_wrapper.set_title("Generating CSV report...")
+            self.l.info(f"Generating CSV report at {self.csv_location}")
 
             with open(self.csv_location, 'w+', newline="\n") as csv_file_object:
                 writer = csv.DictWriter(csv_file_object, fieldnames=get_fieldnames())
@@ -180,7 +158,5 @@ class Reporter:
                 for finding in deduplicated_findings:
                     writer.writerow(finding)
 
-            self.output_wrapper.add("[✓] Done!")
-            self.output_wrapper.flush()
-
+            self.l.info("Report created\n")
             return True

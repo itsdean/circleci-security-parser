@@ -2,7 +2,7 @@ import json
 
 from lib.constants import get_rating
 
-def parse(input_file, issue_holder, output_wrapper):
+def parse(input_file, issue_holder, logger):
     """
     Goes through findings reported by insider-cli and passes issues to Reporter
     for output standardisation
@@ -14,8 +14,6 @@ def parse(input_file, issue_holder, output_wrapper):
     json_object = json.load(input_file)
     vulnerabilities = json_object["vulnerabilities"]
 
-    output_wrapper.add("- There are " + str(len(vulnerabilities)) + " issues to report!")
-
     for vuln in vulnerabilities:
         title = vuln["longMessage"].split(". ")[0] + "."
 
@@ -24,7 +22,7 @@ def parse(input_file, issue_holder, output_wrapper):
         description += "\nAn example of the offending code can be seen below:\n" + vuln["method"]
 
         if "affectedFiles" in vuln.keys():
-            location = "\n".join(vuln["affectedFiles"])
+            location = ", ".join(vuln["affectedFiles"])
         else:
             location = vuln["class"]
 
@@ -46,4 +44,4 @@ def parse(input_file, issue_holder, output_wrapper):
             severity = severity
         )
 
-    output_wrapper.add("[✓] Done!")
+    logger.debug(f"> insider: {len(vulnerabilities)} issues reported\n")

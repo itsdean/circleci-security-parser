@@ -1,54 +1,30 @@
 import os
+import sys
+
 from pathlib import Path
 
-class Loader:
+def load_from_folder(logger, folder):
+    l = logger
 
-    def __init__(self, output_wrapper):
-        self.output_wrapper = output_wrapper
-        self.loaded_files = list()
+    # Create an empty list - this will contain all of the File objects we load
+    loaded_files = list()
 
+    # Get the full path of the folder
+    path = os.path.abspath(folder)
+    l.info(f"Attempting to load files from {path}")
 
-    def elements(self):
-        return
+    # Create a File object for each JSON file in the folder, storing them in loaded_files
+    for filename in Path(path).glob("**/results_*.json"):
+        tool_output = open(str(filename), "r")
+        loaded_files.append(tool_output)
 
+    if len(loaded_files) > 0:
+        l.info(f"Loaded {len(loaded_files)} supported file(s)")
+        for filename in loaded_files:
+            l.debug(f"> {os.path.basename(filename.name)}")
+        print()
+    else:
+        l.critical("No supported files were found - did you target the right directory?")
+        sys.exit(-1)
 
-    def load_from_folder(self, folder):
-
-        return_var = 0
-
-        # # Create an empty list - this list will contain all of the File objects we create
-        self.loaded_files = list()
-
-        self.output_wrapper.set_title("Loading from: " + folder)
-        
-        # Get the full path of the folder
-        folder_path = os.path.abspath(folder)
-
-        # Create open file objects for all JSON files in the input folder
-        # and store them in the files list object
-        for filename in Path(folder_path).glob("**/results_*.json"):
-            file_object = open(str(filename), "r")
-            self.loaded_files.append(file_object)
-
-        loaded_files_size = len(self.loaded_files)
-
-        if loaded_files_size > 0:
-
-            # Output any files!
-            if loaded_files_size >= 1:
-                self.output_wrapper.add(str(loaded_files_size) + " supported files were found!")
-            else:
-                self.output_wrapper.add("1 supported file was found!")
-
-            for element in self.loaded_files:
-                # Get just the filename from the File object and output it
-                loaded_filename = os.path.basename(element.name)
-                self.output_wrapper.add("- " + loaded_filename)
-
-            return_var = self.loaded_files
-
-        self.output_wrapper.add("[✓] Done!")
-        self.output_wrapper.flush(verbose=True)
-        return return_var
-
-        
+    return loaded_files

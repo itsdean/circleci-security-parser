@@ -1,10 +1,12 @@
 import json
 
-def parse(shed_file, issue_holder, output_wrapper):
+def parse(shed_file, issue_holder, logger):
     """
     Goes through SHeD output, reporting concerning output as issues
     and passing them to Reporter.
     """
+
+    issue_count = 0
 
     issue_type = "headers"
     tool_name = "SHeD"
@@ -38,6 +40,8 @@ see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-S
             raw_output = hsts
         )
 
+        issue_count += 1
+
     xframe = shed_object["xframe"]
     if not xframe["present"]:
         severity = "low"
@@ -64,6 +68,8 @@ see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options fo
             filename,
             raw_output = xframe
         )
+
+        issue_count += 1
 
     xss = shed_object["xss"]
     if not xss["present"]:
@@ -95,6 +101,8 @@ for more information."""
             filename,
             raw_output = xss
         )
+
+        issue_count += 1
     
     # cookies = shed_object["cookies"]
     # if len(cookies) > 0:
@@ -130,3 +138,7 @@ The header was:
                     filename,
                     raw_output = header
                 )
+
+                issue_count += 1
+
+    logger.debug(f"> shed: {issue_count} issues reported\n")
