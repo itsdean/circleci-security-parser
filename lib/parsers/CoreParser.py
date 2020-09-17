@@ -193,12 +193,13 @@ class CoreParser:
 
                 if issue["uid"] in whitelisted_issues:
                     self.l.debug(f"Found and whitelisting {issue['uid']}...")
-                    self.l.debug(f"- title: {issue['title']}")
-                    self.l.debug(f"- location(s):  {issue['location']}")
+                    self.l.debug(f"> title: {issue['title']}")
+                    self.l.debug(f"> location(s):  {issue['location']}")
                     self.issue_holder.remove(counter)
                     break
 
         self.l.debug("Finished checking whitelisted issues")
+        self.l.info(f"Number of whitelisted issues: {len(whitelisted_issues)}")
         print()
 
 
