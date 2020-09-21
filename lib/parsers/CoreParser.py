@@ -184,6 +184,8 @@ class CoreParser:
         # Go through a snapshot of the issues by making a duplicate list
         tmp_issue_holder = self.issue_holder.get_issues()
 
+        removed_issues = 0
+
         for whitelisted_id in whitelisted_issues:
 
             tmp_issue_holder = self.issue_holder.get_issues()
@@ -196,10 +198,11 @@ class CoreParser:
                     self.l.debug(f"> title: {issue['title']}")
                     self.l.debug(f"> location(s):  {issue['location']}")
                     self.issue_holder.remove(counter)
+                    removed_issues += 1
                     break
 
         self.l.debug("Finished checking whitelisted issues")
-        self.l.info(f"Number of whitelisted issues: {len(whitelisted_issues)}")
+        self.l.info(f"Number of whitelisted issues removed from report: {len(removed_issues)}")
         print()
 
 
