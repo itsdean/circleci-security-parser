@@ -112,8 +112,6 @@ def node_parse_unresolvables(unparsed_dependencies, reporter):
                     merged_dependencies.append(parsed_dependency)
                     break
 
-    return len(merged_dependencies)
-
     # Okay, now we have deduplicated issues - pass them to reporter for output.
     for merged_dependency in merged_dependencies:
 
