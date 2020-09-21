@@ -202,7 +202,7 @@ class CoreParser:
                     break
 
         self.l.debug("Finished checking whitelisted issues")
-        self.l.info(f"Number of whitelisted issues removed from report: {len(removed_issues)}")
+        self.l.info(f"Number of whitelisted issues removed from report: {removed_issues}")
         print()
 
 
