@@ -164,6 +164,8 @@ def node_parse_unresolvables(unparsed_dependencies, reporter):
             raw_output = merged["raw_output"],
         )
 
+    return len(merged_dependencies)
+
 
 def node_parse_resolvables(upgradable_dependencies, reporter, project_name):
     """
