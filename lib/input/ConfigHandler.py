@@ -39,7 +39,7 @@ class ConfigHandler:
 
         if "whitelist" in yaml_object:
             self.whitelisted_issues = yaml_object["whitelist"]
-            self.l.info(f"Loaded {len(self.whitelisted_issues)} whitelisted ID(s)")
+            self.l.info(f"Loaded {len(self.whitelisted_issues)} whitelisted ID(s) from config file")
 
         if "aws" in yaml_object:
             self.upload_to_aws = yaml_object["aws"]
