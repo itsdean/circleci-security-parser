@@ -15,20 +15,21 @@ def parse(input_file, issue_holder, logger):
     vulnerabilities = json_object["vulnerabilities"]
 
     for vuln in vulnerabilities:
-        title = vuln["longMessage"].split(". ")[0] + "."
+        title = vuln["longMessage"].split(". ")[0]
 
         # Combine the issue descriptions from insider-cli first, then add the code after
-        description = vuln["longMessage"] + "\n"
+        description = vuln["longMessage"].split(". ")[1] + "\n"
         description += "\nAn example of the offending code can be seen below:\n" + vuln["method"]
 
-        if "affectedFiles" in vuln.keys():
-            location = ", ".join(vuln["affectedFiles"])
-        else:
-            location = vuln["class"]
+        # if "affectedFiles" in vuln.keys():
+        #     location = ", ".join(vuln["affectedFiles"])
+        # else:
+        #     location = vuln["classMessage"]
+
+        location = vuln["classMessage"].split(" (")[0]
 
         recommendation = vuln["shortMessage"]
 
-        # todo: logic to calculate severity
         rating = vuln["cvss"]
         severity = get_rating(rating)
         # print(str_rating)
