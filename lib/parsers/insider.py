@@ -20,65 +20,68 @@ def parse(input_file, issue_holder, logger):
     tool_name = "insider"
 
     json_object = json.load(input_file)
-    vulnerabilities = json_object["vulnerabilities"]
 
-    for vuln in vulnerabilities:
-        title = vuln["longMessage"].split(". ")[0]
+    if "vulnerabilities" in json_object:
+        vulnerabilities = json_object["vulnerabilities"]
 
-        # Combine the issue descriptions from insider-cli first, then add the code after
-        description = vuln["longMessage"].split(". ")[1] + "\n"
-        description += "\nAn example of the offending code can be seen below:\n" + vuln["method"]
+        for vuln in vulnerabilities:
+            title = vuln["longMessage"].split(". ")[0]
 
-        # if "affectedFiles" in vuln.keys():
-        #     location = ", ".join(vuln["affectedFiles"])
-        # else:
-        #     location = vuln["classMessage"]
+            # Combine the issue descriptions from insider-cli first, then add the code after
+            description = vuln["longMessage"].split(". ")[1] + "\n"
+            description += "\nAn example of the offending code can be seen below:\n" + vuln["method"]
 
-        location = vuln["classMessage"].split(" (")[0]
+            # if "affectedFiles" in vuln.keys():
+            #     location = ", ".join(vuln["affectedFiles"])
+            # else:
+            #     location = vuln["classMessage"]
 
-        recommendation = vuln["shortMessage"]
+            location = vuln["classMessage"].split(" (")[0]
 
-        rating = vuln["cvss"]
-        severity = convert_cvss(rating)
-        # print(str_rating)
+            recommendation = vuln["shortMessage"]
 
-        issue_holder.add(
-            issue_type,
-            tool_name,
-            title,
-            description,
-            location,
-            recommendation,
-            raw_output = vuln,
-            severity = severity
-        )
+            rating = vuln["cvss"]
+            severity = convert_cvss(rating)
+            # print(str_rating)
 
-    dependencies = json_object["sca"]
-    issue_type = "dependencies"
+            issue_holder.add(
+                issue_type,
+                tool_name,
+                title,
+                description,
+                location,
+                recommendation,
+                raw_output = vuln,
+                severity = severity
+            )
 
-    for dependency in dependencies:
+    if "sca" in json_object:
+        dependencies = json_object["sca"]
+        issue_type = "dependencies"
 
-        if dependency["cves"] != "":
-            cve = dependency["cves"]
-        else:
-            cve = "n/a"
+        for dependency in dependencies:
 
-        title = dependency["title"]
-        description = dependency["description"]
-        location = title.split(" - ")[1]
-        recommendation = dependency["recomendation"]
-        severity = convert_severity(dependency["severity"])
+            if dependency["cves"] != "":
+                cve = dependency["cves"]
+            else:
+                cve = "n/a"
 
-        issue_holder.add(
-            issue_type,
-            tool_name,
-            title,
-            description,
-            location,
-            recommendation,
-            raw_output = dependency,
-            severity = severity,
-            cve_value = cve
-        )
+            title = dependency["title"]
+            description = dependency["description"]
+            location = title.split(" - ")[1]
+            recommendation = dependency["recomendation"]
+            severity = convert_severity(dependency["severity"])
+
+            issue_holder.add(
+                issue_type,
+                tool_name,
+                title,
+                description,
+                location,
+                recommendation,
+                raw_output = dependency,
+                severity = severity,
+                cve_value = cve
+            )
 
     logger.debug(f"> insider: {len(vulnerabilities) + len(dependencies)} issues reported\n")
