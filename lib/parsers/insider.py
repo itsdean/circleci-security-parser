@@ -21,6 +21,7 @@ def parse(input_file, issue_holder, logger):
 
     json_object = json.load(input_file)
 
+    vulnerabilities = []
     if "vulnerabilities" in json_object:
         vulnerabilities = json_object["vulnerabilities"]
 
@@ -55,6 +56,7 @@ def parse(input_file, issue_holder, logger):
                 severity = severity
             )
 
+    dependencies = []
     if "sca" in json_object:
         dependencies = json_object["sca"]
         issue_type = "dependencies"
