@@ -15,7 +15,7 @@ def load_from_folder(logger, folder):
 
     # Create a File object for each JSON file in the folder, storing them in loaded_files
     for filename in Path(path).glob("**/results_*.json"):
-        tool_output = open(str(filename), "r")
+        tool_output = open(str(filename), "r", encoding="utf-8")
         loaded_files.append(tool_output)
 
     if len(loaded_files) > 0:
