@@ -18,7 +18,7 @@ CVSS_CRIT_MIN = 9.0
 CVSS_CRIT_MAX = 10.0
 
 
-def get_rating(cvss):
+def convert_cvss(cvss):
     cvss = int(cvss)
     if CVSS_LOW_MIN <= cvss <= CVSS_LOW_MAX:
         return "low"

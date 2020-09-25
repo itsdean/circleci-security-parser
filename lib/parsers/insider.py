@@ -1,6 +1,14 @@
 import json
 
-from lib.constants import get_rating
+from lib.constants import convert_cvss
+
+
+def convert_severity(severity):
+    if severity == "moderate":
+        return "medium"
+    else:
+        return severity
+
 
 def parse(input_file, issue_holder, logger):
     """
@@ -31,7 +39,7 @@ def parse(input_file, issue_holder, logger):
         recommendation = vuln["shortMessage"]
 
         rating = vuln["cvss"]
-        severity = get_rating(rating)
+        severity = convert_cvss(rating)
         # print(str_rating)
 
         issue_holder.add(
@@ -45,4 +53,32 @@ def parse(input_file, issue_holder, logger):
             severity = severity
         )
 
-    logger.debug(f"> insider: {len(vulnerabilities)} issues reported\n")
+    dependencies = json_object["sca"]
+    issue_type = "dependencies"
+
+    for dependency in dependencies:
+
+        if dependency["cves"] != "":
+            cve = dependency["cves"]
+        else:
+            cve = "n/a"
+
+        title = dependency["title"]
+        description = dependency["description"]
+        location = title.split(" - ")[1]
+        recommendation = dependency["recomendation"]
+        severity = convert_severity(dependency["severity"])
+
+        issue_holder.add(
+            issue_type,
+            tool_name,
+            title,
+            description,
+            location,
+            recommendation,
+            raw_output = dependency,
+            severity = severity,
+            cve_value = cve
+        )
+
+    logger.debug(f"> insider: {len(vulnerabilities) + len(dependencies)} issues reported\n")
