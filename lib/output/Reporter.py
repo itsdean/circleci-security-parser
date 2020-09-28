@@ -150,7 +150,7 @@ class Reporter:
 
             self.l.info(f"Generating CSV report at {self.csv_location}")
 
-            with open(self.csv_location, 'w+', newline="\n") as csv_file_object:
+            with open(self.csv_location, 'w+', newline="\n", encoding="utf-8") as csv_file_object:
                 writer = csv.DictWriter(csv_file_object, fieldnames=get_fieldnames())
                 writer.writeheader()
 
