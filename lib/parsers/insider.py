@@ -39,7 +39,10 @@ def parse(input_file, issue_holder, logger):
 
             location = vuln["classMessage"].split(" (")[0]
 
-            recommendation = vuln["shortMessage"]
+            if "shortMessage" in vuln:
+                recommendation = vuln["shortMessage"]
+            else:
+                recommendation = "Please look at and confirm the validity of this issue."
 
             rating = vuln["cvss"]
             severity = convert_cvss(rating)
