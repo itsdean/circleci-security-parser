@@ -30,7 +30,8 @@ def parse(input_file, issue_holder, logger):
 
             # Combine the issue descriptions from insider-cli first, then add the code after
             description = vuln["longMessage"].split(". ")[1] + "\n"
-            description += "\nAn example of the offending code can be seen below:\n" + vuln["method"]
+            if "method" in vuln:
+                description += "\nAn example of the offending code can be seen below:\n" + vuln["method"]
 
             # if "affectedFiles" in vuln.keys():
             #     location = ", ".join(vuln["affectedFiles"])
