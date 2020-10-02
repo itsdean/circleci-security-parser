@@ -187,22 +187,28 @@ class CoreParser:
         if "ids" in allowlisted_issues:
             ids = allowlisted_issues["ids"]
             for allowlisted_id in ids:
-                for counter, issue in enumerate(self.issue_holder.get_issues()):
-                    issue = issue.dictionary()
+                counter = 0
+                while counter != len(self.issue_holder.get_issues()) - 1:
+                    issue = self.issue_holder.get_issues()[counter].dictionary()
                     if issue["uid"] in allowlisted_issues:
+                        if self.l.verbose:
+                            print()
                         self.l.debug(f"Found and allowing {issue['uid']}...")
                         self.l.debug(f"> title: {issue['title']}")
                         self.l.debug(f"> location(s):  {issue['location']}")
                         del self.issue_holder.get_issues()[counter]
+                        counter = 0
                         removed_issues += 1
-                        break
+                    else:
+                        counter += 1
 
         # deal with paths
         if "paths" in allowlisted_issues:
             paths = allowlisted_issues["paths"]
             for path in paths:
-                for counter, issue in enumerate(self.issue_holder.get_issues()):
-                    issue = issue.dictionary()
+                counter = 0
+                while counter != len(self.issue_holder.get_issues()) - 1:
+                    issue = self.issue_holder.get_issues()[counter].dictionary()
                     if path in issue["location"]:
                         if self.l.verbose:
                             print()
@@ -211,7 +217,10 @@ class CoreParser:
                         self.l.debug(f"> location(s):  {issue['location']}")
                         self.l.debug(f"> allowlist trigger: {path}")
                         del self.issue_holder.get_issues()[counter]
+                        counter = 0
                         removed_issues += 1
+                    else:
+                        counter += 1
 
         print()
         self.l.debug("Finished checking allowed issues")
