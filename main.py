@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
 	# Load the config file
 	if arguments.config is "" or arguments.config is None:
-		config = ConfigHandler(l, input_folder + ".security/parser.yml")
+		config = ConfigHandler(l, input_folder + "/.security/parser.yml")
 	else:
 		config = ConfigHandler(l, arguments.config)
 
