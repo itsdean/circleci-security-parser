@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
 	# Load the config file
 	if arguments.config is "" or arguments.config is None:
-		config = ConfigHandler(l, input_folder + "./security/parser.yml")
+		config = ConfigHandler(l, input_folder + ".security/parser.yml")
 	else:
 		config = ConfigHandler(l, arguments.config)
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
 	parser = CoreParser(l, issue_holder)
 	parser.parse(input_files)
-	parser.check_whitelists(config.whitelisted_issues)
+	parser.check_allowlists(config.allowlisted_issues)
 	exit_code = parser.check_threshold(config.fail_threshold)
 
 	# Get the absolute path for the output folder

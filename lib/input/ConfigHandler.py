@@ -16,7 +16,7 @@ class ConfigHandler:
         # By default, parser builds fail if an issue with severity high or
         # above was found.
         self.fail_threshold = "high"
-        self.whitelisted_issues = []
+        self.allowlisted_issues = []
         self.upload_to_aws = False
 
         # Load the configuration file
@@ -37,9 +37,12 @@ class ConfigHandler:
             else:
                 self.l.info(f"fail_threshold set to {self.fail_threshold}")
 
-        if "whitelist" in yaml_object:
-            self.whitelisted_issues = yaml_object["whitelist"]
-            self.l.info(f"Loaded {len(self.whitelisted_issues)} whitelisted ID(s) from config file")
+        if "allowlist" in yaml_object:
+            self.allowlisted_issues = yaml_object["allowlist"]
+            if "ids" in self.allowlisted_issues:
+                self.l.info(f"Loaded {len(self.allowlisted_issues['ids'])} allowed ID(s) from config file")
+            if "paths" in self.allowlisted_issues:
+                self.l.info(f"Loaded {len(self.allowlisted_issues['paths'])} allowed path(s) from config file")
 
         if "aws" in yaml_object:
             self.upload_to_aws = yaml_object["aws"]

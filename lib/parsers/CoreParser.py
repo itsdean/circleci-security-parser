@@ -174,35 +174,56 @@ class CoreParser:
         # Return error_code as the error code :)
         return exit_code
 
-    def check_whitelists(self, whitelisted_issues):
+    def check_allowlists(self, allowlisted_issues):
         """
-        Loads the local whitelist from summit.yml and checks if any issues to be reported are within. If so, omit the issue from reporting (but report it in verbose mode).
+        Loads the local allowlist from summit.yml and checks if any issues to be reported are within. If so, omit the issue from reporting (but report it in verbose mode).
         """
 
-        self.l.info("Checking to see if any issues are whitelisted")
+        self.l.info("Checking if any issues or paths are allowlisted")
 
         # Go through a snapshot of the issues by making a duplicate list
         tmp_issue_holder = self.issue_holder.get_issues()
 
         removed_issues = 0
 
-        for whitelisted_id in whitelisted_issues:
+        # deal with ids
+        if "ids" in allowlisted_issues:
+            ids = allowlisted_issues["ids"]
+            for allowlisted_id in ids:
+                tmp_issue_holder = self.issue_holder.get_issues()
 
-            tmp_issue_holder = self.issue_holder.get_issues()
+                for counter, issue in enumerate(tmp_issue_holder):
+                    issue = issue.dictionary()
 
-            for counter, issue in enumerate(tmp_issue_holder):
-                issue = issue.dictionary()
+                    if issue["uid"] in allowlisted_issues:
+                        self.l.debug(f"Found and allowing {issue['uid']}...")
+                        self.l.debug(f"> title: {issue['title']}")
+                        self.l.debug(f"> location(s):  {issue['location']}")
+                        self.issue_holder.remove(counter)
+                        removed_issues += 1
+                        break
 
-                if issue["uid"] in whitelisted_issues:
-                    self.l.debug(f"Found and whitelisting {issue['uid']}...")
-                    self.l.debug(f"> title: {issue['title']}")
-                    self.l.debug(f"> location(s):  {issue['location']}")
-                    self.issue_holder.remove(counter)
-                    removed_issues += 1
-                    break
+        # deal with paths
+        if "paths" in allowlisted_issues:
+            paths = allowlisted_issues["paths"]
+            for path in paths:
+                tmp_issue_holder = self.issue_holder.get_issues()
+                for counter, issue in enumerate(tmp_issue_holder):
+                    issue = issue.dictionary()
+                    
+                    if path in issue["location"]:
+                        if self.l.verbose:
+                            print()
+                        self.l.debug(f"Issue found in an allowed path, omitting...")
+                        self.l.debug(f"> title: {issue['title']}")
+                        self.l.debug(f"> location(s):  {issue['location']}")
+                        self.l.debug(f"> allowlist trigger: {path}")
+                        self.issue_holder.remove(counter)
+                        removed_issues += 1
 
-        self.l.debug("Finished checking whitelisted issues")
-        self.l.info(f"Number of whitelisted issues removed from report: {removed_issues}")
+        print()
+        self.l.debug("Finished checking allowed issues")
+        self.l.info(f"Number of allowed issues removed from report: {removed_issues}")
         print()
 
 

@@ -14,6 +14,7 @@ class Logger:
         )
 
         self.l = logging.getLogger(__name__)
+        self.verbose = verbose
 
         if verbose:
             self.l.setLevel(logging.DEBUG)
