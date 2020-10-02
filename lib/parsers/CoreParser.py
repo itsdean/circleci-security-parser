@@ -194,6 +194,7 @@ class CoreParser:
                         if self.l.verbose:
                             print()
                         self.l.debug(f"Found and allowing {issue['uid']}...")
+                        self.l.debug(f"> tool: {issue['tool_name']}")
                         self.l.debug(f"> title: {issue['title']}")
                         self.l.debug(f"> location(s):  {issue['location']}")
                         del self.issue_holder.get_issues()[counter]
@@ -213,6 +214,7 @@ class CoreParser:
                         if self.l.verbose:
                             print()
                         self.l.debug(f"Issue found in an allowed path, omitting...")
+                        self.l.debug(f"> tool: {issue['tool_name']}")
                         self.l.debug(f"> title: {issue['title']}")
                         self.l.debug(f"> location(s):  {issue['location']}")
                         self.l.debug(f"> allowlist trigger: {path}")
