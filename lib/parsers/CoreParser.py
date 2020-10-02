@@ -181,25 +181,19 @@ class CoreParser:
 
         self.l.info("Checking if any issues or paths are allowlisted")
 
-        # Go through a snapshot of the issues by making a duplicate list
-        tmp_issue_holder = self.issue_holder.get_issues()
-
         removed_issues = 0
 
         # deal with ids
         if "ids" in allowlisted_issues:
             ids = allowlisted_issues["ids"]
             for allowlisted_id in ids:
-                tmp_issue_holder = self.issue_holder.get_issues()
-
-                for counter, issue in enumerate(tmp_issue_holder):
+                for counter, issue in enumerate(self.issue_holder.get_issues()):
                     issue = issue.dictionary()
-
                     if issue["uid"] in allowlisted_issues:
                         self.l.debug(f"Found and allowing {issue['uid']}...")
                         self.l.debug(f"> title: {issue['title']}")
                         self.l.debug(f"> location(s):  {issue['location']}")
-                        self.issue_holder.remove(counter)
+                        del self.issue_holder.get_issues()[counter]
                         removed_issues += 1
                         break
 
@@ -207,10 +201,8 @@ class CoreParser:
         if "paths" in allowlisted_issues:
             paths = allowlisted_issues["paths"]
             for path in paths:
-                tmp_issue_holder = self.issue_holder.get_issues()
-                for counter, issue in enumerate(tmp_issue_holder):
+                for counter, issue in enumerate(self.issue_holder.get_issues()):
                     issue = issue.dictionary()
-                    
                     if path in issue["location"]:
                         if self.l.verbose:
                             print()
@@ -218,7 +210,7 @@ class CoreParser:
                         self.l.debug(f"> title: {issue['title']}")
                         self.l.debug(f"> location(s):  {issue['location']}")
                         self.l.debug(f"> allowlist trigger: {path}")
-                        self.issue_holder.remove(counter)
+                        del self.issue_holder.get_issues()[counter]
                         removed_issues += 1
 
         print()
