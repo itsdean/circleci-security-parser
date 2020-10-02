@@ -59,9 +59,9 @@ Each issue reported by the parser contains its own unique "Issue ID" - a long ha
 
 There may be a lot of false positives that the parser ends up consuming. To reduce the noise, you can provide a list of issue IDs in the configuration file - future runs of the parser against the same input files will not take these issues into account.
 
-To whiteliese issues, within the configuration file add the relevant IDs in the following format:
+To allow specific issues, within the configuration file add the relevant IDs in the following format:
 ```
-whitelist:
+allowlist:
   ids:
     - issue_1_hash
     - issue_2_hash
