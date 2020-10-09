@@ -10,6 +10,7 @@ from lib.input.Loader import load_from_folder
 from lib.issues.IssueHolder import IssueHolder
 from lib.parsers.CoreParser import CoreParser
 from lib.output.Logger import Logger
+from lib.output.Metadata import Metadata
 from lib.output.Reporter import Reporter
 
 from dotenv import load_dotenv
@@ -59,10 +60,12 @@ if __name__ == "__main__":
 	l = Logger(verbose)
 
 	# Load the config file
-	if arguments.config is "" or arguments.config is None:
+	if arguments.config == "" or arguments.config is None:
 		config = ConfigHandler(l, input_folder + "/.security/parser.yml")
 	else:
 		config = ConfigHandler(l, arguments.config)
+
+	m = Metadata(l, config)
 
 	issue_holder = IssueHolder(l)
 
@@ -77,7 +80,7 @@ if __name__ == "__main__":
 	output_path = os.path.abspath(output_folder)
 
 	# Create the reporter and generate output now
-	reporter = Reporter(l, issue_holder, output_path)
+	reporter = Reporter(l, m, issue_holder, output_path)
 	creation_success = reporter.create_csv_report()
 
 	# If we have a report and we're allowed to upload to AWS, then do it

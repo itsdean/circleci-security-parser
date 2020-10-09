@@ -87,7 +87,9 @@ class Reporter:
         The name can also include other values (such as the git repository name and branch) taken from CircleCI build variables.
         """
 
-        csv_name = "output_"
+        csv_name = "parser_"
+
+        
 
         # Check if specific CircleCI environments are available and add their values to the output filename.
         if "CIRCLE_PROJECT_USERNAME" in os.environ:
@@ -115,7 +117,7 @@ class Reporter:
         return csv_name
 
 
-    def __init__(self, logger, issue_holder, o_folder):
+    def __init__(self, logger, metadata, issue_holder, o_folder):
         """
         Standard init procedure.
         """
