@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 import yaml
 
@@ -52,6 +53,9 @@ class ConfigHandler:
         """
         Loads the actual file into a structure known to pyyaml.
         """
+
+        # resolve the path relative to the current location
+        filename = os.path.relpath(filename)
 
         self.l.info(f"Loading configuration from {filename}")
 
