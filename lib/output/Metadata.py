@@ -66,8 +66,8 @@ class Metadata:
         if "CIRCLECI" in os.environ:
             self.__get_circleci_environment_variables()
 
-        if config.upload_to_aws:
-            self.__get_aws_credentials()
+        # if config.upload_to_aws:
+        #     self.__get_aws_credentials()
 
         self.payload = {
             "repository": self.repository,

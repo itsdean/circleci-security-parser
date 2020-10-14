@@ -161,7 +161,7 @@ def node_parse_unresolvables(unparsed_dependencies, reporter):
             issue_description,
             path,
             issue_recommendation,
-            raw_output = merged["raw_output"],
+            raw_output = merged_dependency["raw_output"],
         )
 
     return len(merged_dependencies)
