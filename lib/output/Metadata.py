@@ -20,12 +20,11 @@ class Metadata:
         if "CIRCLE_SHA1" in os.environ:
             self.commit_hash = os.getenv("CIRCLE_SHA1")
             self.l.debug(f"commit hash: {self.commit_hash}")
-        if "CIRCLE_PULL_REQUEST":
+        if "CIRCLE_PULL_REQUEST" in os.environ:
             self.is_pr = True
             self.pr_url = os.getenv("CIRCLE_PULL_REQUEST")
             self.l.debug(f"PR URL: {self.pr_url}")
             self.pr_number = int(self.pr_url.split("pull/")[1])
-
 
         # if "CIRCLE_PROJECT_USERNAME" in os.environ:
             # csv_name += os.getenv("CIRCLE_PROJECT_USERNAME") + "_"
