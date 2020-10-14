@@ -63,7 +63,8 @@ class Metadata:
         # self.repository_name = ""
         # self.job_name = ""
 
-        self.__get_circleci_environment_variables()
+        if "CIRCLECI" in os.environ:
+            self.__get_circleci_environment_variables()
 
         if config.upload_to_aws:
             self.__get_aws_credentials()
