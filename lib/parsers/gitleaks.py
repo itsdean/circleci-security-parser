@@ -11,6 +11,9 @@ def parse(gitleaks_file, issue_holder, logger):
     issue_type = "secrets"
     tool_name = "gitleaks"
 
+    # Due to the potential risk of it being a real credential, we should always make these stand out.
+    severity = "medium"
+
     # We'll use the same recommendation as burrow for now because of the
     # relative uncertainty in some findings. We can tweak this as we make
     # the gitleaks file more picky and specific.
@@ -39,6 +42,7 @@ def parse(gitleaks_file, issue_holder, logger):
             location,
             recommendation,
             filename,
+            severity = severity,
             raw_output = issue
         )
 
