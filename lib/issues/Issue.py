@@ -47,7 +47,8 @@ class Issue:
 
         # Create a hash of the object as it is - we will use this to unique
         # identify it in case we need to allowlist it
-        self.hash = hashlib.sha256(pickle.dumps(self)).hexdigest()
+        # self.hash = hashlib.sha256(pickle.dumps(self)).hexdigest()
+        self.hash = hashlib.sha256(f"{self.description}:{self.location}".encode('utf-8')).hexdigest()
 
 
     def dictionary(self):

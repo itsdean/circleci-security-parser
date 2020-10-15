@@ -17,24 +17,24 @@ class IssueHolder:
         self.findings_list = list()
 
 
-    def create_hash(self, issue):
-        """
-        Creates a unqiue hash using fields from the issue.
-        This hash will be used for deduplication and
-        """
+    # def create_hash(self, issue):
+    #     """
+    #     Creates a unqiue hash using fields from the issue.
+    #     This hash will be used for deduplication and
+    #     """
 
-        description = issue["description"].encode("utf-8")
-        location = issue["location"].encode("utf-8")
+    #     description = issue["description"].encode("utf-8")
+    #     location = issue["location"].encode("utf-8")
 
-        # issue = json.dumps(issue, sort_keys=True, default=str)
+    #     # issue = json.dumps(issue, sort_keys=True, default=str)
 
-        issue_hash = hashlib.sha256(
-            description + b":" + location
-        ).hexdigest()
+    #     issue_hash = hashlib.sha256(
+    #         description + b":" + location
+    #     ).hexdigest()
 
-        # self.l.debug(f"> Generated hash: {issue_hash}")
+    #     # self.l.debug(f"> Generated hash: {issue_hash}")
 
-        return issue_hash
+    #     return issue_hash
 
 
     def deduplicate(self):
@@ -57,11 +57,11 @@ class IssueHolder:
             # Get the contents of the issue in dictionary format
             issue = issue.dictionary()
 
-            issue_hash = self.create_hash(issue)
+            # issue_hash = self.create_hash(issue)
 
-            if issue_hash not in issue_hash_oracle:
-
-                issue_hash_oracle.append(issue_hash)
+            # uid = hash
+            if issue["uid"] not in issue_hash_oracle:
+                issue_hash_oracle.append(issue["uid"])
                 deduplicated_findings.append(issue)
 
         # The description and location of each issue is merged together and
