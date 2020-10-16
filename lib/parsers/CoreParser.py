@@ -185,25 +185,25 @@ class CoreParser:
 
         # deal with ids
         if "ids" in allowlisted_issues:
-            ids = allowlisted_issues["ids"]
-            for allowlisted_id in ids:
-                counter = 0
-                while counter != len(self.issue_holder.get_issues()) - 1:
-                    issue = self.issue_holder.get_issues()[counter].dictionary()
-                    if issue["uid"] in allowlisted_issues:
-                        if self.l.verbose:
-                            print()
-                        self.l.debug(f"Found and allowing {issue['uid']}...")
-                        self.l.debug(f"> tool: {issue['tool_name']}")
-                        self.l.debug(f"> title: {issue['title']}")
-                        self.l.debug(f"> location(s):  {issue['location']}")
-                        del self.issue_holder.get_issues()[counter]
-                        counter = 0
-                        removed_issues += 1
-                    else:
-                        counter += 1
+            counter = 0
+            # Repeatedly go through the list of issues until we've gotten rid of all the allowed
+            # issues
+            while counter != len(self.issue_holder.get_issues()) - 1:
+                issue = self.issue_holder.get_issues()[counter].dictionary()
+                if issue["uid"] in allowlisted_issues["ids"]:
+                    self.l.debug(f"Found and allowing {issue['uid']}...")
+                    self.l.debug(f"> tool: {issue['tool_name']}")
+                    self.l.debug(f"> title: {issue['title']}")
+                    self.l.debug(f"> location(s):  {issue['location']}")
+                    del self.issue_holder.get_issues()[counter]
+                    counter = 0
+                    removed_issues += 1
+                else:
+                    counter += 1
 
-        # deal with paths
+        # deal with paths - these are different from checking ids.
+        # for ids, check if the issue's id is in a list of ids.
+        # for paths, check if an allowed path is a substring present in an issue's path
         if "paths" in allowlisted_issues:
             paths = allowlisted_issues["paths"]
             for path in paths:
