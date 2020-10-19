@@ -28,8 +28,8 @@ class Reporter:
         # If we're dealing with a pull request, then add it to the sha1 commit.
         # We'll split it and deal with it in the Lambda (as this may not
         # even be a pull request).
-        if self.m.is_pr:
-            self.s3_path += f"_{self.m.pr_number}"
+        # if self.m.is_pr:
+        #     self.s3_path += f"_{self.m.pr_number}"
 
         self.s3_path += f"/{self.timestamp}"
 
