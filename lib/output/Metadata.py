@@ -70,9 +70,9 @@ class Metadata:
 
     def __init__(self, logger, config):
         self.l = logger
-        self.c = config
 
-        self.output_path = ""
+        self.c = config
+        self.fail_threshold = self.c.fail_threshold
 
         self.payload = {}
 
@@ -83,6 +83,7 @@ class Metadata:
         self.job = ""
 
         self.payload = {
+            "fail_threshold": self.fail_threshold,
             "repository": self.repository,
             "branch": self.branch,
             "username": self.username,
