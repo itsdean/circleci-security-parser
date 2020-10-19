@@ -35,8 +35,8 @@ class ConfigHandler:
             if type(self.fail_threshold) is bool:
                 self.l.error("fail_threshold is a bool, did you use double quotes when defining fail_threshold in the .yml file?")
                 sys.exit(-1)
-            else:
-                self.l.info(f"fail_threshold set to {self.fail_threshold}")
+        
+        self.l.info(f"Fail threshold: {self.fail_threshold.capitalize()}")
 
         if "allowlist" in yaml_object:
             self.allowlisted_issues = yaml_object["allowlist"]
