@@ -6,39 +6,55 @@ class Metadata:
     This class stores and outputs metadata relevant to the current parse.
     """
 
+            self.payload = {
+            "fail_threshold": self.fail_threshold,
+            "repository": self.repository,
+            "branch": self.branch,
+            "username": self.username,
+            "commit_hash": self.commit_hash,
+        }
+
     def __get_circleci_environment_variables(self):
         self.l.info("Looking for CircleCI environment variables...")
 
         if "CIRCLE_USERNAME" in os.environ:
             self.username = os.getenv("CIRCLE_USERNAME")
             self.l.debug(f"username: {self.username}")
+            self.payload["username"] = self.username
             
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
             self.repository = os.getenv("CIRCLE_PROJECT_REPONAME")
             self.l.debug(f"repository: {self.repository}")
+            self.payload["repository"] = self.repository
 
         if "CIRCLE_BRANCH" in os.environ:
             self.branch = os.getenv("CIRCLE_BRANCH").replace("/", "-").replace("_", "-")
             self.l.debug(f"branch: {self.branch}")
+            self.payload["branch"] = self.branch
 
         if "CIRCLE_SHA1" in os.environ:
             self.commit_hash = os.getenv("CIRCLE_SHA1")
             self.l.debug(f"commit hash: {self.commit_hash}")
+            self.payload["commit_hash"] = self.commit_hash
 
         if "CIRCLE_PULL_REQUEST" in os.environ:
             self.is_pr = True
             self.pr_url = os.getenv("CIRCLE_PULL_REQUEST")
             self.l.debug(f"PR URL: {self.pr_url}")
-            self.payload["pr_info"] = {
-                "pr_url": self.pr_url
-            }
             self.pr_number = int(self.pr_url.split("pull/")[1])
+            self.payload["pr_info"] = {
+                "pr_url": self.pr_url,
+                "pr_number": self.pr_number
+            }
         else:
             self.is_pr = False
         self.payload["is_pr"] = self.is_pr
 
         if "CIRCLE_JOB" in os.environ:
             self.job = os.getenv("CIRCLE_JOB").replace("/", "-").replace("_", "-")
+            self.payload["circleci_info"] = {
+                "job": self.job
+            }
         print()
 
 
@@ -81,14 +97,6 @@ class Metadata:
         self.branch = ""
         self.commit_hash = ""
         self.job = ""
-
-        self.payload = {
-            "fail_threshold": self.fail_threshold,
-            "repository": self.repository,
-            "branch": self.branch,
-            "username": self.username,
-            "commit_hash": self.commit_hash,
-        }
 
         if "CIRCLECI" in os.environ:
             self.is_circleci = True
