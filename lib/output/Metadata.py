@@ -6,14 +6,6 @@ class Metadata:
     This class stores and outputs metadata relevant to the current parse.
     """
 
-            self.payload = {
-            "fail_threshold": self.fail_threshold,
-            "repository": self.repository,
-            "branch": self.branch,
-            "username": self.username,
-            "commit_hash": self.commit_hash,
-        }
-
     def __get_circleci_environment_variables(self):
         self.l.info("Looking for CircleCI environment variables...")
 
