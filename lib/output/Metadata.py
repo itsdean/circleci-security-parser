@@ -82,12 +82,12 @@ class Metadata:
 
 
     def __init__(self, logger, config):
+        self.payload = {}
+
         self.l = logger
 
         self.c = config
-        self.fail_threshold = self.c.fail_threshold
-
-        self.payload = {}
+        self.payload["fail_threshold"] = self.c.fail_threshold
 
         self.username = ""
         self.repository = ""
