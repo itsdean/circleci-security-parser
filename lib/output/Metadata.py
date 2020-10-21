@@ -13,6 +13,11 @@ class Metadata:
             self.username = os.getenv("CIRCLE_USERNAME")
             self.l.debug(f"username: {self.username}")
             self.payload["username"] = self.username
+
+        if "CIRCLE_PROJECT_USERNAME" in os.environ:
+            self.project_username = os.getenv("CIRCLE_PROJECT_USERNAME")
+            self.l.debug(f"project username: {self.project_username}")
+            self.payload["project_username"] = self.project_username
             
         if "CIRCLE_PROJECT_REPONAME" in os.environ:
             self.repository = os.getenv("CIRCLE_PROJECT_REPONAME")
