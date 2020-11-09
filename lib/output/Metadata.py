@@ -88,6 +88,7 @@ class Metadata:
 
         self.c = config
         self.payload["fail_threshold"] = self.c.fail_threshold
+        self.payload["jira"] = self.c.jira
 
         self.username = ""
         self.repository = ""

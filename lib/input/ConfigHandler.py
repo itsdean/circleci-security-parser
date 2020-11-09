@@ -17,6 +17,7 @@ class ConfigHandler:
         # By default, parser builds fail if an issue with severity high or
         # above was found.
         self.fail_threshold = "high"
+        self.jira = False
         self.allowlisted_issues = []
         self.upload_to_aws = False
 
@@ -47,6 +48,9 @@ class ConfigHandler:
 
         if "aws" in yaml_object:
             self.upload_to_aws = yaml_object["aws"]
+
+        if "jira" in yaml_object:
+            self.jira = yaml_object["jira"]
 
 
     def load(self, filename):
