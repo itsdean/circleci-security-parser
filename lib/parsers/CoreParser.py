@@ -270,6 +270,8 @@ class CoreParser:
                                 del self.issue_holder.get_issues()[counter]
                                 counter = 0
                                 removed_issues += 1
+                            else:
+                                counter += 1
                         else:
                             counter += 1
 
