@@ -132,7 +132,7 @@ class Reporter:
             # Check the project to see if any of the issues are accepted or FPs.
             # If they are, report this and omit them from the final report
             if self.m.jira:
-                self.j.check(deduplicated_findings)
+                deduplicated_findings = self.j.check(deduplicated_findings)
 
             self.m.payload["issue_count"] = len(deduplicated_findings)
 
