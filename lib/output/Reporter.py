@@ -54,7 +54,7 @@ class Reporter:
 
 
     def upload_to_s3(self):
-        self.l.info("Uploading to S3 bucket {self.m.aws_bucket_name}")
+        self.l.info(f"Uploading to S3 bucket {self.m.aws_bucket_name}")
         s3 = boto3.client(
             "s3",
             aws_access_key_id = self.m.aws_access_key_id,

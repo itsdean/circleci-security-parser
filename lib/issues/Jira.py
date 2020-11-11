@@ -80,9 +80,7 @@ class Jira:
             else:
                 self.l.error("Repository ticket not found!")
 
-        if sorted:
-            self.l.debug(f"Number of issues after going through JIRA: {len(sorted_issues)}")
-        else:
+        if not sorted:
             sorted_issues = issues 
         
         print()

@@ -140,7 +140,7 @@ class Metadata:
         self.c = config
         self.payload["fail_threshold"] = self.c.fail_threshold
 
-        self.jira = self.c.jira
+        self.jira = self.payload["jira"] = self.c.jira
         self.jira_config = self.__validate(self.c.jira_config)
         if self.jira:
             self.__get_jira_environment_variables()
