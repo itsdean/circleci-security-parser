@@ -117,27 +117,22 @@ class Reporter:
         Obtains the current list of issues and prints them to a CSV file.
         """
 
-        if self.issue_holder.size() == 0:
-            self.l.warning("There were no issues found - no report has been created.")
-            return False
+        self.l.info(f"Generating CSV report at {self.csv_location}")
+        with open(self.csv_location, 'w+', newline="\n", encoding="utf-8") as csv_file_object:
+            writer = csv.DictWriter(csv_file_object, fieldnames=get_fieldnames())
+            writer.writeheader()
 
-        else:
-            deduplicated_findings = self.issue_holder.deduplicate()
+            if self.issue_holder.size() > 0:
+                deduplicated_findings = self.issue_holder.deduplicate()
+                self.m.payload["issue_count"] = len(deduplicated_findings)
 
-            self.m.payload["issue_count"] = len(deduplicated_findings)
-
-            self.l.info(f"Generating CSV report at {self.csv_location}")
-
-            with open(self.csv_location, 'w+', newline="\n", encoding="utf-8") as csv_file_object:
-                writer = csv.DictWriter(csv_file_object, fieldnames=get_fieldnames())
-                writer.writeheader()
-
-                # Write a row in csv format for each finding that has been reported so far
                 for finding in deduplicated_findings:
                     writer.writerow(finding)
+            else:
+                self.m.payload["issue_count"] = 0
 
-            self.l.info("Report created\n")
-            return True
+        self.l.info("Report created\n")
+        return True
 
     def generate_metadata_file(self):
         metadata_filename = f"parser_metadata_{self.timestamp}.json"
