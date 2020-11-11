@@ -83,5 +83,6 @@ class Jira:
         if not sorted:
             sorted_issues = issues 
         
+        self.l.info(f"Array size after JIRA check step: {len(sorted_issues)}")
         print()
         return sorted_issues
