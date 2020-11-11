@@ -18,6 +18,7 @@ class ConfigHandler:
         # above was found.
         self.fail_threshold = "high"
         self.jira = False
+        self.jira_config = {}
         self.allowlisted_issues = []
         self.upload_to_aws = False
 
@@ -51,6 +52,9 @@ class ConfigHandler:
 
         if "jira" in yaml_object:
             self.jira = yaml_object["jira"]
+
+        if "jira_config" in yaml_object:
+            self.jira_config = yaml_object["jira_config"] 
 
 
     def load(self, filename):

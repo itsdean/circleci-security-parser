@@ -57,6 +57,7 @@ class Metadata:
 
     def __get_aws_credentials(self):
         self.l.info("Looking for AWS S3 bucket environment variables..")
+        aws_found = True
         if "PARSER_AWS_BUCKET_NAME" in os.environ:
             self.aws_bucket_name = os.getenv("PARSER_AWS_BUCKET_NAME")
             self.payload["aws"] = {
@@ -65,20 +66,70 @@ class Metadata:
             self.l.debug(f"AWS Bucket Name: {self.aws_bucket_name}")
         else:
             self.l.error("The PARSER_AWS_BUCKET_NAME environment variable was not found!")
-            self.c.upload_to_aws = False
+            self.c.upload_to_aws = aws_found = False
         if "PARSER_AWS_AK_ID" in os.environ:
             self.aws_access_key_id = os.getenv("PARSER_AWS_AK_ID")
             self.l.debug("AWS access key found")
         else:
             self.l.error("The PARSER_AWS_AK_ID environment variable was not found!")
-            self.c.upload_to_aws = False
+            self.c.upload_to_aws = aws_found = False
         if "PARSER_AWS_SK" in os.environ:
             self.aws_secret_key = os.getenv("PARSER_AWS_SK")
             self.l.debug("AWS secret key found")
         else:
             self.l.error("The PARSER_AWS_SK environment variable was not found!")
-            self.c.upload_to_aws = False
+            self.c.upload_to_aws = aws_found = False
+        if aws_found:
+            self.l.info("All required AWS environment variables were found")
+        else:
+            self.l.warning("Not all required AWS variables were found - skipping upload")
         print()
+
+    
+    def __get_jira_environment_variables(self):
+        self.l.info("Looking for JIRA environment variables..")
+        jira_found = True
+        if "JIRA_SERVER" in os.environ:
+            self.jira_server = os.getenv("JIRA_SERVER")
+        else:
+            self.l.error("The JIRA_SERVER environment variable was not found!")
+            self.c.jira = jira_found = False
+        if "JIRA_USERNAME" in os.environ:
+            self.jira_username = os.getenv("JIRA_USERNAME")
+        else:
+            self.l.error("The JIRA_USERNAME environment variable was not found!")
+            self.c.jira = jira_found = False
+        if "JIRA_API_TOKEN" in os.environ:
+            self.jira_api_token = os.getenv("JIRA_API_TOKEN")
+        else:
+            self.l.error("The JIRA_API_TOKEN environment variable was not found!")
+            self.c.jira = jira_found = False
+        if jira_found:
+            self.l.info("All required JIRA environment variables were found")
+        else:
+            self.l.warning("Not all required JIRA variables were found - disabling functionality")
+            self.jira = False
+        print()
+
+    
+    def __validate(self, jira_config):
+        jira_validated = True
+        if "project" not in jira_config:
+            self.l.error("project was not defined in the jira config!")
+            jira_validated = False
+        if "issue_type" not in jira_config:
+            self.l.error("issue_type was not defined in the JIRA config!")
+            jira_validated = False
+        if "hash_field" not in jira_config:
+            self.l.error("hash_field was not defined in the JIRA config!")
+            jira_validated = False
+        if "accepted_statuses" not in jira_config:
+            self.l.error("The list of accepted_statuses were not defined in the JIRA config!")
+            jira_validated = False
+        if not jira_validated:
+            self.l.warning("The JIRA configuration within parser.yml appeared to be incorrect - disabling functionality")
+            self.jira = False
+        return jira_config
 
 
     def __init__(self, logger, config):
@@ -88,7 +139,11 @@ class Metadata:
 
         self.c = config
         self.payload["fail_threshold"] = self.c.fail_threshold
-        self.payload["jira"] = self.c.jira
+
+        self.jira = self.c.jira
+        self.jira_config = self.__validate(self.c.jira_config)
+        if self.jira:
+            self.__get_jira_environment_variables()
 
         self.username = ""
         self.repository = ""
