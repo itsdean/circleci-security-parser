@@ -14,7 +14,6 @@ from pathlib import Path
 
 from lib.issues.Issue import Issue, get_fieldnames
 from lib.issues.IssueHolder import IssueHolder
-from lib.issues.Jira import Jira
 
 class Reporter:
     """
@@ -105,9 +104,6 @@ class Reporter:
 
         self.issue_holder = issue_holder
 
-        if self.m.jira:
-            self.j = Jira(self.l, self.m, self.issue_holder)
-
         self.timestamp = int(time.time())
         self.m.payload["timestamp"] = self.timestamp
 
@@ -127,12 +123,6 @@ class Reporter:
 
         else:
             deduplicated_findings = self.issue_holder.deduplicate()
-            
-            # If JIRA functionality is enabled,
-            # Check the project to see if any of the issues are accepted or FPs.
-            # If they are, report this and omit them from the final report
-            if self.m.jira:
-                deduplicated_findings = self.j.check(deduplicated_findings)
 
             self.m.payload["issue_count"] = len(deduplicated_findings)
 

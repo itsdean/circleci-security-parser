@@ -73,9 +73,12 @@ if __name__ == "__main__":
 
     m.input_files = load_from_folder(l, input_folder)
 
-    parser = CoreParser(l, issue_holder)
+    parser = CoreParser(l, m, issue_holder)
     parser.parse(m.input_files)
     parser.check_allowlists(config.allowlisted_issues)
+    if m.jira:
+        parser.check_jira()
+    
     exit_code = parser.check_threshold(config.fail_threshold)
 
     # Create the reporter and generate output now

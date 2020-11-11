@@ -6,6 +6,7 @@ import os
 import re
 
 from ..issues.IssueHolder import IssueHolder
+from ..issues.Jira import Jira
 
 class CoreParser:
     """
@@ -169,7 +170,9 @@ class CoreParser:
                     self.l.info(f"description: {description}")
                     self.l.info(f"recommendation: {remediation}")
                     self.l.info(f"location(s): {location}")
-                    self.l.info(f"uid: {uid}\n")
+                    self.l.info(f"uid: {uid}")
+                
+                print()
 
         # Return error_code as the error code :)
         return exit_code
@@ -229,7 +232,52 @@ class CoreParser:
         self.l.info(f"Number of allowed issues removed from report: {removed_issues}")
         print()
 
+    def check_jira(self):
+        self.l.info("Checking JIRA for issues matching raised tickets")
+        j = Jira(self.l, self.m)
 
-    def __init__(self, logger, issue_holder):
+        if j.connect():
+            self.l.debug("Connected to JIRA")
+
+            removed_issues = 0
+
+            repository = j.get_repository()
+            if repository is None:
+                self.l.error("Repository ticket not found!")
+                return False
+    
+            self.l.info(f"Found repository ticket: {repository.key} - {repository.fields.summary}")
+            
+            subtasks = j.get_subtasks(repository.key)
+            if subtasks is not None:
+                for subtask in j.get_subtasks(repository.key):
+                    subtask_issue = j.client.issue(subtask.key)
+                    subtask_hash = subtask_issue.raw["fields"][j.jira_config["hash_field"]]
+
+                    # okay now we iterate through the issue_holder until we've gone through every subtask.
+                    # use more memory, but use less requests (and latency i suppose)
+                    counter = 0
+                    while counter != len(self.issue_holder.get_issues()):
+                        issue = self.issue_holder.get_issues()[counter].dictionary()
+                        issue_hash = issue["uid"]
+
+                        if subtask_hash == issue_hash:
+                            self.l.info(f"> Found sub-task ticket {subtask.key} for issue \"{issue['title']}\" with hash ending in {issue_hash[-5:]}")
+                            subtask_status = str(subtask_issue.fields.status)
+                            self.l.info(f'>>> Ticket has a status of "{subtask_status.lower()}"')
+                            if subtask_status.lower() in j.jira_config["accepted_statuses"]:
+                                self.l.info(">>>>>> This status is accepted, removing from issue list")
+                                del self.issue_holder.get_issues()[counter]
+                                counter = 0
+                                removed_issues += 1
+                        else:
+                            counter += 1
+
+                self.l.debug("Finished checking JIRA tickets")
+                self.l.info(f"Number of allowed issues removed from report: {removed_issues}")
+                print()
+
+    def __init__(self, logger, metadata, issue_holder):
         self.l = logger
+        self.m = metadata
         self.issue_holder = issue_holder
