@@ -89,3 +89,34 @@ PARSER_AWS_BUCKET_NAME # name of the s3 bucket to upload to
 PARSER_AWS_AK_ID # AWS access key
 PARSER_AWS_SK # AWS secret key
 ```
+
+## JIRA Integration
+If you use JIRA to keep track of security issues/vulnerabilities, the parser can connect to your JIRA board, identify tickets that map to parsed issues and determine (based off their status) if they should continue to be reported or not. An example situation could be that an issue is a false positive, in which case the parser should omit this from the report.
+
+**There are a number of pre-requisites for this integration to work:**
+
+1) Populating the following in the configuration file:
+```
+jira: true
+
+jira_config:
+ project: "the name of your JIRA project/board"
+ issue_type: "the issue type your security tickets are raised under"
+ 
+ # you may need to create and populate a customfield for hashes/uids if you do not already
+ hash_field: "the customfield used to store the hashes of each parser-reported issue
+ 
+ # ticket statuses used to determine if an issue could be disregarded due to valid reasons (i.e. false positive, duplicate, accepted)
+ accepted_statuses:
+  - false positive
+  - duplicate
+```
+
+2) Setting the following environment variables:
+```
+JIRA_SERVER # the url for your JIRA server
+JIRA_USERNAME # the username to authenticate to the JIRA server
+JIRA_API_TOKEN # the generated API token used to authenticate to the JIRA server
+```
+
+
