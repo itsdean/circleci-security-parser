@@ -57,20 +57,22 @@ def node_parse_unresolvables(unparsed_dependencies, reporter):
         # Gather Snyk-specific information
         snyk_vulnerability_id = unparsed_dependency["id"]
 
-        parsed_dependencies.append(
-            {
-                "name": name,
-                "sub": sub,
-                "path": path,
-                "vulnerability": vulnerability_name,
-                "version": version,
-                "update_min_versions": min_fix_version,
-                "snyk_vuln_ids": [
-                    snyk_vulnerability_id + " - " + vulnerability_name
-                ],
-                "raw_output": [unparsed_dependency]
-            }
-        )
+        # We will not report sub-dependencies as they may not be fixable by updating the core/parent dependency
+        if not sub:
+            parsed_dependencies.append(
+                {
+                    "name": name,
+                    "sub": sub,
+                    "path": path,
+                    "vulnerability": vulnerability_name,
+                    "version": version,
+                    "update_min_versions": min_fix_version,
+                    "snyk_vuln_ids": [
+                        snyk_vulnerability_id + " - " + vulnerability_name
+                    ],
+                    "raw_output": [unparsed_dependency]
+                }
+            )
 
     # Now we have parsed issues - we have to merge them per dependency, version and path.
     merged_dependencies = []
