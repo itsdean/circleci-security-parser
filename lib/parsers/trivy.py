@@ -49,7 +49,7 @@ def parse(trivy_file, issue_holder, logger):
                 "package": package,
                 "title": f"Vulnerabilities identified for {package}",
                 "description": description_start + "\n" + description + "\n",
-                "recommendation": f"Upgrade {package} to the latest stable version to make use of the most recent security patches and fixes. Please note that this may break required features of the currently used version; it is recommended to test and assess the impact of the upgrade before carrying this out in a production environment.",
+                "recommendation": f"Upgrade {package} to the latest at least {issue["FixedVersion"]} to make use of the most recent security patches and fixes. Please note that this may break required features of the currently used version; it is recommended to test and assess the impact of the upgrade before carrying this out in a production environment.",
                 "severity": severity
             }
 

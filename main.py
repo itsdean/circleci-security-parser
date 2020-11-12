@@ -84,7 +84,6 @@ if __name__ == "__main__":
     # Create the reporter and generate output now
     reporter = Reporter(l, m, issue_holder)
     creation_success = reporter.create_csv_report()
-
     reporter.generate_metadata_file()
 
     # If we have a report and we're allowed to upload to AWS, then do it
