@@ -17,7 +17,7 @@ def parse(gitleaks_file, issue_holder, logger):
     # We'll use the same recommendation as burrow for now because of the
     # relative uncertainty in some findings. We can tweak this as we make
     # the gitleaks file more picky and specific.
-    recommendation = "Please identify whether this finding is true or false positive."
+    recommendation = "Please identify whether this finding is valid."
 
     gitleaks_issues = json.load(gitleaks_file)
 

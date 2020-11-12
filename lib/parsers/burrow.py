@@ -11,7 +11,7 @@ def parse(burrow_file, issue_holder, logger):
 
     # Without 100% confidence we don't want to recommend removing the line. 
     # We'll leave it up to manual work to triage this.
-    recommendation = "Please identify whether this finding is a true or false positive. Consider adding the file and line to .burrowignore if this is a false positive."
+    recommendation = "Please identify whether this finding is valid; consider adding the file and line to .burrowignore if this is a false positive."
 
     # Because burrow_file is a File object, we need the filename for outputting reasons. 
     filename = burrow_file.name # Do I need to do this? How often am I called?
