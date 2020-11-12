@@ -30,3 +30,20 @@ def convert_cvss(cvss):
         return "critical"
     else:
         return "unknown"
+
+
+ranking = {
+    "critical": 5,
+    "high": 4,
+    "medium": 3,
+    "low": 2,
+    "informational": 1
+}
+
+
+def calculate_rating(severity):
+    if severity not in ranking.keys():
+        return 1
+    else:
+        return ranking[severity]
+    
