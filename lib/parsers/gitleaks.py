@@ -25,11 +25,11 @@ def parse(gitleaks_file, issue_holder, logger):
 
         if "key" in issue["tags"]:
             title = f"Potential {issue['rule']} match"
-            description = "A string matching a key was found in a file. Gitleaks reported it as {}.".format(an(issue["rule"]))
-            description = f"A string matching a key was found in a file; gitleaks reported it as {an(issue['rule'].lower())}.\n\nThe offence can be found below:\n{issue['offender']}"
+            # description = "A string matching a key was found in a file/. Gitleaks reported it as \"{}\".".format(an(issue["rule"]))
+            description = f"A string matching a key was found in a file; gitleaks reported it as \"{an(issue['rule'].lower())}\".\n\nThe offence can be found below:\n{issue['offender']}"
         else:
             title = issue["rule"]
-            description = f"A potential credential was found in a file. Gitleaks reported it as {an(issue['rule'].lower())}.\n\nThe offence can be found below:\n{issue['offender']}"
+            description = f"A potential credential was found in a file. Gitleaks reported it as \"{an(issue['rule'].lower())}\".\n\nThe offence can be found below:\n{issue['offender']}"
 
         location = issue["file"]
         filename = issue["file"]
