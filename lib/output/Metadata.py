@@ -143,6 +143,7 @@ class Metadata:
         self.jira = self.payload["jira"] = self.c.jira
         self.jira_config = self.__validate(self.c.jira_config)
         if self.jira:
+            self.payload["jira_project"] = self.jira_config["project"]
             self.__get_jira_environment_variables()
 
         self.username = ""

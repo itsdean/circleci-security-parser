@@ -17,7 +17,7 @@ def parse(trivy_file, issue_holder, logger):
     # Load the issues into a JSON blob. The output is an element in a list, so we'll explode it out.
     json_object = json.load(trivy_file)[0]
 
-    title = f"Vulnerable dependencies present within usage of {json_object['Type']}"
+    title = f"Container image uses vulnerable dependencies"
     location = json_object["Target"]
 
     # Chances are, the vulnerable packages are coming from the base image, so lets bunch the dependencies into one issue.
