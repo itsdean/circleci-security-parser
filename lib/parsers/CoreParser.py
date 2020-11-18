@@ -38,7 +38,7 @@ class CoreParser:
 
     def gitleaks(self, gitleaks_file):
         from lib.parsers import gitleaks
-        gitleaks.parse(gitleaks_file, self.issue_holder, self.l)
+        gitleaks.parse(gitleaks_file, self.issue_holder, self.l, self.m)
 
     def snyk_node(self, i_file):
         from lib.parsers import snyk

@@ -2,7 +2,9 @@ import json
 
 from ..constants import an
 
-def parse(gitleaks_file, issue_holder, logger):
+MAX_LINE_LENGTH = 100
+
+def parse(gitleaks_file, issue_holder, logger, metadata):
     """
     Goes through gitleaks --verbose output, combines them into a proper JSON
     object, then passes each reported issue to Reporter.
@@ -23,15 +25,47 @@ def parse(gitleaks_file, issue_holder, logger):
 
     for issue in gitleaks_issues:
 
-        if "key" in issue["tags"]:
-            title = f"Potential {issue['rule']} match"
-            # description = "A string matching a key was found in a file/. Gitleaks reported it as \"{}\".".format(an(issue["rule"]))
-            description = f"A string matching a key was found in a file; gitleaks reported it as \"{an(issue['rule'].lower())}\".\n\nThe offence can be found below:\n{issue['offender']}"
-        else:
-            title = issue["rule"]
-            description = f"A potential credential was found in a file. Gitleaks reported it as \"{an(issue['rule'].lower())}\".\n\nThe offence can be found below:\n{issue['offender']}"
+        title = issue["rule"]
+        description = f'A potential credential was found in a file. The gitleaks rule that triggered was \"{issue["rule"].lower()}\".'
 
-        location = issue["file"]
+        # Create the file location for the repository URL
+        location = metadata.repository_url
+        if "/" in issue["file"]:
+            location += f'/blob/{issue["commit"]}/{issue["file"]}'
+            if issue["lineNumber"] > 0:
+                location += f'#L{issue["lineNumber"]}'
+
+
+        # Report the issue differently if the rule is for a file pattern
+        if "Filename/path" in issue["offender"]:
+            # description += f"\nThe file that triggered this rule was {}"
+            description += f'\nThe file that triggered this rule was "{issue["file"]}"'
+            description += "\nAs this was a filename/path rule that triggered, please search the repository for matching files and confirm if they are valid."
+            location = "N/A"
+
+        # Otherwise we'll set the full file path, and report the line that triggered
+        else:
+
+            description += "\n\nThe offence can be found below:"
+
+            # We might be reporting minified JS, so lets check
+            offending_line = issue["line"]
+            # If the line is too long, we'll just report the specific trigger
+            if len(offending_line) > MAX_LINE_LENGTH:
+                offending_line = issue["offender"]
+
+            if metadata.jira:
+                description += "\n{code}\n" + offending_line + "\n{code}"
+            else:
+                description += f'\n{offending_line}\n'
+
+            # Create the file location for the repository URL
+            location = metadata.repository_url
+            if "/" in issue["file"]:
+                location += f'/blob/{issue["commit"]}/{issue["file"]}'
+                if issue["lineNumber"] > 0:
+                    location += f'#L{issue["lineNumber"]}'
+
         filename = issue["file"]
 
         issue_holder.add(

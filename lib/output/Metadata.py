@@ -147,6 +147,7 @@ class Metadata:
             self.__get_jira_environment_variables()
 
         self.username = ""
+        self.project_username = ""
         self.repository = ""
         self.branch = ""
         self.commit_hash = ""
@@ -155,6 +156,11 @@ class Metadata:
         if "CIRCLECI" in os.environ:
             self.is_circleci = True
             self.__get_circleci_environment_variables()
+            
+            # Create the repository URL
+            self.repository_url = f"https://github.com/{self.project_username}/{self.repository}"
+            self.payload["repository_url"] = self.repository_url
+
         else:
             self.is_circleci = False
         self.payload["is_circleci"] = self.is_circleci
