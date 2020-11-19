@@ -42,9 +42,9 @@ class ConfigHandler:
 
         if "allowlist" in yaml_object:
             self.allowlisted_issues = yaml_object["allowlist"]
-            if "ids" in self.allowlisted_issues:
+            if "ids" in self.allowlisted_issues and self.allowlisted_issues['ids'] is not None:
                 self.l.info(f"Loaded {len(self.allowlisted_issues['ids'])} allowed ID(s) from config file")
-            if "paths" in self.allowlisted_issues:
+            if "paths" in self.allowlisted_issues and self.allowlisted_issues['paths'] is not None:
                 self.l.info(f"Loaded {len(self.allowlisted_issues['paths'])} allowed path(s) from config file")
 
         if "aws" in yaml_object:
