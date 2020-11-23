@@ -63,10 +63,9 @@ def parse(gitleaks_file, issue_holder, logger, metadata):
 
             # Create the file location for the repository URL
             location = metadata.repository_url
-            if "/" in issue["file"]:
-                location += f'/blob/{issue["commit"]}/{issue["file"]}'
-                if issue["lineNumber"] > 0:
-                    location += f'#L{issue["lineNumber"]}'
+            location += f'/blob/{issue["commit"]}/{issue["file"]}'
+            if issue["lineNumber"] > 0:
+                location += f'#L{issue["lineNumber"]}'
 
         filename = issue["file"]
 
