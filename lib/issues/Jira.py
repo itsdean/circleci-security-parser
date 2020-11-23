@@ -34,7 +34,7 @@ class Jira:
     def get_repository(self):
             search_string = f'Summary ~ "{self.m.repository}" '
             search_string += f'AND project = "{self.jira_config["project"]}" '
-            search_string += f' AND issuetype = "{self.jira_config["task_issue_type"]}"'
+            search_string += f'AND issuetype = "{self.jira_config["task_issue_type"]}"'
 
             repository_tickets = self.client.search_issues(search_string, validate_query=True)
             if len(repository_tickets) >= 1:

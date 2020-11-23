@@ -16,10 +16,7 @@ def parse(gitleaks_file, issue_holder, logger, metadata):
     # Due to the potential risk of it being a real credential, we should always make these stand out.
     severity = "medium"
 
-    recommendation = ""
-    if metadata.jira:
-        recommendation += "h4. Recommendation\n"
-    recommendation += "Please identify whether this finding is valid.\nIt is recommended to make use of secrets management tools/functionality such as "
+    recommendation = "Please identify whether this finding is valid.\nIt is recommended to make use of secrets management tools/functionality such as "
     recommendation += "AWS Secrets Manager to retrieve sensitive values or credentials when required, rather than hardcoding contents."
 
     gitleaks_issues = json.load(gitleaks_file)
