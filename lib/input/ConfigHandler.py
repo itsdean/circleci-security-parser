@@ -17,6 +17,7 @@ class ConfigHandler:
         # By default, parser builds fail if an issue with severity high or
         # above was found.
         self.fail_threshold = "high"
+        self.fail_branches = []
         self.jira = False
         self.jira_config = {}
         self.allowlisted_issues = []
@@ -37,6 +38,9 @@ class ConfigHandler:
             if type(self.fail_threshold) is bool:
                 self.l.error("fail_threshold is a bool, did you use double quotes when defining fail_threshold in the .yml file?")
                 sys.exit(-1)
+
+            if "fail_branches" in yaml_object:
+                self.fail_branches = yaml_object["fail_branches"]
         
         self.l.info(f"Fail threshold: {self.fail_threshold.capitalize()}")
 

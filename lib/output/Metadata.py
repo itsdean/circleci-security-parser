@@ -117,8 +117,8 @@ class Metadata:
         if "project" not in jira_config:
             self.l.error("project was not defined in the jira config!")
             jira_validated = False
-        if "issue_type" not in jira_config:
-            self.l.error("issue_type was not defined in the JIRA config!")
+        if "task_issue_type" not in jira_config:
+            self.l.error("task_issue_type was not defined in the JIRA config!")
             jira_validated = False
         if "hash_field" not in jira_config:
             self.l.error("hash_field was not defined in the JIRA config!")
@@ -139,6 +139,9 @@ class Metadata:
 
         self.c = config
         self.payload["fail_threshold"] = self.c.fail_threshold
+
+        self.fail_branches = self.c.fail_branches
+        # self.payload["fail_branches"] = self.c.fail_branches
 
         self.jira = self.payload["jira"] = self.c.jira
         self.jira_config = self.__validate(self.c.jira_config)

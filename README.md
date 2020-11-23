@@ -93,6 +93,8 @@ PARSER_AWS_SK # AWS secret key
 ## JIRA Integration
 If you use JIRA to keep track of security issues/vulnerabilities, the parser can connect to your JIRA board, identify tickets that map to parsed issues and determine (based off their status) if they should continue to be reported or not. An example situation could be that an issue is a false positive, in which case the parser should omit this from the report.
 
+Please note that this integration works under the assumption you have a ticket per repository, with subtask tickets being security issues for the repository.
+
 **There are a number of pre-requisites for this integration to work:**
 
 1) Populating the following in the configuration file:
@@ -101,7 +103,7 @@ jira: true
 
 jira_config:
  project: "the name of your JIRA project/board"
- issue_type: "the issue type your security tickets are raised under"
+ task_issue_type: "the issue type your repository tickets are raised under"
  
  # you may need to create and populate a customfield for hashes/uids if you do not already
  hash_field: "the customfield used to store the hashes of each parser-reported issue
