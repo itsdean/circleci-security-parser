@@ -75,7 +75,7 @@ class CoreParser:
                 file_parser_method = getattr(self, filename_pattern)
                 file_parser_method(i_file)
 
-        # print()
+        print()
 
 
     def parse(self, input_files):
@@ -98,6 +98,18 @@ class CoreParser:
 
         # For output cleanliness, only report a failure once
         fail_outputted = False
+
+        # If fail_branches was defined, check if the branch we're in matches one of them.
+        # If it does not, we won't fail.
+        # If it matches, continue.
+        if len(self.m.fail_branches) > 0:
+            # self.l.debug("fail_branches has been defined")
+            self.l.info(f"Branch: {self.m.branch}")
+            self.l.debug("")
+            if [branch for branch in self.m.fail_branches if branch.startswith(branch)]:
+                self.l.info("> We are in a branch that will fail builds")
+            else:
+                self.l.info("> fail_branches configured but we're not in one - disabling failing")
 
         # Only go down this route if a threshold has not been set.
         if fail_threshold != "off":
@@ -157,7 +169,7 @@ class CoreParser:
                     title = issue["title"].lower()
                     issue_severity = issue["severity"].lower()
                     description = issue["description"].split("\n")[0]
-                    remediation = issue["recommendation"].split(". ")[0] + "."
+                    remediation = issue["recommendation"].split(".\n")[0] + "."
                     location = issue["location"]
                     uid = issue["uid"]
 
@@ -172,7 +184,7 @@ class CoreParser:
                     self.l.info(f"location(s): {location}")
                     self.l.info(f"uid: {uid}")
                 
-                print()
+        print()
 
         # Return error_code as the error code :)
         return exit_code
@@ -227,7 +239,6 @@ class CoreParser:
                     else:
                         counter += 1
 
-        print()
         self.l.debug("Finished checking allowed issues")
         self.l.info(f"Number of allowed issues removed from report: {removed_issues}")
         print()

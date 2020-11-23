@@ -54,6 +54,16 @@ The fail threshold can be manually set within the configuration file, as so:
 fail_threshold: "medium"
 ```
 
+### Failing Branches
+If for any reason you only want to fail specific branches (i.e. if you only want to fail master builds) then you can specify them in the following format:
+```
+fail_branches:
+  - master
+  - loren ipsum
+  - etc.
+```
+
+
 ## Allowlisting issues
 Each issue reported by the parser contains its own unique "Issue ID" - a long hash that maps to the issue's description and location.
 
