@@ -129,7 +129,7 @@ class Metadata:
         if not jira_validated:
             self.l.warning("The JIRA configuration within parser.yml appeared to be incorrect - disabling functionality")
             self.jira = False
-        return jira_config
+        return self.jira
 
 
     def __init__(self, logger, config):
@@ -141,11 +141,10 @@ class Metadata:
         self.payload["fail_threshold"] = self.c.fail_threshold
 
         self.fail_branches = self.c.fail_branches
-        # self.payload["fail_branches"] = self.c.fail_branches
 
         self.jira = self.payload["jira"] = self.c.jira
-        self.jira_config = self.__validate(self.c.jira_config)
-        if self.jira:
+        if self.__validate(self.c.jira_config):
+            self.jira_config = self.c.jira_config
             self.payload["jira_project"] = self.jira_config["project"]
             self.__get_jira_environment_variables()
 
