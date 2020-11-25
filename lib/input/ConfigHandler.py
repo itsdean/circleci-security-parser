@@ -80,7 +80,7 @@ class ConfigHandler:
                 if yaml_object is not None:
                     self.parse(yaml_object)
                 else:
-                    self.l.warning("yaml_object is None")
+                    self.l.warning("yaml_object is None - skipping YAML parse stage")
 
         else:
             self.l.warning(f"{filename} not found - skipping YAML parse stage")
