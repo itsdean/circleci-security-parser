@@ -143,7 +143,7 @@ class Metadata:
         self.fail_branches = self.c.fail_branches
 
         self.jira = self.payload["jira"] = self.c.jira
-        if self.__validate(self.c.jira_config):
+        if self.jira and self.__validate(self.c.jira_config):
             self.jira_config = self.c.jira_config
             self.payload["jira_project"] = self.jira_config["project"]
             self.__get_jira_environment_variables()
