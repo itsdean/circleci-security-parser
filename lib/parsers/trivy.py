@@ -56,11 +56,11 @@ def parse(trivy_file, issue_holder, logger):
                 if version.parse(dependency_information["fix"]) < version.parse(finding["FixedVersion"]):
                     dependency_information["fix"] = finding["FixedVersion"]
 
-                if calculate_rating(dependency_information["severity"]) < calculate_rating(finding["Severity"].lower()):
+                if calculate_rating(dependency_information["severity"]) < calculate_rating(finding["Severity"]):
                     dependency_information["severity"] = finding["Severity"].lower()
             
             # Regardless of whether the packages match, we need to capture the highest severity issue in general.
-            if calculate_rating(finding["Severity"].lower()) > calculate_rating(highest_severity):
+            if calculate_rating(finding["Severity"]) > calculate_rating(highest_severity):
                 highest_severity = finding["Severity"].lower()
 
         description_issue_list.append(f'- {dependency_name} (severity: {dependency_information["severity"]}, installed: {dependency_information["installed"]}, fix: {dependency_information["fix"]})')
