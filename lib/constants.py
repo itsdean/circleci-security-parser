@@ -42,8 +42,8 @@ ranking = {
 
 
 def calculate_rating(severity):
-    if severity not in ranking.keys():
+    if severity.lower() not in ranking.keys():
         return 1
     else:
-        return ranking[severity]
+        return ranking[severity.lower()]
     
