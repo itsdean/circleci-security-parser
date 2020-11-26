@@ -19,11 +19,11 @@ class Issue:
             description,
             location,
             recommendation,
-            ifile_name="",
             raw_output="n/a",
             severity="",
             cve_value="n/a",
-            fails=False
+            fails=False,
+            custom = {}
         ):
         """
         Instantiator of Issue objects.
@@ -36,7 +36,6 @@ class Issue:
         self.description = description
         self.location = location
         self.recommendation = recommendation
-        self.ifile_name = ifile_name
         self.raw_output = raw_output
         if severity == "":
             self.severity = "low"
@@ -44,11 +43,12 @@ class Issue:
             self.severity = severity
         self.cve_value = cve_value
         self.fails = fails
+        self.custom = custom
 
         # Create a hash of the object as it is - we will use this to unique
         # identify it in case we need to allowlist it
-        if tool_name == "gitleaks": # The location of gitleaks issues is very dynamic so we need another factor
-            self.hash = hashlib.sha256(f"{self.description}:{self.ifile_name}".encode('utf-8')).hexdigest()
+        if tool_name == "gitleaks" or tool_name == "gosec": # The location of gitleaks issues is very dynamic so we need another factor
+            self.hash = hashlib.sha256(f'{self.description}:{self.custom["file_location"]}'.encode('utf-8')).hexdigest()
         else:
             self.hash = hashlib.sha256(f"{self.description}:{self.location}".encode('utf-8')).hexdigest()
 

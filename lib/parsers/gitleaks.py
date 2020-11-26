@@ -23,6 +23,8 @@ def parse(gitleaks_file, issue_holder, logger, metadata):
 
     for issue in gitleaks_issues:
 
+        custom = {}
+
         title = issue["rule"]
         title = f'{issue["rule"]} found at {issue["file"]}'
         description = f'A potential credential was found in a file. The gitleaks rule that triggered was \"{issue["rule"].lower()}\".'
@@ -64,7 +66,7 @@ def parse(gitleaks_file, issue_holder, logger, metadata):
             if issue["lineNumber"] > 0:
                 location += f'#L{issue["lineNumber"]}'
 
-        filename = issue["file"]
+        custom["file_location"] = issue["file"]
 
         issue_holder.add(
             issue_type,
@@ -73,9 +75,9 @@ def parse(gitleaks_file, issue_holder, logger, metadata):
             description,
             location,
             recommendation,
-            filename,
             severity = severity,
-            raw_output = issue
+            raw_output = issue,
+            custom = custom
         )
 
     logger.debug(f"> gitleaks: {len(gitleaks_issues)} issues reported\n")

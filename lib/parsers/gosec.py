@@ -115,6 +115,7 @@ def parse(gosec_file, issue_holder, logger, metadata):
 
         # Get the relative filepath (as gosec outputs the path from root upwards)
         file_location = issue["file"].split(repository_name + "/")[1]
+        custom["file_location"] = file_location
         filename = file_location.split("/")[-1]
 
         description = f"A security issue was identified in line {line} of {filename}. "
@@ -151,6 +152,7 @@ def parse(gosec_file, issue_holder, logger, metadata):
             recommendation,
             raw_output = issue,
             severity = severity,
+            custom = custom
         ) 
 
     logger.debug(f"> gosec: {len(issues)} issues reported\n")
