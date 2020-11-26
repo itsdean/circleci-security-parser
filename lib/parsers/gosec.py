@@ -106,7 +106,7 @@ def parse(gosec_file, issue_holder, logger, metadata):
         rule_id = issue["rule_id"]
 
         repository_location = metadata.repository_url
-        repository_name = metadata.repository
+        # repository_name = metadata.repository
         commit = metadata.commit_hash
 
         # The minimum severity is medium, but if the issue's severity is higher we'll report that
@@ -114,7 +114,11 @@ def parse(gosec_file, issue_holder, logger, metadata):
             severity = issue["severity"].capitalize()
 
         # Get the relative filepath (as gosec outputs the path from root upwards)
-        file_location = issue["file"].split(repository_name + "/")[1]
+        if metadata.working_directory != "":
+            working_directory = metadata.working_directory.split("/")[-1]
+            file_location = issue["file"].split(working_directory + "/")[1]
+        else:
+            file_location = issue["file"]
         custom["file_location"] = file_location
         filename = file_location.split("/")[-1]
 

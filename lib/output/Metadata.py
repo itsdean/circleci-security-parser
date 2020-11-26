@@ -47,6 +47,9 @@ class Metadata:
             self.is_pr = False
         self.payload["is_pr"] = self.is_pr
 
+        if "CIRCLE_WORKING_DIRECTORY" in os.environ:
+            self.working_directory = os.getenv("CIRCLE_WORKING_DIRECTORY")
+
         if "CIRCLE_JOB" in os.environ:
             self.job = os.getenv("CIRCLE_JOB").replace("/", "-").replace("_", "-")
             self.payload["circleci_info"] = {
@@ -154,6 +157,7 @@ class Metadata:
         self.branch = ""
         self.commit_hash = ""
         self.job = ""
+        self.working_directory = ""
 
         if "CIRCLECI" in os.environ:
             self.is_circleci = True
