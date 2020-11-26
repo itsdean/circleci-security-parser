@@ -26,7 +26,7 @@ class CoreParser:
 
     def gosec(self, i_file):
         from lib.parsers import gosec
-        gosec.parse(i_file, self.issue_holder, self.l)
+        gosec.parse(i_file, self.issue_holder, self.l, self.m)
 
     def nancy(self, i_file):
         from lib.parsers import nancy
@@ -75,13 +75,10 @@ class CoreParser:
                 file_parser_method = getattr(self, filename_pattern)
                 file_parser_method(i_file)
 
-        print()
-
 
     def parse(self, input_files):
         for input_file in input_files:
             self.__parse(input_file)
-        # print()
 
 
     def check_threshold(self, fail_threshold):
@@ -175,7 +172,7 @@ class CoreParser:
 
                     issue["fails"] = True
 
-                    print("")
+                    print()
                     self.l.info(f"tool: {reporting_tool}")
                     self.l.info(f"title: {title}")
                     self.l.info(f"severity: {issue_severity}")
@@ -184,10 +181,11 @@ class CoreParser:
                     self.l.info(f"location(s): {location}")
                     self.l.info(f"uid: {uid}")
                 
-        print()
+            print()
 
         # Return error_code as the error code :)
         return exit_code
+
 
     def check_allowlists(self, allowlisted_issues):
         """
@@ -241,7 +239,7 @@ class CoreParser:
 
         self.l.debug("Finished checking allowed issues")
         self.l.info(f"Number of allowed issues removed from report: {removed_issues}")
-        print()
+
 
     def check_jira(self):
         self.l.info("Checking JIRA for issues matching raised tickets")
