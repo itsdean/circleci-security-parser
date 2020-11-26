@@ -42,8 +42,6 @@ def parse(nancy_file, issue_holder, logger):
 
                     if vulnerability["Cve"] != "":
                         cve_value = vulnerability["Cve"]
-                    else:
-                        cve_value = ""
 
                 issue_holder.add(
                     issue_type,
