@@ -21,6 +21,7 @@ class ConfigHandler:
         self.jira = False
         self.jira_config = {}
         self.allowlisted_issues = []
+        self.gitleaks = {}
         self.upload_to_aws = False
 
         # Load the configuration file
@@ -59,6 +60,9 @@ class ConfigHandler:
 
         if "jira_config" in yaml_object:
             self.jira_config = yaml_object["jira_config"] 
+
+        if "gitleaks" in yaml_object:
+            self.gitleaks = yaml_object["gitleaks"]
 
 
     def load(self, filename):
