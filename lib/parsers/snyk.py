@@ -227,7 +227,7 @@ def node_parse_resolvables(upgradable_dependencies, reporter, project_name):
             recommendation += "\n\nFurthermore, by updating " + dependency_name + " to " + dependency_upgrade_version + " its following sub-dependencies will be updated:"
             for subdependency in subdependency_upgrades:
                 # Split the syntax into name and version again
-                subdependency_name, subdependency_update_version = subdependency.split("@")
+                subdependency_name, subdependency_update_version = subdependency.rsplit("@", 1)
 
                 # Sometimes the parent package is also in the list of things to be updated so ignore outputting that (as it's done in the start of the recommendation section)
                 if dependency_name not in subdependency_name:
