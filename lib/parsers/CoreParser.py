@@ -238,7 +238,8 @@ class CoreParser:
                         counter += 1
 
         self.l.debug("Finished checking allowed issues")
-        self.l.info(f"Number of allowed issues removed from report: {removed_issues}")
+        self.l.info(f"Number of allowlisted issues removed from report: {removed_issues}")
+        print()
 
 
     def check_jira(self):
@@ -285,7 +286,7 @@ class CoreParser:
                             counter += 1
 
                 self.l.debug("Finished checking JIRA tickets")
-                self.l.info(f"Number of allowed issues removed from report: {removed_issues}")
+                self.l.info(f"Number of JIRA-allowed issues removed from report: {removed_issues}")
                 print()
 
     def __init__(self, logger, metadata, issue_holder):
