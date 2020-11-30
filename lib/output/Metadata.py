@@ -177,3 +177,8 @@ class Metadata:
 
         if self.c.upload_to_aws:
             self.__get_aws_credentials()
+
+        if self.c.gitleaks:
+            self.gitleaks = self.c.gitleaks
+        else:
+            self.gitleaks = {}
