@@ -90,9 +90,8 @@ class IssueHolder:
         location,
         recommendation,
         raw_output = "n/a",
-        severity = "",
+        severity = "low",
         cve_value = "n/a",
-        fails = False,
         custom = {}
     ):
         """
@@ -110,7 +109,6 @@ class IssueHolder:
                 raw_output=raw_output,
                 severity=severity,
                 cve_value=cve_value,
-                fails=fails,
                 custom=custom
             )
         )

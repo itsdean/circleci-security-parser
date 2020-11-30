@@ -19,11 +19,10 @@ class Issue:
             description,
             location,
             recommendation,
-            raw_output="n/a",
-            severity="",
-            cve_value="n/a",
-            fails=False,
-            custom = {}
+            raw_output,
+            severity,
+            cve_value,
+            custom
         ):
         """
         Instantiator of Issue objects.
@@ -37,13 +36,11 @@ class Issue:
         self.location = location
         self.recommendation = recommendation
         self.raw_output = raw_output
-        if severity == "":
-            self.severity = "low"
-        else:
-            self.severity = severity
+        self.severity = severity.lower()
         self.cve_value = cve_value
-        self.fails = fails
         self.custom = custom
+
+        self.fails = False
 
         # Create a hash of the object as it is - we will use this to unique
         # identify it in case we need to allowlist it
