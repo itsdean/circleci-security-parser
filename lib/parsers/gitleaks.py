@@ -25,8 +25,9 @@ def parse_individual(gitleaks_issues, issue_holder, logger, metadata):
 
         custom = {}
 
-        title = issue["rule"]
-        title = f'{issue["rule"]} found at {issue["file"]}'
+        filename = issue["file"].rsplit("/")[-1]
+
+        title = f'{issue["rule"]} found at \"{filename}\"'
         description = f'A potential credential was found in a file. The gitleaks rule that triggered was \"{issue["rule"].lower()}\".'
 
         # Create the file location for the repository URL
@@ -90,6 +91,8 @@ def parse_multiple(gitleaks_issues, issue_holder, logger, metadata):
     for issue in gitleaks_issues:
 
         if issue["file"] not in files.keys():
+            filename = issue["file"].rsplit("/")[-1]
+
             files[issue["file"]] = {
                 "offences": [
                     {
@@ -99,7 +102,7 @@ def parse_multiple(gitleaks_issues, issue_holder, logger, metadata):
                         "offender":  issue["offender"],
                     }
                 ],
-                "title": f"Potential credentials found at \"{issue['file']}\"",
+                "title": f"Potential credentials found at \"{filename}\"",
                 "commit": issue["commit"],
                 "path": issue["file"],
                 "repository_path_known": False,
