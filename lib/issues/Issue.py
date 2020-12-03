@@ -42,12 +42,23 @@ class Issue:
 
         self.fails = False
 
-        # Create a hash of the object as it is - we will use this to unique
-        # identify it in case we need to allowlist it
-        if tool_name == "gitleaks" or tool_name == "gosec": # The location of gitleaks issues is very dynamic so we need another factor
-            self.hash = hashlib.sha256(f'{self.description}:{self.custom["file_location"]}'.encode('utf-8')).hexdigest()
-        else:
-            self.hash = hashlib.sha256(f"{self.description}:{self.location}".encode('utf-8')).hexdigest()
+        # Create a hash of the object as it is - we will use this for future comparisons
+        self.hash = f"{self.description}:{self.location}"
+
+        # Change the hash depending on the case to enforce consistency
+        if tool_name == "gitleaks":
+            if self.custom["type"] == "single":
+                self.hash = f'{self.custom["filename"]}:{self.custom["line"]}'
+            else:
+                self.hash = f'{self.custom["filepath"]}'
+        elif tool_name == "insider":
+            if self.custom["type"] == "credential":
+                self.hash = f'{self.custom["filename"]}:{self.custom["line"]}'
+        elif tool_name == "gosec":
+            if self.custom["type"] == "credential":
+                self.hash = f'{self.custom["filename"]}:{self.custom["line"]}'
+
+        self.hash = hashlib.sha256(self.hash.encode('utf-8')).hexdigest()
 
 
     def dictionary(self):

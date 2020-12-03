@@ -26,7 +26,23 @@ def parse(input_file, issue_holder, logger):
         vulnerabilities = json_object["vulnerabilities"]
 
         for vuln in vulnerabilities:
+
+            custom = {
+                "type": "vulnerability"
+            }
+
+            # This is the full path to the file
+            location = vuln["classMessage"].split(" (")[0]
+
+            # This is just the filename
+            filename = location.rsplit("/")[-1]
+
             title = vuln["longMessage"].split(". ")[0]
+            if "Generic API key" in title:
+                custom["type"] = "credential"
+                custom["filename"] = filename
+                custom["line"] = vuln["line"]
+                title += f" found at \"{filename}\""
 
             # Combine the issue descriptions from insider-cli first, then add the code after
             description = vuln["longMessage"].split(". ")[1] + "\n"
@@ -38,7 +54,6 @@ def parse(input_file, issue_holder, logger):
             # else:
             #     location = vuln["classMessage"]
 
-            location = vuln["classMessage"].split(" (")[0]
 
             if "shortMessage" in vuln:
                 recommendation = vuln["shortMessage"]
@@ -47,7 +62,6 @@ def parse(input_file, issue_holder, logger):
 
             rating = vuln["cvss"]
             severity = convert_cvss(rating)
-            # print(str_rating)
 
             issue_holder.add(
                 issue_type,
@@ -57,7 +71,8 @@ def parse(input_file, issue_holder, logger):
                 location,
                 recommendation,
                 raw_output = vuln,
-                severity = severity
+                severity = severity,
+                custom = custom
             )
 
     dependencies = []
@@ -66,6 +81,10 @@ def parse(input_file, issue_holder, logger):
         issue_type = "dependencies"
 
         for dependency in dependencies:
+
+            custom = {
+                "type": "dependency"
+            }
 
             if dependency["cves"] != "":
                 cve = dependency["cves"]
@@ -87,7 +106,8 @@ def parse(input_file, issue_holder, logger):
                 recommendation,
                 raw_output = dependency,
                 severity = severity,
-                cve_value = cve
+                cve_value = cve,
+                custom = custom
             )
 
     logger.debug(f"> insider: {len(vulnerabilities) + len(dependencies)} issues reported\n")

@@ -17,26 +17,6 @@ class IssueHolder:
         self.findings_list = list()
 
 
-    # def create_hash(self, issue):
-    #     """
-    #     Creates a unqiue hash using fields from the issue.
-    #     This hash will be used for deduplication and
-    #     """
-
-    #     description = issue["description"].encode("utf-8")
-    #     location = issue["location"].encode("utf-8")
-
-    #     # issue = json.dumps(issue, sort_keys=True, default=str)
-
-    #     issue_hash = hashlib.sha256(
-    #         description + b":" + location
-    #     ).hexdigest()
-
-    #     # self.l.debug(f"> Generated hash: {issue_hash}")
-
-    #     return issue_hash
-
-
     def deduplicate(self):
         """
         Goes through the list and removes and duplicate issues.

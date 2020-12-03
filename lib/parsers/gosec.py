@@ -97,13 +97,19 @@ def parse(gosec_file, issue_holder, logger, metadata):
 
     for issue in issues:
 
-        custom = {}
+        custom = {
+            "type": "generic"
+        }
 
-        severity = "Medium"
+        severity = "medium"
 
         title = issue["details"]
         line = issue["line"]
         rule_id = issue["rule_id"]
+
+        if rule_id == "G101":
+            custom["type"] = "credential"
+            custom["line"] = line
 
         repository_location = metadata.repository_url
         # repository_name = metadata.repository
@@ -116,11 +122,13 @@ def parse(gosec_file, issue_holder, logger, metadata):
         # Get the relative filepath (as gosec outputs the path from root upwards)
         if metadata.working_directory != "":
             working_directory = metadata.working_directory.split("/")[-1]
-            file_location = issue["file"].split(working_directory + "/")[1]
+            filepath = issue["file"].split(working_directory + "/")[1]
         else:
-            file_location = issue["file"]
-        custom["file_location"] = file_location
-        filename = file_location.split("/")[-1]
+            filepath = issue["file"]
+        custom["filepath"] = filepath
+
+        filename = filepath.split("/")[-1]
+        custom["filename"] = filename
 
         description = f"A security issue was identified in line {line} of {filename}. "
 
@@ -145,7 +153,7 @@ def parse(gosec_file, issue_holder, logger, metadata):
         recommendation += f"\n{recommendation_rel}"
 
         # craft the exact location of the issue in the repository
-        location = f'{repository_location}/blob/{commit}/{file_location}#L{line}'
+        location = f'{repository_location}/blob/{commit}/{filepath}#L{line}'
 
         issue_holder.add(
             issue_type,

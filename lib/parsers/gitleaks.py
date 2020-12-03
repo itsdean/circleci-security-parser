@@ -23,7 +23,11 @@ def parse_individual(gitleaks_issues, issue_holder, logger, metadata):
 
     for issue in gitleaks_issues:
 
-        custom = {}
+        custom = {
+            "type": "single",
+            "filename": issue["file"],
+            "line": issue["lineNumber"]
+        }
 
         filename = issue["file"].rsplit("/")[-1]
 
@@ -65,8 +69,6 @@ def parse_individual(gitleaks_issues, issue_holder, logger, metadata):
             location += f'/blob/{issue["commit"]}/{issue["file"]}'
             if issue["lineNumber"] > 0:
                 location += f'#L{issue["lineNumber"]}'
-
-        custom["file_location"] = issue["file"]
 
         issue_holder.add(
             ISSUE_TYPE,
@@ -146,6 +148,11 @@ def parse_multiple(gitleaks_issues, issue_holder, logger, metadata):
 
     for offending_file in files.keys():
 
+        custom = {
+            "type": "multiple",
+            "filepath": offending_file
+        }
+
         issue_holder.add(
             ISSUE_TYPE,
             TOOL_NAME,
@@ -155,9 +162,7 @@ def parse_multiple(gitleaks_issues, issue_holder, logger, metadata):
             RECOMMENDATION,
             severity = SEVERITY,
             raw_output = files[offending_file],
-            custom = {
-                "file_location": files[offending_file]["path"]
-            }
+            custom = custom
         )
 
     logger.debug(f"> gitleaks: {len(files)} issues reported\n")
