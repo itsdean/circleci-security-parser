@@ -43,7 +43,7 @@ class Issue:
         self.fails = False
 
         # Create a hash of the object as it is - we will use this for future comparisons
-        self.hash = f"{self.description}:{self.location}"
+        self.hash = f"{self.tool_name}:{self.title}:{self.location}"
 
         # Change the hash depending on the case to enforce consistency
         if tool_name == "gitleaks":
