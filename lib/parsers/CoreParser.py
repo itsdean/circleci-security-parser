@@ -102,8 +102,8 @@ class CoreParser:
         if len(self.m.fail_branches) > 0:
             # self.l.debug("fail_branches has been defined")
             self.l.info(f"Branch: {self.m.branch}")
-            self.l.debug("")
-            if [branch for branch in self.m.fail_branches if branch.startswith(branch)]:
+            print()
+            if [branch for branch in self.m.fail_branches if self.m.branch.startswith(branch)]:
                 self.l.info("> We are in a branch that will fail builds")
             else:
                 self.l.info("> fail_branches configured but we're not in one - disabling failing")
