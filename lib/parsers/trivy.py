@@ -85,7 +85,6 @@ def parse(trivy_file, issue_holder, logger):
         location,
         recommendation,
         filename,
-        raw_output = json_object,
         severity = highest_severity
     )
 
