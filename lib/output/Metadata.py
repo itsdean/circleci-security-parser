@@ -132,6 +132,7 @@ class Metadata:
         if not jira_validated:
             self.l.warning("The JIRA configuration within parser.yml appeared to be incorrect - disabling functionality")
             self.jira = False
+            self.payload["jira"] = False
         return self.jira
 
 
