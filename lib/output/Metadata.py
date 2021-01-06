@@ -120,8 +120,8 @@ class Metadata:
         if "project" not in jira_config:
             self.l.error("project was not defined in the jira config!")
             jira_validated = False
-        if "issue_type" not in jira_config:
-            self.l.error("issue_type was not defined in the JIRA config!")
+        if "task_issue_type" not in jira_config:
+            self.l.error("task_issue_type was not defined in the JIRA config!")
             jira_validated = False
         if "hash_field" not in jira_config:
             self.l.error("hash_field was not defined in the JIRA config!")
