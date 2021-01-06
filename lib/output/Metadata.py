@@ -130,7 +130,7 @@ class Metadata:
             self.l.error("The list of accepted_statuses were not defined in the JIRA config!")
             jira_validated = False
         if not jira_validated:
-            self.l.warning("The JIRA configuration within parser.yml appeared to be incorrect - disabling functionality")
+            self.l.warning("The JIRA configuration within parser.yml appeared to be incorrect - disabling functionality\n")
             self.jira = False
             self.payload["jira"] = False
         return self.jira
