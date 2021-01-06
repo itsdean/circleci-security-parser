@@ -248,6 +248,28 @@ def node_parse_resolvables(upgradable_dependencies, reporter, project_name):
     return len(upgradable_dependencies)
 
 
+def __parse_node(logger, issue_holder, json_object):
+    unresolve_count = 0
+    resolve_count = 0
+    project_name = json_object["projectName"]
+
+    if len(json_object["vulnerabilities"]) > 0:
+
+        remediation_key = json_object["remediation"]
+        if "unresolved" in remediation_key:
+            unresolved_dependencies = remediation_key["unresolved"]
+            if len(unresolved_dependencies) > 0:
+                unresolve_count = node_parse_unresolvables(unresolved_dependencies, issue_holder)
+
+        if "upgrade" in remediation_key:
+            upgradable_dependencies = remediation_key["upgrade"]
+            if len(upgradable_dependencies) > 0:
+                resolve_count = node_parse_resolvables(upgradable_dependencies, issue_holder, project_name)    
+
+            logger.debug(f"> snyk: {unresolve_count + resolve_count} issues reported\n")   
+        # print(remediation_key)
+
+
 def parse_node(i_file, issue_holder, logger):
     """
     Attempts to carry out multiple steps on a Snyk scan's output:
@@ -257,21 +279,9 @@ def parse_node(i_file, issue_holder, logger):
 
     i_file_json_object = json.load(i_file)
 
-    # Check if the output is for a scan that successfully completed. If it did, then there wouldn't be an error key.
-    if "error" not in i_file_json_object:
-
-        project_name = i_file_json_object["projectName"]
-        remediation_key = i_file_json_object["remediation"]
-
-        unresolved_dependencies = remediation_key["unresolved"]
-        unresolve_count = node_parse_unresolvables(unresolved_dependencies, issue_holder)
-
-        upgradable_dependencies = remediation_key["upgrade"]
-        resolve_count = node_parse_resolvables(upgradable_dependencies, issue_holder, project_name)
-
-        logger.debug(f"> snyk: {unresolve_count + resolve_count} issues reported\n")
-
+    # Sometimes snyk will report multiple files - we need to check if this is the case first
+    if isinstance(i_file_json_object, list):
+        for target in i_file_json_object:
+            __parse_node(logger, issue_holder, target)
     else:
-        logger.warning("snyk: The results of this scan apparently failed!")
-        logger.warning("snyk: Please see the following error obtained from the output file:")
-        logger.warning(i_file_json_object["error"] + "\n")
+        __parse_node(logger, issue_holder, i_file_json_object)
