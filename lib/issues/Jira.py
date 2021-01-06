@@ -31,10 +31,11 @@ class Jira:
         self.m = metadata
         self.jira_config = self.m.jira_config
 
+
     def get_repository(self):
             search_string = f'Summary ~ "{self.m.repository}" '
             search_string += f'AND project = "{self.jira_config["project"]}" '
-            search_string += f'AND issuetype = "{self.jira_config["issue_type"]}"'
+            # search_string += f'AND issuetype = "{self.jira_config["issue_type"]}"'
 
             repository_tickets = self.client.search_issues(search_string, validate_query=True)
             if len(repository_tickets) >= 1:
@@ -42,6 +43,7 @@ class Jira:
                 return repository
             else:
                 return None
+
 
     def get_subtasks(self, ticket_key):
         ticket = self.client.issue(ticket_key)
