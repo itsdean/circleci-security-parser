@@ -131,7 +131,7 @@ def parse_multiple(gitleaks_issues, issue_holder, logger, metadata):
             # Add an atomic line to the description and save the file URL
             if not files[issue["file"]]["repository_path_known"]:
                 files[issue["file"]]["description"] += "\n\nMatches for the following gitleaks rule(s) were found:"
-                files[issue["file"]]["reepository_path_known"] = True
+                files[issue["file"]]["repository_path_known"] = True
                 files[issue["file"]]["repository_path"] = path
 
             # Add an entry in the description for this offence
@@ -153,12 +153,16 @@ def parse_multiple(gitleaks_issues, issue_holder, logger, metadata):
             "filepath": offending_file
         }
 
+        path = files[offending_file]["path"]
+        if files[offending_file]["repository_path"] is not "N/A":
+            path = files[offending_file]["repository_path"]
+
         issue_holder.add(
             ISSUE_TYPE,
             TOOL_NAME,
             files[offending_file]["title"],
             files[offending_file]["description"],
-            files[offending_file]["path"],
+            path,
             RECOMMENDATION,
             severity = SEVERITY,
             raw_output = files[offending_file],
