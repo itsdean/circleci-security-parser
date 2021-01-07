@@ -137,9 +137,9 @@ def parse_multiple(gitleaks_issues, issue_holder, logger, metadata):
             # Add an entry in the description for this offence
             files[issue["file"]]["description"] += f"\n{issue['rule']} at line {issue['lineNumber']}:\n- "
             if len(issue["line"]) > MAX_LINE_LENGTH:
-                files[issue["file"]]["description"] += f"{issue['offender']}"
+                files[issue["file"]]["description"] += f"{issue['offender']}\n"
             else:
-                files[issue["file"]]["description"] += f"{issue['line']}"
+                files[issue["file"]]["description"] += f"{issue['line']}\n"
 
         # If it's a whole-file rule, tailor the description
         else:
